@@ -1,0 +1,17 @@
+eclipse.preferences.version=1
+encoding//Debug/makefile=UTF-8
+encoding//Debug/objects.mk=UTF-8
+encoding//Debug/peripherals/subdir_rules.mk=UTF-8
+encoding//Debug/peripherals/subdir_vars.mk=UTF-8
+encoding//Debug/sources.mk=UTF-8
+encoding//Debug/src/myIsr/subdir_rules.mk=UTF-8
+encoding//Debug/src/myIsr/subdir_vars.mk=UTF-8
+encoding//Debug/src/myPeripherals/subdir_rules.mk=UTF-8
+encoding//Debug/src/myPeripherals/subdir_vars.mk=UTF-8
+encoding//Debug/src/protocol/subdir_rules.mk=UTF-8
+encoding//Debug/src/protocol/subdir_vars.mk=UTF-8
+encoding//Debug/src/subdir_rules.mk=UTF-8
+encoding//Debug/src/subdir_vars.mk=UTF-8
+encoding//Debug/targetConfigs/subdir_rules.mk=UTF-8
+encoding//Debug/targetConfigs/subdir_vars.mk=UTF-8
+encoding//header/peripheral/swfifo.h=UTF-8
