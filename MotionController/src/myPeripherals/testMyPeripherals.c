@@ -106,8 +106,9 @@ void TestSpi(void)
 	}
 	for(;;) {
 		DELAY_US(500000);
+		Spia_puts("nothing is received.\n");
 		if( !Spia_gets(tmp)) {
-
+	//		ESTOP0;	// stop here.
 		}
 	}
 }
@@ -115,8 +116,35 @@ void TestSpi(void)
 
 
 
+#if( MY_TEST_DEMO == TEST_XINTF )
+void TestXintf(void)
+{
+	extern volatile Uint16 EXTRAM[0x8000];		// ∆¨Õ‚RAM
 
+	EXTRAM[0] = (signed int)0x0009;
+	EXTRAM[1] = 0x0007;
+	EXTRAM[2] = 0x08;
+	EXTRAM[3] = 0x09;
 
+}
+
+void EXTFPGA_Test(void)
+{
+	extern volatile Uint16 EXTFPGA[32];
+	volatile int i,tmp;
+
+	testMymotor();
+
+    EXTFPGA[0x11] = 6400*5;      // set inpos LSB
+    EXTFPGA[0x12] = 0;      // set inpos HSB
+	EXTFPGA[0x10] = 3;      // set status
+
+    
+
+	for( i=0; i<20;i++)
+		tmp = EXTFPGA[i];
+}
+#endif //( MY_TEST_DEMO == TEST_XINTF )
 
 
 

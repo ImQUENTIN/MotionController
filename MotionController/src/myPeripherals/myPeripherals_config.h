@@ -88,6 +88,11 @@ extern "C" {
 #error no target device defined.
 #endif
 
+//----------------------------------------------------------
+// Step3. Calculate the SYSCLK's frequency.
+//          ** DO NOT CHANGE HERE **
+//----------------------------------------------------------
+#define SYSCLK_HZ		(SYSCLKOUT_MHZ*1E6)		// 90Mhz
 
 //============================================================================
 //      Section 2: Peripheral clock Frequency, 外设时钟频率
@@ -100,20 +105,36 @@ extern "C" {
 //  ...      -      /6,8,12
 //  111      -      /14
 // 默认的情况下：  LSPCLK = SYSCLKOUT/4 = 37.5Mhz;
-//                 HSPCLK = SYSCLKOUT/2 = 75Mhz;
+//   (150Mhz)      HSPCLK = SYSCLKOUT/2 = 75Mhz;
+//  TMS320F28335,334,235,234 最大可以支持150Mhz的HSPCLK, 75Mhz的LSPCLK；
+//  TMS320F25232,332 最大可以支持100Mhz的HSPCLK, 50Mhz的LSPCLK；
 
+//----------------------------------------------------------
+// Step1. choose HISPCP & LOSPCP for Peripheral clock.
+//----------------------------------------------------------
 #if(DSP28_28335 && (OSCCLK_MHZ == 30) )
-#define DSP28_HISPCP	1	// HSPCLK = SYSCLKOUT/2
-#define DSP28_LOSPCP	2	// LSPCLK = SYSCLKOUT/4
-#define HSPCLK_MHZ SYSCLKOUT_MHZ/2     // 75Mhz
-#define LSPCLK_MHZ SYSCLKOUT_MHZ/4     // 37.5MHZ
+#define DSP28_HISPCP	1	// 1->75Mhz	 , while SYSCLK_HZ = 150MHZ.
+#define DSP28_LOSPCP	2	// 2->37.5Mhz, while SYSCLK_HZ = 150MHZ.
 #elif(DSP28_28332 && (OSCCLK_MHZ == 30) )
-#define DSP28_HISPCP	1	// HSPCLK = SYSCLKOUT/2
-#define DSP28_LOSPCP	2	// LSPCLK = SYSCLKOUT/4
-#define HSPCLK_MHZ SYSCLKOUT_MHZ/2     // 45Mhz
-#define LSPCLK_MHZ SYSCLKOUT_MHZ/4     // 22.5MHZ
+#define DSP28_HISPCP	0	// 0->90MHZ, while SYSCLK_HZ = 90MHZ.
+#define DSP28_LOSPCP	1	// 1->45MHZ, while SYSCLK_HZ = 90MHZ.
 #else
 #error No suitable combination of crystals
+#endif
+
+//----------------------------------------------------------
+// Step2. calculate the HSPCLK&LSPCLK's frequency.
+//          ** DO NOT CHANGE HERE **
+//----------------------------------------------------------
+#if( DSP28_HISPCP != 0)
+#define HSPCLK_HZ 		( SYSCLK_HZ / (2*DSP28_HISPCP) )
+#else
+#define HSPCLK_HZ 		SYSCLK_HZ
+#endif
+#if( DSP28_LOSPCP != 0)
+#define LSPCLK_HZ 		( SYSCLK_HZ / (2*DSP28_LOSPCP) )
+#else
+#define LSPCLK_HZ 		SYSCLK_HZ
 #endif
 
 
@@ -455,6 +476,29 @@ extern "C" {
 #define DMA_TSIZE		1	// 一次传输，传输几包。
 #endif
 
+//============================================================================
+//      Peripheral X: XINTF External Interface
+//============================================================================
+//----------------------------------------------------------
+// Step1. Select the zones you use.
+//----------------------------------------------------------
+#ifndef USE_XINTF_ZONE0
+#define USE_XINTF_ZONE0		0
+#endif
+#ifndef USE_XINTF_ZONE6
+#define USE_XINTF_ZONE6		0
+#endif
+#ifndef USE_XINTF_ZONE7
+#define USE_XINTF_ZONE7		0
+#endif
+
+#if( USE_XINTF_ZONE0 || USE_XINTF_ZONE6 || USE_XINTF_ZONE7 )
+#define USE_XINTF 	1
+
+
+#else
+#define USE_XINTF	0
+#endif
 
 
 

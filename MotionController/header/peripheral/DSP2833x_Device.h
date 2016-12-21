@@ -27,7 +27,7 @@ extern "C" {
 #define TARGET 				1
 #define DSP28_28335 		0	// 没有定义设备，默认使用DSP28335
 #define DSP28_28334 		0
-#define DSP28_28332 		TARGET
+#define DSP28_28332 		TARGET//0
 
 
 //---------------------------------------------------------------------------
@@ -194,8 +194,12 @@ typedef long double     float64;
 //---------------------------------------------------------------------------
 // Include All Peripheral Header Files:
 //
+// --------------- The below headers is added by QUENTIN -------------------
 #include "swfifo.h"
+#include "SST39VF800A.h"				// external Flash driver files
+#include "mymotors.h"					// FPGA's Motor control
 
+// --------------- no more ----------------------------------------
 #include "DSP2833x_Adc.h"                // ADC Registers
 #include "DSP2833x_DevEmu.h"             // Device Emulation Registers
 #include "DSP2833x_CpuTimers.h"          // 32-bit CPU Timers

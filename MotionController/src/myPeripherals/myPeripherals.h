@@ -19,6 +19,7 @@ extern void InitMyTask(void);
 
 extern void TestSci(void);
 extern void TestSpi(void);
-
+extern void TestXintf(void);
+extern void EXTFPGA_Test(void);
 
 #endif /* MYPERIPHERALS_H_ */

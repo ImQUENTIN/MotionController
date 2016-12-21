@@ -21,6 +21,8 @@
 #include "DSP2833x_Device.h"     // DSP2833x Headerfile Include File
 #include "DSP2833x_Examples.h"   // DSP2833x Examples Include File
 
+
+
 //---------------------------------------------------------------------------
 // InitXINTF:
 //---------------------------------------------------------------------------
@@ -30,118 +32,283 @@
 // so can yield unpredictable results
 
 
-void InitXintf(void)
+void ConfigureXTIMING( volatile union XTIMING_REG *zone, struct XTIMING_BITS *cfg )
 {
-    // This shows how to write to the XINTF registers.  The
-    // values used here are the default state after reset.
-    // Different hardware will require a different configuration.
+	   // Zone 6------------------------------------
+	    // When using ready, ACTIVE must be 1 or greater
+	    // Lead must always be 1 or greater
+// ----------------------------------------------------------------------------------------------------
+//		Description 					X2TIMING = 0 					X2TIMING = 1
+// ----------------------------------------------------------------------------------------------------
+//	LR 	Lead period, read access 		XRDLEAD x tc(xtim) 				(XRDLEADx2) x tc(xtim)
+//	AR 	Active period, read access 		(XRDACTIVE+WS+1) x tc(xtim) 	(XRDACTIVEx2+WS+1) x tc(xtim)
+//	TR 	Trail period, read access 		XRDTRAIL x tc(xtim) 			(XRDTRAILx2) x tc(xtim)
+//	LW Lead period, write access
+//	AW Active period, write access
+//	TW Trail period, write access
+// ----------------------------------------------------------------------------------------------------
+//
+//	(1) tc(xtim) - Cycle time, XTIMCLK
+//	(2) WS refers to the number of wait states inserted by hardware when using XREADY. If the zone is configured to ignore XREADY
+//	(USEREADY= 0) then WS = 0.
+		EALLOW;
+		// Zone write timing
+		zone->bit.XWRLEAD 	= cfg->XWRLEAD;
+	    zone->bit.XWRACTIVE = cfg->XWRACTIVE;
+	    zone->bit.XWRTRAIL 	= cfg->XWRTRAIL;
+	    // Zone read timing
+	    zone->bit.XRDLEAD 	= cfg->XRDLEAD;
+	    zone->bit.XRDACTIVE = cfg->XRDACTIVE;
+	    zone->bit.XRDTRAIL 	= cfg->XRDTRAIL;
 
-    // For an example of an XINTF configuration used with the
-    // F28335 eZdsp, refer to the examples/run_from_xintf project.
+	    // double all Zone read/write lead/active/trail timing
+	    zone->bit.X2TIMING = cfg->X2TIMING;
 
-    // Any changes to XINTF timing should only be made by code
-    // running outside of the XINTF.
+	    // Zone will sample XREADY signal
+	    zone->bit.USEREADY = cfg->USEREADY;
+	    zone->bit.READYMODE = cfg->READYMODE;
 
-    // All Zones---------------------------------
-    // Timing for all zones based on XTIMCLK = 1/2 SYSCLKOUT
-    EALLOW;
-    XintfRegs.XINTCNF2.bit.XTIMCLK = 1;
-    // No write buffering
-    XintfRegs.XINTCNF2.bit.WRBUFF = 0;
-    // XCLKOUT is enabled
-    XintfRegs.XINTCNF2.bit.CLKOFF = 0;
-    // XCLKOUT = XTIMCLK/2
-    XintfRegs.XINTCNF2.bit.CLKMODE = 1;
-
-
-    // Zone 0------------------------------------
-    // When using ready, ACTIVE must be 1 or greater
-    // Lead must always be 1 or greater
-    // Zone write timing
-    XintfRegs.XTIMING0.bit.XWRLEAD = 3;
-    XintfRegs.XTIMING0.bit.XWRACTIVE = 7;
-    XintfRegs.XTIMING0.bit.XWRTRAIL = 3;
-    // Zone read timing
-    XintfRegs.XTIMING0.bit.XRDLEAD = 3;
-    XintfRegs.XTIMING0.bit.XRDACTIVE = 7;
-    XintfRegs.XTIMING0.bit.XRDTRAIL = 3;
-
-    // double all Zone read/write lead/active/trail timing
-    XintfRegs.XTIMING0.bit.X2TIMING = 1;
-
-    // Zone will sample XREADY signal
-    XintfRegs.XTIMING0.bit.USEREADY = 1;
-    XintfRegs.XTIMING0.bit.READYMODE = 1;  // sample asynchronous
-
-    // Size must be either:
-    // 0,1 = x32 or
-    // 1,1 = x16 other values are reserved
-    XintfRegs.XTIMING0.bit.XSIZE = 3;
-
-    // Zone 6------------------------------------
-    // When using ready, ACTIVE must be 1 or greater
-    // Lead must always be 1 or greater
-    // Zone write timing
-    XintfRegs.XTIMING6.bit.XWRLEAD = 3;
-    XintfRegs.XTIMING6.bit.XWRACTIVE = 7;
-    XintfRegs.XTIMING6.bit.XWRTRAIL = 3;
-    // Zone read timing
-    XintfRegs.XTIMING6.bit.XRDLEAD = 3;
-    XintfRegs.XTIMING6.bit.XRDACTIVE = 7;
-    XintfRegs.XTIMING6.bit.XRDTRAIL = 3;
-
-    // double all Zone read/write lead/active/trail timing
-    XintfRegs.XTIMING6.bit.X2TIMING = 1;
-
-    // Zone will sample XREADY signal
-    XintfRegs.XTIMING6.bit.USEREADY = 1;
-    XintfRegs.XTIMING6.bit.READYMODE = 1;  // sample asynchronous
-
-    // Size must be either:
-    // 0,1 = x32 or
-    // 1,1 = x16 other values are reserved
-    XintfRegs.XTIMING6.bit.XSIZE = 3;
-
-    // Bank switching
-    // Assume Zone 6 is slow, so add additional BCYC cycles
-    // when ever switching from Zone 6 to another Zone.
-    // This will help avoid bus contention.
-    XintfRegs.XBANK.bit.BANK = 6;
-    XintfRegs.XBANK.bit.BCYC = 6;
-
+	    // Size must be either:
+	    // 0,1 = x32 or
+	    // 1,1 = x16 other values are reserved
+	    zone->bit.XSIZE = cfg->XSIZE;
+	    EDIS;
+}
+void InitZone7(void)
+{
+#if(USE_XINTF_ZONE7)
+	struct XTIMING_BITS cfg;
     // Zone 7------------------------------------
-    // When using ready, ACTIVE must be 1 or greater
-    // Lead must always be 1 or greater
+	// 连接的是FLASH, SST39VF800A-70, 即70ns
+#if(SYSCLKOUT_MHZ == 150)
+	//	F28335，SYSCLK=150Mhz -> 6.7ns
     // Zone write timing
-    XintfRegs.XTIMING7.bit.XWRLEAD = 3;
-    XintfRegs.XTIMING7.bit.XWRACTIVE = 7;
-    XintfRegs.XTIMING7.bit.XWRTRAIL = 3;
+	cfg.XWRLEAD 	= 1;	// one XTIMCLK cycle.
+    cfg.XWRACTIVE 	= 1;	// two XTIMCLK cycle.
+    cfg.XWRTRAIL 	= 0;
     // Zone read timing
-    XintfRegs.XTIMING7.bit.XRDLEAD = 3;
-    XintfRegs.XTIMING7.bit.XRDACTIVE = 7;
-    XintfRegs.XTIMING7.bit.XRDTRAIL = 3;
+    cfg.XRDLEAD 	= 1;
+    cfg.XRDACTIVE 	= 1;
+    cfg.XRDTRAIL 	= 0;
 
     // double all Zone read/write lead/active/trail timing
-    XintfRegs.XTIMING7.bit.X2TIMING = 1;
+    cfg.X2TIMING 	= 0;
 
     // Zone will sample XREADY signal
-    XintfRegs.XTIMING7.bit.USEREADY = 1;
-    XintfRegs.XTIMING7.bit.READYMODE = 1;  // sample asynchronous
+    cfg.USEREADY 	= 0;
+    cfg.READYMODE 	= 1;  // sample asynchronous
 
     // Size must be either:
     // 0,1 = x32 or
     // 1,1 = x16 other values are reserved
-    XintfRegs.XTIMING7.bit.XSIZE = 3;
+    cfg.XSIZE 		= 3;
+
+#elif(SYSCLKOUT_MHZ == 90)
+	// SYSCLK=90Mhz -> 11.11ns
+    // Zone write timing
+	cfg.XWRLEAD 	= 3;	// one XTIMCLK cycle.
+    cfg.XWRACTIVE 	= 7;	// two XTIMCLK cycle.
+    cfg.XWRTRAIL 	= 3;
+    // Zone read timing
+    cfg.XRDLEAD 	= 3;
+    cfg.XRDACTIVE 	= 7;
+    cfg.XRDTRAIL 	= 3;
+
+    // double all Zone read/write lead/active/trail timing
+    cfg.X2TIMING 	= 1;
+
+    // Zone will sample XREADY signal
+    cfg.USEREADY 	= 0;
+    cfg.READYMODE 	= 1;  // sample asynchronous
+
+    // Size must be either:
+    // 0,1 = x32 or
+    // 1,1 = x16 other values are reserved
+    cfg.XSIZE 		= 3;
+#endif
+    ConfigureXTIMING(&XintfRegs.XTIMING7, &cfg);
 
     // Bank switching
     // Assume Zone 7 is slow, so add additional BCYC cycles
     // when ever switching from Zone 6 to another Zone.
     // This will help avoid bus contention.
+//    EALLOW;
 //    XintfRegs.XBANK.bit.BANK = 7;
 //    XintfRegs.XBANK.bit.BCYC = 7;
-    EDIS;
+//    EDIS;
    //Force a pipeline flush to ensure that the write to
    //the last register configured occurs before returning.
+#endif
+}
+void InitZone6(void)
+{
+#if(USE_XINTF_ZONE6)
+	struct XTIMING_BITS cfg;
+    // Zone 6------------------------------------
+#if(SYSCLKOUT_MHZ == 150)
+	// 开发板的zone7连的是RAM芯片：IS61LV256(512)16-10, 10ns
+	// 开发板的用的F28335，SYSCLK=150Mhz -> 6.7ns
+    // Zone write timing
+	cfg.XWRLEAD 	= 1;	// one XTIMCLK cycle.
+    cfg.XWRACTIVE 	= 7;	// two XTIMCLK cycle.
+    cfg.XWRTRAIL 	= 1;
+    // Zone read timing
+    cfg.XRDLEAD 	= 1;
+    cfg.XRDACTIVE 	= 7;
+    cfg.XRDTRAIL 	= 1;
+
+    // double all Zone read/write lead/active/trail timing
+    cfg.X2TIMING 	= 1;
+
+    // Zone will sample XREADY signal
+    cfg.USEREADY 	= 0;
+    cfg.READYMODE 	= 1;  // sample asynchronous
+
+    // Size must be either:
+    // 0,1 = x32 or
+    // 1,1 = x16 other values are reserved
+    cfg.XSIZE 		= 3;
+#elif(SYSCLKOUT_MHZ == 90)
+	// SYSCLK=90Mhz -> 11.11ns
+    // Zone write timing
+	cfg.XWRLEAD 	= 1;	// one XTIMCLK cycle.
+    cfg.XWRACTIVE 	= 1;	// two XTIMCLK cycle.
+    cfg.XWRTRAIL 	= 0;
+    // Zone read timing
+    cfg.XRDLEAD 	= 1;
+    cfg.XRDACTIVE 	= 1;
+    cfg.XRDTRAIL 	= 0;
+
+    // double all Zone read/write lead/active/trail timing
+    cfg.X2TIMING 	= 0;
+
+    // Zone will sample XREADY signal
+    cfg.USEREADY 	= 0;
+    cfg.READYMODE 	= 1;  // sample asynchronous
+
+    // Size must be either:
+    // 0,1 = x32 or
+    // 1,1 = x16 other values are reserved
+    cfg.XSIZE 		= 3;
+#endif
+
+    // Zone 6------------------------------------
+        ConfigureXTIMING(&XintfRegs.XTIMING6, &cfg);
+        
+
+    // Bank switching
+    // Assume Zone 6 is slow, so add additional BCYC cycles
+    // when ever switching from Zone 6 to another Zone.
+    // This will help avoid bus contention.
+//        EALLOW;
+//    XintfRegs.XBANK.bit.BANK = 6;
+//    XintfRegs.XBANK.bit.BCYC = 6;
+//        EDIS;
+#endif
+}
+
+
+void InitZone0(void)
+{
+#if(USE_XINTF_ZONE0)
+	struct XTIMING_BITS cfg;
+    // Zone 0------------------------------------
+#if(SYSCLKOUT_MHZ == 150)
+	// 开发板的zone7连的是RAM芯片：IS01LV256(512)16-10, 10ns
+	// 开发板的用的F28335，SYSCLK=150Mhz -> 6.7ns
+    // Zone write timing
+	cfg.XWRLEAD 	= 1;	// one XTIMCLK cycle.
+    cfg.XWRACTIVE 	= 7;	// two XTIMCLK cycle.
+    cfg.XWRTRAIL 	= 1;
+    // Zone read timing
+    cfg.XRDLEAD 	= 1;
+    cfg.XRDACTIVE 	= 7;
+    cfg.XRDTRAIL 	= 1;
+
+    // double all Zone read/write lead/active/trail timing
+    cfg.X2TIMING 	= 1;
+
+    // Zone will sample XREADY signal
+    cfg.USEREADY 	= 0;
+    cfg.READYMODE 	= 1;  // sample asynchronous
+
+    // Size must be either:
+    // 0,1 = x32 or
+    // 1,1 = x16 other values are reserved
+    cfg.XSIZE 		= 3;
+#elif(SYSCLKOUT_MHZ == 90)
+	// SYSCLK=90Mhz -> 11.11ns
+    // Zone write timing
+	cfg.XWRLEAD 	= 3;	// one XTIMCLK cycle.
+    cfg.XWRACTIVE 	= 7;	// two XTIMCLK cycle.
+    cfg.XWRTRAIL 	= 3;
+    // Zone read timing
+    cfg.XRDLEAD 	= 3;
+    cfg.XRDACTIVE 	= 7;
+    cfg.XRDTRAIL 	= 3;
+
+    // double all Zone read/write lead/active/trail timing
+    cfg.X2TIMING 	= 1;
+
+    // Zone will sample XREADY signal
+    cfg.USEREADY 	= 0;
+    cfg.READYMODE 	= 1;  // sample asynchronous
+
+    // Size must be either:
+    // 0,1 = x32 or
+    // 1,1 = x16 other values are reserved
+    cfg.XSIZE 		= 3;
+#endif
+    
+    // Zone 0------------------------------------
+    ConfigureXTIMING(&XintfRegs.XTIMING0, &cfg);
+
+
+    // Bank switching
+    // Assume Zone 0 is slow, so add additional BCYC cycles
+    // when ever switching from Zone 0 to another Zone.
+    // This will help avoid bus contention.
+//        EALLOW;
+//    XintfRegs.XBANK.bit.BANK = 0;
+//    XintfRegs.XBANK.bit.BCYC = 0;
+//        EDIS;
+#endif
+}
+
+
+
+void InitXintf(void)
+{
+	// -------------------------------------------------------
+    // Step 2. Make sure the XINTF clock is enabled
+    //
+	EALLOW;
+	SysCtrlRegs.PCLKCR3.bit.XINTFENCLK = 1;
+
+	// ------------------------------------------------------
+    // Step 3. Configure the XTIMCLK and XCLKOUT
+	//
+//	XTIMCLK:
+//	000 XTIMCLK = SYSCLKOUT/1
+//	001 XTIMCLK = SYSCLKOUT/2 (default)
+    XintfRegs.XINTCNF2.bit.XTIMCLK = 0;    // 设置所有外部区域 XTIMCLK = SYSCLKOUT
+    // 3个写缓冲
+    XintfRegs.XINTCNF2.bit.WRBUFF = 3;
+    // XCLKOUT被使能
+    XintfRegs.XINTCNF2.bit.CLKOFF = 0;
+//    CLKMODE:
+//    0 XCLKOUT is equal to XTIMCLK
+//    1 XCLKOUT is a divide by 2 of XTIMCLK (default)
+    XintfRegs.XINTCNF2.bit.CLKMODE = 0;       // XCLKOUT = XTIMCLK
+	EDIS;
+
+	// ------------------------------------------------------
+    // Step 4. Initialize the specific zone.
+	//
+	InitZone0();
+	InitZone6();
+	InitZone7();
+
 
    InitXintf16Gpio();
 // InitXintf32Gpio();
@@ -243,6 +410,60 @@ void InitXintf16Gpio()
      EDIS;
 }
 
+
+//
+//        SRC/DST_ADDR    // The value written into the shadow register
+//                        // is the start address of the first location where data is read or written to.
+//
+//        SRC/DST_BEG_ADDR// On a wrap condition, the active register will be incremented by the signed value in the
+//                        // appropriate SRC/DST_WRAP_STEP register prior to being loaded into the active SRC/DST_ADDR register.
+//
+//        BURST_SIZE  	// 16 or 32, the smallest amount of data that can be transferred at one time
+//                        // This specifies the number of words to be transferred in a burst.
+//                        // This value is loaded into the BURST_COUNT register at the beginning of each burst.
+//
+//        TRANSFER_SIZE 	// How many bursts are performed in the entire transfer.
+//                        // This specifies the number of bursts to be transferred before per CPU interrupt (if enabled).
+//                        // This value is loaded into the TRANSFER_COUNT register at the beginning of each transfer.
+//        // DATASIZE
+//                        NOTE: The value written to the SIZE registers is one less than the intended size. So, to transfer
+//                        three 16-bit words, the value 2 should be placed in the SIZE register.
+//                        Regardless of the state of the DATASIZE bit, the value specified in the SIZE registers are for
+//                        16-bit addresses. So, to transfer three 32-bit words, the value 5 should be placed in the SIZE
+//                        register.
+//
+//        MODE.CHx[CONTINUOUS]
+//        MODE.CHx[ONESHOT]   // DMA transfers one burst of data each time
+//        MODE.CHx[CHINTMODE] // DMA interrupt
+//                        Whether this interrupt is generated at the beginning or the end of the transfer is defined in the
+//                        CHINTMODE bit in the MODE register. Whether the channel remains enabled or not after the
+//                        transfer is completed is defined by the CONTINUOUS bit in the MODE register.
+//
+//        SRC/DST_WRAP_SIZE   // This specifies the number of bursts to be transferred before the current address pointer wraps around to the beginning.
+//                            // To disable the wrap function, assign the value of these registers to be larger than the TRANSFER_SIZE.
+//
+//
+//        For each source/destination pointer, the address changes can be controlled with the following step values:
+//        SRC/DST_BURST_STEP // Within each burst transfer, the address source and destination step sizes are specified by these registers.
+//                            This value is a signed 2's compliment number. If no increment is desired,
+//                            such as when accessing the McBSP data, the value of these registers should be set to zero.
+//
+//
+//        SRC/DST_TRANSFER_STEP   // This specifies the address offset to start the next burst transfer after completing the current burst transfer.
+//
+//        SRC/DST_WRAP_STEP       // When the wrap counter reaches zero, this value specifies the number of words to add/subtract
+//                                // from the BEG_ADDR pointer and hence sets the new start address.
+//
+//
+//
+//        The appropriate active SRC/DST_BEG_ADDR register is incremented by the signed value contained
+//           in the SRC/DST_WRAP_STEP register, then
+//
+//        • The new active SRC/DST_BEG_ADDR register is loaded into the active SRC/DST_ADDR register.
+//
+//        SRC/DST_BEG_ADDR
+//        SRC/DST_TRANSFER_STEP
+        
 //===========================================================================
 // No more.
 //===========================================================================

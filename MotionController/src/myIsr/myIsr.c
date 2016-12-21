@@ -39,10 +39,20 @@ interrupt void cpu_timer0_isr(void)
 	LED2_TOG = 1;
 #endif
 
-#if(USE_DMA_CH1)
+#if(USE_DMA)
 	extern volatile Uint16 srcBuf[1024];
 	int i;
-	for(i=0;i<1024;i++)		srcBuf[i] = CpuTimer0.InterruptCount;
+	for(i=0;i<DMA_BSIZE*DMA_TSIZE*2;i++)
+		srcBuf[i] = 1000*CpuTimer0.InterruptCount;
+#if(USE_DMA_CH1)
+	StartDMACHx( &Dma.RegsAddr->CH1);
+#endif
+#if(USE_DMA_CH2)
+	StartDMACHx( &Dma.RegsAddr->CH2);
+#endif
+#if(USE_DMA_CH3)
+	StartDMACHx( &Dma.RegsAddr->CH3);
+#endif
 
 #endif
 	// Acknowledge this interrupt to receive more interrupts from group 1
@@ -221,13 +231,39 @@ interrupt void dma_ch1_isr(void)
 	  // Remove after inserting ISR Code
 //	   asm ("      ESTOP0");
 //	   for(;;);
-	StartDMACHx( &Dma.RegsAddr->CH1);
+//	StartDMACHx( &Dma.RegsAddr->CH1);
 	// Acknowledge this interrupt to receive more interrupts from group 6
 	PieCtrlRegs.PIEACK.bit.ACK7 = 1;
 }
-
-
 #endif
+
+#if(USE_DMA_CH2)
+interrupt void dma_ch2_isr(void)
+{
+	  // Next two lines for debug only to halt the processor here
+	  // Remove after inserting ISR Code
+//	   asm ("      ESTOP0");
+//	   for(;;);
+//	StartDMACHx( &Dma.RegsAddr->CH2);
+	// Acknowledge this interrupt to receive more interrupts from group 6
+	PieCtrlRegs.PIEACK.bit.ACK7 = 1;
+}
+#endif
+
+#if(USE_DMA_CH3)
+interrupt void dma_ch3_isr(void)
+{
+	  // Next two lines for debug only to halt the processor here
+	  // Remove after inserting ISR Code
+//	   asm ("      ESTOP0");
+//	   for(;;);
+//	StartDMACHx( &Dma.RegsAddr->CH2);
+	// Acknowledge this interrupt to receive more interrupts from group 6
+	PieCtrlRegs.PIEACK.bit.ACK7 = 1;
+}
+#endif
+
+
 
 //============================================================================
 //      Peripheral X. xx

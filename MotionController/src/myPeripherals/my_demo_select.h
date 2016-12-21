@@ -20,13 +20,13 @@
 #define TEST_SCIC           	23      // 测试SCIA，即uart通信。
 #define TEST_SPIA           	3       // 测试SPI
 #define TEST_DMA				4		// 测试DMA
-
+#define TEST_XINTF				5		// 测试XINTF
 
 
 //###########################################################################
 //						 DEMO SELECT
 //###########################################################################
-#define MY_TEST_DEMO TEST_SCIB		// 测试模式的选择
+#define MY_TEST_DEMO TEST_XINTF		// 测试模式的选择
 
 
 
@@ -93,9 +93,7 @@
 //      Example X. SCIB 测试模式
 //============================================================================
 #elif( MY_TEST_DEMO == TEST_SCIB )
-#define USE_SCIB        		1   		// 使用 SCIB
 #define SCIB_BAUD 				256000
-
 #define USE_GPIO19_AS_SCIRXDB 1
 #define USE_GPIO18_AS_SCITXDB 1
 
@@ -129,6 +127,23 @@
 #define USE_CPU_TIMER0  1
 
 
+
+#elif( MY_TEST_DEMO == TEST_XINTF )
+//============================================================================
+//      Example X. XXX 测试模式
+//============================================================================
+// 实验现象：
+//
+#define USE_CPU_TIMER0  	1
+
+#define USE_DMA   			1
+#define USE_DMA_CH1			1
+#define USE_DMA_CH2			1
+//#define USE_DMA_CH3			1
+
+#define USE_XINTF_ZONE0		1
+#define USE_XINTF_ZONE6		1
+#define USE_XINTF_ZONE7		1
 
 
 //#elif( MY_TEST_DEMO == TEST_SCIA_FIFO )

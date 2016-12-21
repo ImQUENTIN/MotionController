@@ -1,8 +1,8 @@
 //  Edited by QUENTIN @0:31 2016/12/1
 // ----------------------------------------------------
-//  修改了区域划分，原来的空间太小。
+//  淇敼浜嗗尯鍩熷垝鍒嗭紝鍘熸潵鐨勭┖闂村お灏忋�
 //  
-//  出现了以下错误：
+//  鍑虹幇浜嗕互涓嬮敊璇細
 // --------------------------------------------------------------------------------
 // placement with alignment/blocking fails for section ".text" size 0x11d8 page 0.  
 // Available memory ranges:
@@ -106,9 +106,9 @@ PAGE 0 :
 
    RAML0      : origin = 0x008000, length = 0x001000    
    RAML1      : origin = 0x009000, length = 0x002000    
-   // RAML2      : origin = 0x00A000, length = 0x001000    /* 没有用到，所以把它划给RAML1 */ 
+   // RAML2      : origin = 0x00A000, length = 0x001000    /* 娌℃湁鐢ㄥ埌锛屾墍浠ユ妸瀹冨垝缁橰AML1 */
    RAML3      : origin = 0x00B000, length = 0x001000 
-   ZONE6A     : origin = 0x100000, length = 0x00FC00    /* XINTF zone 6 - program space */ 
+//   ZONE6A     : origin = 0x100000, length = 0x00FC00    /* XINTF zone 6 - program space */
    CSM_RSVD   : origin = 0x33FF80, length = 0x000076     /* Part of FLASHA.  Program with all 0x0000 when CSM is in use. */
    CSM_PWL    : origin = 0x33FFF8, length = 0x000008     /* Part of FLASHA.  CSM password locations in FLASHA            */
    ADC_CAL    : origin = 0x380080, length = 0x000009
@@ -118,14 +118,16 @@ PAGE 0 :
    FPUTABLES  : origin = 0x3FEBDC, length = 0x0006A0
    BOOTROM    : origin = 0x3FF27C, length = 0x000D44               
 
-         
 PAGE 1 : 
    RAMM1      : origin = 0x000400, length = 0x000400     /* on-chip RAM block M1 */
    RAML4      : origin = 0x00C000, length = 0x001000    
    RAML5      : origin = 0x00D000, length = 0x001000    
    RAML6      : origin = 0x00E000, length = 0x001000    
    RAML7      : origin = 0x00F000, length = 0x001000 
-   ZONE7B     : origin = 0x20FC00, length = 0x000400     /* XINTF zone 7 - data space */
+
+   ZONE6B	  : origin = 0x100000, length = 0x080000	// 用作片外RAM, 512KB, added by QUENTIN.
+   ZONE7B     : origin = 0x200000, length = 0x080000    // 用作片外FLASH, 512KB, added by QUENTIN.
+   //ZONE7B     : origin = 0x20FC00, length = 0x000400     /* XINTF zone 7 - data space */
 }
  
  
@@ -136,7 +138,7 @@ SECTIONS
       re-directs execution to the start of user code.  */
    codestart        : > BEGIN,     PAGE = 0
    ramfuncs         : > RAML0,     PAGE = 0  
-   .text            : > RAML1,     PAGE = 0     /* 空间不足！ */
+   .text            : > RAML1,     PAGE = 0     /* 绌洪棿涓嶈冻锛�*/
    .cinit           : > RAML0,     PAGE = 0
    .pinit           : > RAML0,     PAGE = 0
    .switch          : > RAML0,     PAGE = 0
@@ -156,7 +158,10 @@ SECTIONS
    DMARAML6         : > RAML6,     PAGE = 1
    DMARAML7         : > RAML7,     PAGE = 1
    
-   ZONE7DATA        : > ZONE7B,    PAGE = 1  
+   //ZONE7DATA        : > ZONE7B,    PAGE = 1
+   EXTRAM_DATA		: > ZONE6B,    PAGE = 1		// added by QUENTIN.
+   EXTFLASH_DATA    : > ZONE7B,    PAGE = 1		// added by QUENTIN.
+
 
    .reset           : > RESET,     PAGE = 0, TYPE = DSECT /* not used                    */
    csm_rsvd         : > CSM_RSVD   PAGE = 0, TYPE = DSECT /* not used for SARAM examples */

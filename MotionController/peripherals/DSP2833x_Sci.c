@@ -45,9 +45,10 @@ uint8_t SCIA_SWFFRXBUF[SCIA_SWFFRXDEEP];		// SCI Software FIFO Rx Buffer.
 // Test 1,SCIA  DLB, 8-bit word, baud rate 0x000F, default, 1 STOP bit, no parity
 void InitScia(void)
 {
+
+
 	Scia.RegsAddr 	= &SciaRegs;
-	Scia.Baud		= SCIA_BAUD;		// get from user's configuration.
-	Scia.LSPCLKFreq	= LSPCLK_FRQ;		// get from user's configuration.
+	Scia.Baud		= SCIA_BAUD;			// get from user's configuration.
 
 	swfifoReset(&Scia.swfifoTx);
 	swfifoReset(&Scia.swfifoRx);
@@ -61,6 +62,7 @@ void InitScia(void)
 #else
 #error hardware is not support for 'SCIA'.
 #endif
+
 
 #if(USE_SCI_INT)
 	// 	修改中断向量表：
@@ -76,12 +78,13 @@ void InitScia(void)
 	//										    // 4. 开启总中断，INTM。在最后统一打开，这里不开启。
 #endif
 
-	// Note: Clocks were turned on to the SCIA peripheral
-	// in the InitSysCtrl() function
+	// Make sure this peripheral clock is enabled
+	EALLOW;
+	SysCtrlRegs.PCLKCR0.bit.SCIAENCLK = 1;   // SCI-A
+	EDIS;
+
 	InitSciFifo(&Scia);
-
 	ConfigSci(&Scia);
-
 
 
 }
@@ -106,7 +109,6 @@ void InitScib(void)
 	void InitScibGpio(void);
 	Scib.RegsAddr 	= &ScibRegs;
 	Scib.Baud		= SCIB_BAUD;		// get from user's configuration.
-	Scib.LSPCLKFreq	= LSPCLK_MHZ;		// get from user's configuration.
 
 	swfifoReset(&Scib.swfifoTx);
 	swfifoReset(&Scib.swfifoRx);
@@ -136,8 +138,10 @@ void InitScib(void)
 	//										    // 4. 开启总中断，INTM。在最后统一打开，这里不开启。
 #endif
 
-	// Note: Clocks were turned on to the SCIB peripheral
-	// in the InitSysCtrl() function
+	// Make sure this peripheral clock is enabled
+	EALLOW;
+	SysCtrlRegs.PCLKCR0.bit.SCIBENCLK = 1;   // SCI-B
+	EDIS;
 	InitSciFifo(&Scib);
 	ConfigSci(&Scib);
 
@@ -163,7 +167,6 @@ void InitScic(void)
 	void InitScicGpio(void);
 	Scic.RegsAddr 	= &ScicRegs;
 	Scic.Baud		= SCIC_BAUD;		// get from user's configuration.
-	Scic.LSPCLKFreq	= LSPCLK_FRQ;		// get from user's configuration.
 
 	swfifoReset(&Scic.swfifoTx);
 	swfifoReset(&Scic.swfifoRx);
@@ -193,8 +196,10 @@ void InitScic(void)
 	//										    // 4. 开启总中断，INTM。在最后统一打开，这里不开启。
 #endif
 
-	// Note: Clocks were turned on to the SCIC peripheral
-	// in the InitSysCtrl() function
+	// Make sure this peripheral clock is enabled
+	EALLOW;
+	SysCtrlRegs.PCLKCR0.bit.SCICENCLK = 1;   // SCI-C
+	EDIS;
 	InitSciFifo(&Scic);
 	ConfigSci(&Scic);
 }
@@ -202,7 +207,8 @@ void InitScic(void)
 #endif // (USE_SCIC)
 
 
-void InitScis(void){
+void InitScis(void)
+{
 #if( USE_SCIA )
 	InitScia();
 #endif
@@ -218,9 +224,51 @@ void InitScis(void){
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////
 ///////////////////////////                     common                   //////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////
-uint8_t SCIFFTX_IsNotFull( struct SCI_VARS *Sci){	return (Sci->RegsAddr->SCIFFTX.bit.TXFFST < 16) ? 1: 0;}
-void SCIFFTX_In( uint8_t dat, struct SCI_VARS *Sci){	Sci->RegsAddr->SCITXBUF = dat;}
-void SCIFFTX_ClearINT( struct SCI_VARS *Sci){	Sci->RegsAddr->SCIFFTX.bit.TXFFINTCLR = 1;	}// clear INT flag.
+uint8_t SCIFFTX_IsNotFull( struct SCI_VARS *Sci)
+{
+	return (Sci->RegsAddr->SCIFFTX.bit.TXFFST < 16) ? 1: 0;
+}
+uint8_t SCIFFTX_IsEmpty( struct SCI_VARS *Sci)
+{
+	return (Sci->RegsAddr->SCIFFTX.bit.TXFFST == 0) ? 1: 0;
+}
+void SCIFFTX_In( uint8_t dat, struct SCI_VARS *Sci)
+{
+	Sci->RegsAddr->SCITXBUF = dat;
+}
+void SCIFFTX_ClearINT( struct SCI_VARS *Sci)
+{
+	Sci->RegsAddr->SCIFFTX.bit.TXFFINTCLR = 1;	       // clear INT flag.
+}
+uint8_t Sci_IsFifoTxEmpty(struct SCI_VARS *Sci )
+{
+	return ( SCIFFTX_IsEmpty(Sci) && swfifo_IsEmpty( &Sci->swfifoTx) ) ? 1 : 0;
+}
+
+uint8_t SCIFFRX_IsNotEmpty( struct SCI_VARS *Sci)
+{
+	return (Sci->RegsAddr->SCIFFRX.bit.RXFFST > 0) ? 1: 0;
+}
+uint8_t SCIFFRX_Out( struct SCI_VARS *Sci)
+{
+	return ( Sci->RegsAddr->SCIRXBUF.bit.RXDT );
+}
+void SCIFFRX_ClearINT( struct SCI_VARS *Sci)
+{
+	Sci->RegsAddr->SCIFFRX.bit.RXFFINTCLR = 1;
+}
+uint8_t SCIRX_IsOn( struct SCI_VARS *Sci)
+{
+	return( Sci->RegsAddr->SCICTL1.bit.RXENA );
+}
+void SCIRX_TurnOn( struct SCI_VARS *Sci)
+{
+	Sci->RegsAddr->SCICTL1.bit.RXENA = 1;
+}
+void SCIRX_TurnOff( struct SCI_VARS *Sci)
+{
+	Sci->RegsAddr->SCICTL1.bit.RXENA = 0;
+}
 
 
 uint8_t Sci_putchar(int8_t dat, struct SCI_VARS *Sci)
@@ -269,10 +317,10 @@ uint8_t Sci_puts(int8_t * msg, struct SCI_VARS *Sci)
 //#else
 //		while ( !Sci->RegsAddr->SCICTL2.bit.TXRDY ) ;		// TX移位寄存器没有操作完成。
 //#endif
-			if( Sci_putchar(msg[i], Sci) ){
-				SCIFFTX_ClearINT(Sci);
-				return i;	// FIFO溢出,返回字符串截断的位置。
-			}
+		if( Sci_putchar(msg[i], Sci) ) {
+			SCIFFTX_ClearINT(Sci);
+			return i;	// FIFO溢出,返回字符串截断的位置。
+		}
 
 		i++;
 	}
@@ -286,7 +334,7 @@ void Sci_TxFifoFullHandler(struct SCI_VARS *Sci)
 	int8_t tmpData;
 	if( !swfifo_IsEmpty(&Sci->swfifoTx) ) {		// swFIFOTX is not empty, load them to SCI TXFIFO.
 		while(  SCIFFTX_IsNotFull(Sci) &&
-		       !swfifo_IsEmpty(&Sci->swfifoTx) ) {
+		        !swfifo_IsEmpty(&Sci->swfifoTx) ) {
 //			 当swFIFOTX非空，且SCITXFIFO未满时，就往SCITXFIFO送数据。
 			swfifo_Out(&tmpData, &Sci->swfifoTx);	// get from swfifoTx
 			SCIFFTX_In(tmpData,Sci);				// load to SCIFFTX
@@ -312,16 +360,6 @@ void Sci_TxFifoFullHandler(struct SCI_VARS *Sci)
 //----------------------------------------------------------
 //           supports for Sci_gets
 //----------------------------------------------------------
-
-uint8_t SCIFFRX_IsNotEmpty( struct SCI_VARS *Sci){	return (Sci->RegsAddr->SCIFFRX.bit.RXFFST > 0) ? 1: 0; }
-uint8_t SCIFFRX_Out( struct SCI_VARS *Sci){	return ( (Sci->RegsAddr->SCIRXBUF.all) & 0x00ff );}
-void SCIFFRX_ClearINT( struct SCI_VARS *Sci){	Sci->RegsAddr->SCIFFRX.bit.RXFFINTCLR = 1;}
-
-uint8_t SCIFFRX_IsOn( struct SCI_VARS *Sci){return( Sci->RegsAddr->SCIFFTX.bit.SCIFFENA );}
-void SCIFFRX_TurnOn( struct SCI_VARS *Sci){Sci->RegsAddr->SCIFFTX.bit.SCIFFENA = 1;}
-void SCIFFRX_TurnOff( struct SCI_VARS *Sci){	Sci->RegsAddr->SCIFFTX.bit.SCIFFENA = 0;}
-
-uint8_t Sci_IsFifoTxEmpty(struct SCI_VARS *Sci ) {	return ( !SCIFFRX_IsNotEmpty(Sci) && swfifo_IsEmpty( &Sci->swfifoTx) ) ? 1 : 0;}
 
 // 可以用于固定个数的读取
 uint8_t Sci_getchar(int8_t *dat, struct SCI_VARS *Sci)
@@ -359,8 +397,8 @@ uint8_t Sci_gets(int8_t * msg, struct SCI_VARS *Sci)
 	if(i) *(msg+i) = 0;	// 尾
 
 	// 如果rx功能关闭，那么打开它。
-	if( SCIFFRX_IsOn(Sci) )
-		SCIFFRX_TurnOn(Sci);
+	if( !SCIRX_IsOn(Sci) )
+		SCIRX_TurnOn(Sci);
 
 	SCIFFRX_ClearINT(Sci);
 	return i ? 0: 1;	// return 1: 数据不可用，数据为空。
@@ -372,7 +410,7 @@ void Sci_RxFifoFullHandler(struct SCI_VARS *Sci)
 	// 硬件的SCI RXFIFO满了，存入软件FIFO（即swFIFORX）以保证SCI RXFIFO继续接收数据。
 	if( !swfifo_IsFull( &Sci->swfifoRx) ) {
 		while( !swfifo_IsFull( &Sci->swfifoRx) &&
-				SCIFFRX_IsNotEmpty( Sci ) ) {
+		       SCIFFRX_IsNotEmpty( Sci ) ) {
 			// 当SCIRXFIFO非空，且swFIFORX未满时，就往swFIFORX送数据。
 			tmpData = SCIFFRX_Out(Sci);
 			swfifo_In(tmpData, &Sci->swfifoRx);
@@ -385,7 +423,7 @@ void Sci_RxFifoFullHandler(struct SCI_VARS *Sci)
 //		if(Sci->RegsAddr->SCIFFRX.bit.RXFFOVF)
 //			Sci->RegsAddr->SCIFFRX.bit.RXFFOVFCLR = 1;
 //		关闭串口接收
-		SCIFFRX_TurnOff(Sci);
+		SCIRX_TurnOff(Sci);
 	}
 
 }
@@ -455,10 +493,9 @@ void ConfigSci(struct SCI_VARS *Sci)
 	//----------------------------------------------------------
 	//	baud = LSPCK / ( 8*(BAUD_RATE_REG + 1) )) ;
 	//	=> BBR = LSPCK/(8*baud) - 1;
-
-	tmp = (Uint16)( Sci->LSPCLKFreq / (8* Sci->Baud ) ) - 1;
-	Sci->RegsAddr->SCILBAUD	= tmp&0xff;
-	Sci->RegsAddr->SCIHBAUD	= (tmp>>8)&0xff;
+	tmp = (Uint16)( LSPCLK_HZ / (8* Sci->Baud )  - 1 );
+	Sci->RegsAddr->SCILBAUD	= tmp&0x00ff;
+	Sci->RegsAddr->SCIHBAUD	= (tmp>>8)&0x00ff;
 
 	//----------------------------------------------------------
 	// Step2. Configure the Data Format.
@@ -600,6 +637,7 @@ void InitScibGpio(void)
 #elif ( USE_GPIO18_AS_SCITXDB )
 	GpioCtrlRegs.GPAPUD.bit.GPIO18 = 0;     // Enable pull-up for GPIO18  (SCITXDB)
 	GpioCtrlRegs.GPAMUX2.bit.GPIO18 = 2;    // Configure GPIO18 for SCITXDB operation
+	GpioCtrlRegs.GPAQSEL2.bit.GPIO18 = 3;  // Asynch input GPIO19 (SCIRXDB)
 #elif ( USE_GPIO22_AS_SCITXDB )
 	GpioCtrlRegs.GPAPUD.bit.GPIO22 = 0;     // Enable pull-up for GPIO22  (SCITXDB)
 	GpioCtrlRegs.GPAMUX1.bit.GPIO22 = 2;    // Configure GPIO22 for SCITXDB operation

@@ -34,7 +34,7 @@ void InitDmaCh1(void)
 
 	DMACHxConfig(&mySets, &Dma.RegsAddr->CH1);
 	DMACHxAddrConfig(DMACh1Dst, DMACh1Src, &Dma.RegsAddr->CH1);
-	StartDMACHx( &Dma.RegsAddr->CH1);
+//	StartDMACHx( &Dma.RegsAddr->CH1);
 
 	// 	修改中断向量表：
 	EALLOW;  // This is needed to write to EALLOW protected registers
@@ -62,7 +62,7 @@ void InitDmaCh2(void)
 
 	DMACHxConfig(&mySets, &Dma.RegsAddr->CH2);
 	DMACHxAddrConfig(DMACh2Dst, DMACh2Src, &Dma.RegsAddr->CH2);
-	StartDMACHx( &Dma.RegsAddr->CH2);
+//	StartDMACHx( &Dma.RegsAddr->CH2);
 
 	// 	修改中断向量表：
 	EALLOW;  // This is needed to write to EALLOW protected registers
@@ -90,7 +90,7 @@ void InitDmaCh3(void)
 
 	DMACHxConfig(&mySets, &Dma.RegsAddr->CH3);
 	DMACHxAddrConfig(DMACh3Dst, DMACh3Src, &Dma.RegsAddr->CH3);
-	StartDMACHx( &Dma.RegsAddr->CH3);
+//	StartDMACHx( &Dma.RegsAddr->CH3);
 
 	// 	修改中断向量表：
 	EALLOW;  // This is needed to write to EALLOW protected registers
@@ -118,7 +118,7 @@ void InitDmaCh4(void)
 
 	DMACHxConfig(&mySets, &Dma.RegsAddr->CH4);
 	DMACHxAddrConfig(DMACh4Dst, DMACh4Src, &Dma.RegsAddr->CH4);
-	StartDMACHx( &Dma.RegsAddr->CH4);
+//	StartDMACHx( &Dma.RegsAddr->CH4);
 
 	// 	修改中断向量表：
 	EALLOW;  // This is needed to write to EALLOW protected registers
@@ -146,11 +146,11 @@ void InitDmaCh5(void)
 
 	DMACHxConfig(&mySets, &Dma.RegsAddr->CH5);
 	DMACHxAddrConfig(DMACh5Dst, DMACh5Src, &Dma.RegsAddr->CH5);
-	StartDMACHx( &Dma.RegsAddr->CH5);
+//	StartDMACHx( &Dma.RegsAddr->CH5);
 
 	// 	修改中断向量表：
 	EALLOW;  // This is needed to write to EALLOW protected registers
-	PieVectTable.DINTCH5 = &dma_ch5_isr;		// 7.1
+	PieVectTable.DINTCH5 = &dma_ch5_isr;		// 7.5
 	EDIS;    // This is needed to disable write to EALLOW protected registers
 	//	 									    // 1. 外设中断打开。
 	PieCtrlRegs.PIEIER7.bit.INTx5 = 1;  		// 2. PIE中断打开。
@@ -174,11 +174,11 @@ void InitDmaCh6(void)
 
 	DMACHxConfig(&mySets, &Dma.RegsAddr->CH6);
 	DMACHxAddrConfig(DMACh6Dst, DMACh6Src, &Dma.RegsAddr->CH6);
-	StartDMACHx( &Dma.RegsAddr->CH6);
+//	StartDMACHx( &Dma.RegsAddr->CH6);
 
 	// 	修改中断向量表：
 	EALLOW;  // This is needed to write to EALLOW protected registers
-	PieVectTable.DINTCH6 = &dma_ch6_isr;		// 7.1
+	PieVectTable.DINTCH6 = &dma_ch6_isr;		// 7.6
 	EDIS;    // This is needed to disable write to EALLOW protected registers
 	//	 									    // 1. 外设中断打开。
 	PieCtrlRegs.PIEIER7.bit.INTx1 = 1;  		// 2. PIE中断打开。

@@ -22,6 +22,68 @@
 // ========================================================================================
 //       The following is added by QUENTIN.
 // ========================================================================================
+void ConfigSpi(struct SPI_VARS *Spi);
+void InitSpiFifo( struct SPI_VARS *Spi);
+
+#if(USE_SPIA)
+struct SPI_VARS Spia;
+uint8_t SPIA_SWFFTXBUF[SPIA_SWFFTXDEEP]={0};		// SPI Software FIFO Tx Buffer.
+uint8_t SPIA_SWFFRXBUF[SPIA_SWFFRXDEEP]={0};		// SPI Software FIFO Rx Buffer.
+
+
+// Test 1,SPIA , 8-bit word,
+void InitSpia(void)
+{
+	void InitSpiaGpio(void);
+
+	Spia.RegsAddr->SPICCR.bit.SPISWRESET = 0;		// force to reset.
+
+	Spia.RegsAddr 	= &SpiaRegs;
+	Spia.Baud		= SPIA_BAUD;		// get from user's configuration.
+
+	swfifoReset(&Spia.swfifoTx);
+	swfifoReset(&Spia.swfifoRx);
+	Spia.swfifoTx.Buffer = SPIA_SWFFTXBUF;		// tx buffer addr
+	Spia.swfifoTx.Deep   = SPIA_SWFFTXDEEP;		// tx buffer size
+	Spia.swfifoRx.Buffer = SPIA_SWFFRXBUF;		// Rx buffer addr
+	Spia.swfifoRx.Deep   = SPIA_SWFFRXDEEP;		// Rx buffer size
+
+#if DSP28_SPIA
+	InitSpiaGpio();
+#else
+#error hardware is not support for 'SPIA'.
+#endif
+
+#if(USE_SPI_INT)
+	// 	修改中断向量表：
+	EALLOW;  // This is needed to write to EALLOW protected registers
+	PieVectTable.SPIRXINTA = &spia_rx_isr;	// 6.1
+	PieVectTable.SPITXINTA = &spia_tx_isr;	// 6.2
+	EDIS;    // This is needed to disable write to EALLOW protected registers
+
+	//	 									    // 1. 外设中断打开。
+	PieCtrlRegs.PIEIER6.bit.INTx1 = 1;  		// 2. PIE中断打开。
+	PieCtrlRegs.PIEIER6.bit.INTx2 = 1;          //
+	IER |= M_INT6;  	                		// 3. CPU核中断打开。
+	//										    // 4. 开启总中断，INTM。在最后统一打开，这里不开启。
+#endif
+
+    // Make sure this peripheral clock is enabled
+	EALLOW;
+	SysCtrlRegs.PCLKCR0.bit.SPIAENCLK = 1;   // SPI-A
+	EDIS;
+	InitSpiFifo(&Spia);
+	ConfigSpi(&Spia);
+
+
+}
+#endif
+
+void InitSpis(void){
+#if(USE_SPIA)
+	InitSpia();
+#endif
+}
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////
 ///////////////////////////                     common                   //////////////////////////////////
@@ -84,7 +146,7 @@ void ConfigSpi(struct SPI_VARS *Spi)
 	//----------------------------------------------------------
 //	For SPIBRR = 3 to 127  :	SPI Baud Rate = LSPCLK / (SPIBRR+1)
 //	For SPIBRR = 0, 1, or 2:	SPI Baud Rate = LSPCLK / 4
-	Uint16 tmp = (Uint16)( Spi->LSPCLKFreq / (Spi->Baud ) ) - 1;
+	Uint16 tmp = (Uint16)( LSPCLK_HZ / (Spi->Baud )  - 1 );
 	Spi->RegsAddr->SPIBRR	= tmp;
 
 	//----------------------------------------------------------
@@ -156,6 +218,9 @@ uint8_t Spi_IsFifoTxEmpty(struct SPI_VARS *Spi ) {	return ( !SPIFFRX_IsNotEmpty(
 uint8_t SPIFFTX_IsNotFull( struct SPI_VARS *Spi){	return (Spi->RegsAddr->SPIFFTX.bit.TXFFST < 16) ? 1: 0;}
 void SPIFFTX_In( uint8_t dat, struct SPI_VARS *Spi){	Spi->RegsAddr->SPITXBUF = dat;}
 void SPIFFTX_ClearINT( struct SPI_VARS *Spi){	Spi->RegsAddr->SPIFFTX.bit.TXFFINTCLR = 1;	}// clear INT flag.
+//uint8_t SPI_IsMater( struct SPI_VARS *Spi ){	return(Spi->RegsAddr->SPICTL.bit.MASTER_SLAVE);}
+//void SPI_SetMater( struct SPI_VARS *Spi ){	Spi->RegsAddr->SPICTL.bit.MASTER_SLAVE = 1;}
+//void SPI_SetSlaver( struct SPI_VARS *Spi ){	Spi->RegsAddr->SPICTL.bit.MASTER_SLAVE = 0;}
 
 
 uint8_t Spi_putchar(int8_t dat, struct SPI_VARS *Spi)
@@ -303,7 +368,7 @@ void Spi_RxFifoFullHandler(struct SPI_VARS *Spi)
 // Only one GPIO pin should be enabled for SPICLKA operation.
 // Only one GPIO pin should be enabled for SPISTEA operation.
 // Comment out other unwanted lines.
-void InitSpiaGpio()
+void InitSpiaGpio(void)
 {
 
 	EALLOW;
@@ -362,60 +427,6 @@ void InitSpiaGpio()
 #endif
 
 	EDIS;
-}
-
-#if(USE_SPIA)
-struct SPI_VARS Spia;
-uint8_t SPIA_SWFFTXBUF[SPIA_SWFFTXDEEP]={0};		// SPI Software FIFO Tx Buffer.
-uint8_t SPIA_SWFFRXBUF[SPIA_SWFFRXDEEP]={0};		// SPI Software FIFO Rx Buffer.
-
-// Test 1,SPIA , 8-bit word,
-void InitSpia(void)
-{
-	Spia.RegsAddr 	= &SpiaRegs;
-	Spia.Baud		= SPIA_BAUD;		// get from user's configuration.
-	Spia.LSPCLKFreq	= LSPCLK_FRQ;		// get from user's configuration.
-
-	swfifoReset(&Spia.swfifoTx);
-	swfifoReset(&Spia.swfifoRx);
-	Spia.swfifoTx.Buffer = SPIA_SWFFTXBUF;		// tx buffer addr
-	Spia.swfifoTx.Deep   = SPIA_SWFFTXDEEP;		// tx buffer size
-	Spia.swfifoRx.Buffer = SPIA_SWFFRXBUF;		// Rx buffer addr
-	Spia.swfifoRx.Deep   = SPIA_SWFFRXDEEP;		// Rx buffer size
-
-#if DSP28_SPIA
-	InitSpiaGpio();
-#else
-#error hardware is not support for 'SPIA'.
-#endif
-
-#if(USE_SPI_INT)
-	// 	修改中断向量表：
-	EALLOW;  // This is needed to write to EALLOW protected registers
-	PieVectTable.SPIRXINTA = &spia_rx_isr;	// 6.1
-	PieVectTable.SPITXINTA = &spia_tx_isr;	// 6.2
-	EDIS;    // This is needed to disable write to EALLOW protected registers
-
-	//	 									    // 1. 外设中断打开。
-	PieCtrlRegs.PIEIER6.bit.INTx1 = 1;  		// 2. PIE中断打开。
-	PieCtrlRegs.PIEIER6.bit.INTx2 = 1;          //
-	IER |= M_INT6;  	                		// 3. CPU核中断打开。
-	//										    // 4. 开启总中断，INTM。在最后统一打开，这里不开启。
-#endif
-
-	// Note: Clocks were turned on to the SPIA peripheral
-	// in the InitSysCtrl() function
-	InitSpiFifo(&Spia);
-	ConfigSpi(&Spia);
-
-
-}
-#endif
-
-void InitSpis(void){
-#if(USE_SPIA)
-	InitSpia();
-#endif
 }
 
 //===========================================================================

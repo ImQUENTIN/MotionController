@@ -243,7 +243,6 @@ struct SCI_VARS {
 	volatile struct  SCI_REGS  *RegsAddr;
 
 //   *** added by QUENTIN ****
-	float   LSPCLKFreq;						// 系统主频，单位hz。
 	float   Baud;							// 波特率，单位Bps
 	struct SWFIFO swfifoTx;					// software fifo Tx.
 	struct SWFIFO swfifoRx;					// software fifo Rx.

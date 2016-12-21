@@ -19,12 +19,38 @@
 
 #include "my_project.h"
 
-#if(USE_DMA_CH1)
-	// Configure DMA Channel
-	volatile Uint16 srcBuf[1024];
-	volatile Uint16 dstBuf[1024];
-	volatile Uint16 *DMACh1Dst = dstBuf;
-	volatile Uint16 *DMACh1Src = srcBuf;
+// 运动卡的EXTRAM用的zone6，EXTFLASH用的zone7, FPGA用的zone0.
+
+// 运动卡的EXTRAM用的zone6，
+#pragma DATA_SECTION(EXTRAM,"EXTRAM_DATA");
+volatile Uint16 EXTRAM[0x8000];		// 片外RAM
+
+
+// 运动卡的FPGA用的zone0，
+//#pragma DATA_SECTION(EXTFPGA,"EXTFPGA_DATA");
+volatile Uint16 EXTFPGA[32];	// 片外FPGA, 0x1000,4kB.
+
+
+// Configure DMA Channel
+#pragma DATA_SECTION(srcBuf,"DMARAML4");
+volatile Uint16  srcBuf[1024];
+
+#if( USE_DMA_CH1 )
+// ch1 -> 读flash：srcBuf到dst0Buf
+volatile Uint16 *DMACh1Dst = EXTFPGA;
+volatile Uint16 *DMACh1Src = srcBuf;
+#endif
+
+#if( USE_DMA_CH2 )
+// ch2 -> 写RAM：srcBuf到dst6Buf
+volatile Uint16 *DMACh2Dst = EXTRAM;
+volatile Uint16 *DMACh2Src = srcBuf;
+#endif
+
+#if( USE_DMA_CH3 )
+// ch3 -> 写flash：srcBuf到dst7Buf
+volatile Uint16 *DMACh3Dst = EXTFLASH;
+volatile Uint16 *DMACh3Src = srcBuf;
 #endif
 
 void InitPeripherals(void)
@@ -64,14 +90,14 @@ void InitPeripherals(void)
 	InitGpio();     	// 把GPIO0~95设置为： 1，普通IO口，不使用特殊功能；2，输入方向；
 //						// 3，CLK与SYSCLKOUT同步；4，使用上拉电阻；
 	InitMyTask();   	// 初始化任务
+
 	InitCpuTimers();   	// Peripheral 2: Cpu timer 初始化，if used.
 	InitScis();			// Peripheral 3: SCI 初始化，if used.
 	InitSpis();			// Peripheral 4: SPI 初始化，if used.
+	InitXintf();		// initializes the External Interface the default reset state.
 	InitDmas();			// Peripheral 5: DMA 初始化，if used.
 
-	//
-	// InitXintf();	// initializes the External Interface the default reset state.
-
+	StartDMACHx( &Dma.RegsAddr->CH1);
 	// InitAdc();			// Initializes ADC to a known state.
 
 	// InitECan();			// Initialize eCAN-A module
@@ -113,20 +139,20 @@ void InitMyTask(void)
 	LED4    = LED_OFF;
 
 	EDIS;
-#elif( MY_TEST_DEMO == TEST_DMA )
-
-
+#endif
+#if( MY_TEST_DEMO == TEST_DMA || MY_TEST_DEMO == TEST_XINTF )
 	int i;
 	for(i=0;i<1024;i++){
+#if ( MY_TEST_DEMO == TEST_DMA)
 		dstBuf[i] = 0;
 		srcBuf[i] = i;
+#else
+		srcBuf[i] = i;
+#endif
 	}
-
-
 #endif
 
 }
-
 
 
 // 此次任务内容
@@ -140,7 +166,10 @@ void ExecuteMyTask(void)
 	TestSpi();
 #endif
 
-#if( MY_TEST_DEMO == TEST_DMA )
+#if( MY_TEST_DEMO == TEST_DMA || MY_TEST_DEMO == TEST_XINTF)
+	TestXintf();
+	FlashSST39_Init();
+	EXTFPGA_Test();
 	while(1);
 #endif
 
