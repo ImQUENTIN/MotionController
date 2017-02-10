@@ -27,8 +27,8 @@ volatile Uint16 EXTRAM[0x8000];		// 片外RAM
 
 
 // 运动卡的FPGA用的zone0，
-//#pragma DATA_SECTION(EXTFPGA,"EXTFPGA_DATA");
-volatile Uint16 EXTFPGA[32];	// 片外FPGA, 0x1000,4kB.
+// #pragma DATA_SECTION(EXTFPGA,"Motor2RegsFiles");
+ volatile Uint16 EXTFPGA[0x20];	// 片外FPGA, 0x1000,4kB.
 
 
 // Configure DMA Channel
@@ -124,22 +124,7 @@ void InitPeripherals(void)
 // 此次demo的任务（功能）初始化
 void InitMyTask(void)
 {
-	//---------------- 1. GPIO 测试模式 ---------------------------------------------
-#if( MY_TEST_DEMO == TEST_GPIO_TIMER_LED)
-	EALLOW;
 
-	/* output */
-	LED2_DIR = 1;
-	LED3_DIR = 1;
-	LED4_DIR = 1;
-
-	/* all off. */
-	LED2    = LED_OFF;
-	LED3    = LED_OFF;
-	LED4    = LED_OFF;
-
-	EDIS;
-#endif
 #if( MY_TEST_DEMO == TEST_DMA || MY_TEST_DEMO == TEST_XINTF )
 	int i;
 	for(i=0;i<1024;i++){

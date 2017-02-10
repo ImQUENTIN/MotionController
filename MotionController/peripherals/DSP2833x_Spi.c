@@ -96,26 +96,26 @@ void InitSpiFifo( struct SPI_VARS *Spi)
 	// Initialize SPI FIFO registers
 
 //	struct  SPIFFTX_BITS {       // bit    description
-//	   Uint16 TXFFIL:5;          // 4:0    Interrupt level, Interrupt occurs when TXFFIL equal TXFFST.
-//	   Uint16 TXFFIENA:1;        // 5      Interrupt enable
-//	   Uint16 TXFFINTCLR:1;      // 6      Clear INT flag, high active.
+//	   Uint16 TXFFIL:5;          // 4:0    0, Interrupt level, Interrupt occurs when TXFFIL equal TXFFST.
+//	   Uint16 TXFFIENA:1;        // 5      1, Interrupt enable
+//	   Uint16 TXFFINTCLR:1;      // 6      1, Clear INT flag, high active.
 //	   Uint16 TXFFINT:1;         // 7      INT flag
 //	   Uint16 TXFFST:5;          // 12:8   FIFO status, the number of stored data.
-//	   Uint16 TXFIFOXRESET:1;    // 13     FIFO reset,low active.
-//	   Uint16 SPIFFENA:1;        // 14     FIFO Enable
-//	   Uint16 SPIRST:1;          // 15     SPI reset rx/tx channels
+//	   Uint16 TXFIFOXRESET:1;    // 13     1, FIFO reset,low active.
+//	   Uint16 SPIFFENA:1;        // 14     1, FIFO Enable
+//	   Uint16 SPIRST:1;          // 15     1, SPI reset rx/tx channels
 	Spi->RegsAddr->SPIFFTX.all=0xE040;	// 0xC028 // SPI reset rx/tx channels, tx FIFO; low active.
 	//  Clear tx Fifo INT flag, Enhancement enable.
 
 //    struct  SPIFFRX_BITS {       // bits   description
-//       Uint16 RXFFIL:5;          // 4:0    Interrupt level, Interrupt occurs when RXFFIL equal RXFFST.
-//       Uint16 RXFFIENA:1;        // 5      Interrupt enable
-//       Uint16 RXFFINTCLR:1;      // 6      Clear INT flag
+//       Uint16 RXFFIL:5;          // 4:0    10,Interrupt level, Interrupt occurs when RXFFIL equal RXFFST.
+//       Uint16 RXFFIENA:1;        // 5      1, Interrupt enable
+//       Uint16 RXFFINTCLR:1;      // 6      1, Clear INT flag
 //       Uint16 RXFFINT:1;         // 7      INT flag
 //       Uint16 RXFFST:5;          // 12:8   FIFO status, the number of stored data.
-//       Uint16 RXFIFORESET:1;     // 13     FIFO reset
-//       Uint16 RXFFOVRCLR:1;      // 14     Clear overflow
-//       Uint16 RXFFOVF:1;         // 15     FIFO overflow
+//       Uint16 RXFIFORESET:1;     // 13     1, FIFO reset
+//       Uint16 RXFFOVRCLR:1;      // 14     1, Clear overflow
+//       Uint16 RXFFOVF:1;         // 15     0, FIFO overflow
 	Spi->RegsAddr->SPIFFRX.all=0x2050;	// ** 别忘了改回来***
 
 #if(USE_SPI_INT)
@@ -186,6 +186,9 @@ void ConfigSpi(struct SPI_VARS *Spi)
 //	没有开启SPI FIFO功能，打开RX,TX的中断
 	Spi->RegsAddr->SPICTL.bit.SPIINTENA 		= 1;
 	Spi->RegsAddr->SPICTL.bit.OVERRUNINTENA 	= 1;
+#elif (USE_SPI_INT)
+	Spi->RegsAddr->SPIFFRX.bit.RXFFIENA = 1;
+	Spi->RegsAddr->SPIFFTX.bit.TXFFIENA = 1;
 #endif
 
 	Spi->RegsAddr->SPIPRI.bit.FREE = 1;                // Set so breakpoints don't disturb xmission
