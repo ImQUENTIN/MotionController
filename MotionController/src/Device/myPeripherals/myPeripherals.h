@@ -13,6 +13,7 @@
 #ifndef MYPERIPHERALS_H_
 #define MYPERIPHERALS_H_
 
+#define InitDevices InitPeripherals
 
 extern void ExecuteMyTask(void);
 extern void InitMyTask(void);

@@ -26,8 +26,8 @@ struct SWFIFO {
 };
 
 extern void swfifoReset( struct SWFIFO *swfifo );
-extern uint8_t swfifo_In( int8_t dat, struct SWFIFO *swFifo);
-extern uint8_t swfifo_Out( int8_t *dat, struct SWFIFO *swFifo);
+extern uint8_t swfifo_In( uint8_t dat, struct SWFIFO *swFifo);
+extern uint8_t swfifo_Out( uint8_t *dat, struct SWFIFO *swFifo);
 extern uint8_t swfifo_IsEmpty(struct SWFIFO *swFifo);	// 1:empty; 0:not.
 extern uint8_t swfifo_IsFull(struct SWFIFO *swFifo);		// 1: full; 0:not.
 

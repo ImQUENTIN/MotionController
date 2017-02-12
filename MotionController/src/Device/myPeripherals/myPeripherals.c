@@ -89,7 +89,6 @@ void InitPeripherals(void)
 	// ==============================================================================
 	InitGpio();     	// 把GPIO0~95设置为： 1，普通IO口，不使用特殊功能；2，输入方向；
 //						// 3，CLK与SYSCLKOUT同步；4，使用上拉电阻；
-	InitMyTask();   	// 初始化任务
 
 	InitCpuTimers();   	// Peripheral 2: Cpu timer 初始化，if used.
 	InitScis();			// Peripheral 3: SCI 初始化，if used.
@@ -97,7 +96,7 @@ void InitPeripherals(void)
 	InitXintf();		// initializes the External Interface the default reset state.
 	InitDmas();			// Peripheral 5: DMA 初始化，if used.
 
-	StartDMACHx( &Dma.RegsAddr->CH1);
+	// StartDMACHx( &Dma.RegsAddr->CH1);
 	// InitAdc();			// Initializes ADC to a known state.
 
 	// InitECan();			// Initialize eCAN-A module
@@ -121,25 +120,6 @@ void InitPeripherals(void)
 
 
 
-// 此次demo的任务（功能）初始化
-void InitMyTask(void)
-{
-
-#if( MY_TEST_DEMO == TEST_DMA || MY_TEST_DEMO == TEST_XINTF )
-	int i;
-	for(i=0;i<1024;i++){
-#if ( MY_TEST_DEMO == TEST_DMA)
-		dstBuf[i] = 0;
-		srcBuf[i] = i;
-#else
-		srcBuf[i] = i;
-#endif
-	}
-#endif
-
-}
-
-
 // 此次任务内容
 void ExecuteMyTask(void)
 {
@@ -157,5 +137,6 @@ void ExecuteMyTask(void)
 	EXTFPGA_Test();
 	while(1);
 #endif
+
 
 }

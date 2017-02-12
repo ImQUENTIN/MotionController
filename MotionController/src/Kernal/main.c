@@ -42,56 +42,37 @@
 //
 // 功能描述:
 //
-//    本例程配置 CPU定时器0为500ms周期, 每次周期中断取反 GPIO66
-//    取反后LED就在亮和灭之间转换. 为了便于观察，本例还增加了一个计数变量CpuTimer0.InterruptCount
-//    每次中断计数变量+1；
-//
-//       Watch Variables:
-//          CpuTimer0.InterruptCount
-//
-//       Monitor the GPIO32 LED blink on (for 500 msec) and off (for 500 msec) on the 2833x eZdsp.
-//
 //###########################################################################
 
 #include "my_project.h"
 
 
-//===========================================================================
-// No more.
-//===========================================================================
+// 从ARM过来的指令：硬件 --> taskComm --> taskPlan  --> taskExecute
 
-int main(void)
+void main(void)
 {
 /* 
-    SPI 使用说明：
-    1. 关于FIFO长度
-    SPIA 内部使用了FIFO中断，默认的缓存长度是 16(硬件) + 16（软件），32字长。
-    其中软件的缓存的DEPTH可以通过修改变量SPIA_SWFFTXDEEP, SPIA_SWFFRXDEEP
-    来自定义设置，在这里修改：line 118-120, @ my_demo_select.h 
-    
-    2. 关于发送接收SPI的使用
-    SPIA 使用收发缓存的形式，你可以直接使用函数 uint8_t Spia_gets(int8_t * msg)
-    来读取接收的数据，msg的长度应大于16+SPIA_SWFFRXDEEP。
-    当没有数据接收到时，Spia_gets 返回1；返回0说明msg信息有效可以进一步处理。
-    注意：Spia_gets 会自动在msg的最后一个写0封尾，所以最后一位的数值是0时要注意。
-    
-    发送的话，使用Spia_puts(int8_t * msg);
-    
-    3. 缓存满的情况
-    a) 如果没有即使清空缓存，当接收缓存满了之后将不会再接收新的数据，直到有空闲
-       的缓存存放数据为止。
-    b) 如果发送一帧数据时，超出了发送缓存区的大小，返回字符串截断的位置。
-       比如返回j，当发送缓存区清空后，下一帧数据可以这么发送Spia_puts(msg+j);
-       
-       建议把缓存器调大，适合使用。
-    
-
+	tmp = sizeof(char);			// 1 - 16bit
+	tmp = sizeof(int);			// 1
+	tmp = sizeof(short);		// 1
+	tmp = sizeof(long);			// 2
+	tmp = sizeof(long long);	// 4
+	tmp = sizeof(float);		// 2
+	tmp = sizeof(double);		// 2
  */
 
+	ERROR_CODE rtn;
 
-	InitPeripherals();	// as you see.
-	ExecuteMyTask();
-	return 0;
+	// step 1: initial devices
+	InitDevices();
+
+	while(1)
+     {
+		rtn = checkNewCommand();
+		if (rtn == RTN_SUCC) {
+			taskPlan();
+		}
+     }
 }
 
 //===========================================================================

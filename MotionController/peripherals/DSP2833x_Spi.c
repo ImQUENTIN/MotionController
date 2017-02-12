@@ -17,12 +17,12 @@
     来自定义设置，在这里修改：line 118-120, @ my_demo_select.h
 
     2. 关于发送接收SPI的使用
-    SPIA 使用收发缓存的形式，你可以直接使用函数 uint8_t Spia_gets(int8_t * msg)
+    SPIA 使用收发缓存的形式，你可以直接使用函数 uint8_t Spia_gets(uint8_t * msg)
     来读取接收的数据，msg的长度应大于16+SPIA_SWFFRXDEEP。
     当没有数据接收到时，Spia_gets 返回1；返回0说明msg信息有效可以进一步处理。
     注意：Spia_gets 会自动在msg的最后一个写0封尾，所以最后一位的数值是0时要注意。
 
-    发送的话，使用Spia_puts(int8_t * msg);
+    发送的话，使用Spia_puts(uint8_t * msg);
 
     3. 缓存满的情况
     a) 如果没有即使清空缓存，当接收缓存满了之后将不会再接收新的数据，直到有空闲
@@ -251,7 +251,7 @@ void SPIFFTX_ClearINT( struct SPI_VARS *Spi){	Spi->RegsAddr->SPIFFTX.bit.TXFFINT
 //void SPI_SetSlaver( struct SPI_VARS *Spi ){	Spi->RegsAddr->SPICTL.bit.MASTER_SLAVE = 0;}
 
 
-uint8_t Spi_putchar(int8_t dat, struct SPI_VARS *Spi)
+uint8_t Spi_putchar(uint8_t dat, struct SPI_VARS *Spi)
 {
 	// 在swFIFO为空的情况下，优先使用硬件FIFO.
 	if( SPIFFTX_IsNotFull(Spi) && swfifo_IsEmpty(&Spi->swfifoTx) )
@@ -268,7 +268,7 @@ uint8_t Spi_putchar(int8_t dat, struct SPI_VARS *Spi)
 //----------------------------------------------------------
 //           supports for Spi_puts
 //----------------------------------------------------------
-uint8_t Spi_puts(int8_t * msg, struct SPI_VARS *Spi)
+uint8_t Spi_puts(uint8_t * msg, struct SPI_VARS *Spi)
 {
 	int i;
 	i = 0;
@@ -288,7 +288,7 @@ uint8_t Spi_puts(int8_t * msg, struct SPI_VARS *Spi)
 // 下面函数在中断中执行，旨在清空（发送）软件FIFO的数据。
 void Spi_TxFifoFullHandler(struct SPI_VARS *Spi)
 {
-	int8_t tmpData;
+	uint8_t tmpData;
 	if( !swfifo_IsEmpty(&Spi->swfifoTx) ) {		// swFIFOTX is not empty, load them to SPI TXFIFO.
 		while(  SPIFFTX_IsNotFull(Spi) &&
 		       !swfifo_IsEmpty(&Spi->swfifoTx) ) {
@@ -311,7 +311,7 @@ void Spi_TxFifoFullHandler(struct SPI_VARS *Spi)
 }
 
 // 可以用于固定个数的读取
-uint8_t Spi_getchar(int8_t *dat, struct SPI_VARS *Spi)
+uint8_t Spi_getchar(uint8_t *dat, struct SPI_VARS *Spi)
 {
 	if( !swfifo_IsEmpty(&Spi->swfifoRx) ) {
 //		优先从 swFIFO中取数据
@@ -328,7 +328,7 @@ uint8_t Spi_getchar(int8_t *dat, struct SPI_VARS *Spi)
 
 
 // 读取全部收到的数据
-uint8_t Spi_gets(int8_t * msg, struct SPI_VARS *Spi)
+uint8_t Spi_gets(uint8_t * msg, struct SPI_VARS *Spi)
 {
 	int i=0;
 

@@ -37,12 +37,14 @@
 									<listOptionValue builtIn="false" value="&quot;${PROJECT_LOC}\header\peripheral&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${PROJECT_LOC}\header\lib&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${PROJECT_LOC}\header\user&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${PROJECT_LOC}\src\myPeripherals&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${PROJECT_LOC}\src\myIsr&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${PROJECT_LOC}\src\myFlash&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${PROJECT_LOC}\src\myFPGA&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${PROJECT_LOC}\src\protocol&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${PROJECT_LOC}\src\myFPGA\mymotors&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${PROJECT_LOC}\src\Device\myPeripherals&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${PROJECT_LOC}\src\Device\myIsr&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${PROJECT_LOC}\src\Device\myFlash&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${PROJECT_LOC}\src\Device\myFPGA\header&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${PROJECT_LOC}\src\Config&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${PROJECT_LOC}\src\Task&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${PROJECT_LOC}\src\Kernal&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${PROJECT_LOC}\src\Communication\arm-dsp&quot;"/>
 								</option>
 								<option id="com.ti.ccstudio.buildDefinitions.C2000_6.2.compilerID.DEBUGGING_MODEL.2065026764" name="Debugging model" superClass="com.ti.ccstudio.buildDefinitions.C2000_6.2.compilerID.DEBUGGING_MODEL" value="com.ti.ccstudio.buildDefinitions.C2000_6.2.compilerID.DEBUGGING_MODEL.SYMDEBUG__DWARF" valueType="enumerated"/>
 								<option id="com.ti.ccstudio.buildDefinitions.C2000_6.2.compilerID.DIAG_WARNING.1960674339" name="Treat diagnostic &lt;id&gt; as warning (--diag_warning, -pdsw)" superClass="com.ti.ccstudio.buildDefinitions.C2000_6.2.compilerID.DIAG_WARNING" valueType="stringList">
