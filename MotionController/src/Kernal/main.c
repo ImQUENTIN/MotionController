@@ -42,29 +42,37 @@
 //
 // 功能描述:
 //
-//    本例程配置 CPU定时器0为500ms周期, 每次周期中断取反 GPIO66
-//    取反后LED就在亮和灭之间转换. 为了便于观察，本例还增加了一个计数变量CpuTimer0.InterruptCount
-//    每次中断计数变量+1；
-//
-//       Watch Variables:
-//          CpuTimer0.InterruptCount
-//
-//       Monitor the GPIO32 LED blink on (for 500 msec) and off (for 500 msec) on the 2833x eZdsp.
-//
 //###########################################################################
 
 #include "my_project.h"
 
 
-//===========================================================================
-// No more.
-//===========================================================================
+// 从ARM过来的指令：硬件 --> taskComm --> taskPlan  --> taskExecute
 
-int main(void)
+void main(void)
 {
-	InitPeripherals();	// as you see.
-	ExecuteMyTask();
-	return 0;
+/* 
+	tmp = sizeof(char);			// 1 - 16bit
+	tmp = sizeof(int);			// 1
+	tmp = sizeof(short);		// 1
+	tmp = sizeof(long);			// 2
+	tmp = sizeof(long long);	// 4
+	tmp = sizeof(float);		// 2
+	tmp = sizeof(double);		// 2
+ */
+
+	ERROR_CODE rtn;
+
+	// step 1: initial devices
+	InitDevices();
+
+	while(1)
+     {
+		rtn = checkNewCommand();
+		if (rtn == RTN_SUCC) {
+			taskPlan();
+		}
+     }
 }
 
 //===========================================================================

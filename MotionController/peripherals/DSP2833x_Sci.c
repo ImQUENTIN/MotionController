@@ -45,7 +45,7 @@ uint8_t SCIA_SWFFRXBUF[SCIA_SWFFRXDEEP];		// SCI Software FIFO Rx Buffer.
 // Test 1,SCIA  DLB, 8-bit word, baud rate 0x000F, default, 1 STOP bit, no parity
 void InitScia(void)
 {
-
+  void InitSciaGpio();
 
 	Scia.RegsAddr 	= &SciaRegs;
 	Scia.Baud		= SCIA_BAUD;			// get from user's configuration.
@@ -271,7 +271,7 @@ void SCIRX_TurnOff( struct SCI_VARS *Sci)
 }
 
 
-uint8_t Sci_putchar(int8_t dat, struct SCI_VARS *Sci)
+uint8_t Sci_putchar(uint8_t dat, struct SCI_VARS *Sci)
 {
 	// 在swFIFO为空的情况下，优先使用硬件FIFO.
 	if( SCIFFTX_IsNotFull(Sci) && swfifo_IsEmpty(&Sci->swfifoTx) )
@@ -288,7 +288,7 @@ uint8_t Sci_putchar(int8_t dat, struct SCI_VARS *Sci)
 //----------------------------------------------------------
 //           supports for Sci_puts
 //----------------------------------------------------------
-uint8_t Sci_puts(int8_t * msg, struct SCI_VARS *Sci)
+uint8_t Sci_puts(uint8_t * msg, struct SCI_VARS *Sci)
 {
 	int i;
 	i = 0;
@@ -331,7 +331,7 @@ uint8_t Sci_puts(int8_t * msg, struct SCI_VARS *Sci)
 // 下面函数在中断中执行，旨在清空（发送）软件FIFO的数据。
 void Sci_TxFifoFullHandler(struct SCI_VARS *Sci)
 {
-	int8_t tmpData;
+	uint8_t tmpData;
 	if( !swfifo_IsEmpty(&Sci->swfifoTx) ) {		// swFIFOTX is not empty, load them to SCI TXFIFO.
 		while(  SCIFFTX_IsNotFull(Sci) &&
 		        !swfifo_IsEmpty(&Sci->swfifoTx) ) {
@@ -362,7 +362,7 @@ void Sci_TxFifoFullHandler(struct SCI_VARS *Sci)
 //----------------------------------------------------------
 
 // 可以用于固定个数的读取
-uint8_t Sci_getchar(int8_t *dat, struct SCI_VARS *Sci)
+uint8_t Sci_getchar(uint8_t *dat, struct SCI_VARS *Sci)
 {
 	if( !swfifo_IsEmpty(&Sci->swfifoRx) ) {
 //		优先从 swFIFO中取数据
@@ -379,7 +379,7 @@ uint8_t Sci_getchar(int8_t *dat, struct SCI_VARS *Sci)
 
 
 // 读取全部收到的数据
-uint8_t Sci_gets(int8_t * msg, struct SCI_VARS *Sci)
+uint8_t Sci_gets(uint8_t * msg, struct SCI_VARS *Sci)
 {
 	int i=0;
 

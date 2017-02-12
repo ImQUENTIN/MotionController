@@ -254,11 +254,11 @@ struct SCI_VARS {
 
 // common
 	extern uint8_t Sci_IsFifoTxEmpty(struct SCI_VARS *Sci );
-	extern uint8_t Sci_putchar(int8_t ch, struct SCI_VARS *Sci);
-	extern uint8_t Sci_puts(int8_t * msg, struct SCI_VARS *Sci);
+	extern uint8_t Sci_putchar(uint8_t ch, struct SCI_VARS *Sci);
+	extern uint8_t Sci_puts(uint8_t * msg, struct SCI_VARS *Sci);
 	extern void Sci_TxFifoFullHandler(struct SCI_VARS *Sci);	// clear software TXFIFO
-	extern uint8_t Sci_getchar(int8_t *ch, struct SCI_VARS *Sci);
-	extern uint8_t Sci_gets(int8_t * msg, struct SCI_VARS *Sci);
+	extern uint8_t Sci_getchar(uint8_t *ch, struct SCI_VARS *Sci);
+	extern uint8_t Sci_gets(uint8_t * msg, struct SCI_VARS *Sci);
 	extern void Sci_RxFifoFullHandler(struct SCI_VARS *Sci);
 
 // specific

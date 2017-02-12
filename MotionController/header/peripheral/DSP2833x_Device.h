@@ -88,8 +88,8 @@ extern cregister volatile unsigned int IER;
 
 #ifndef DSP28_DATA_TYPES
 #define DSP28_DATA_TYPES
-typedef char			int8;		// added by QUENTIN.
-typedef unsigned char   Uint8;	// added by QUENTIN.
+typedef char			   int8;	// added by QUENTIN, in fact the size is 16.
+typedef unsigned char   Uint8;	// added by QUENTIN, in fact the size is 16.
 typedef int             int16;
 typedef long            int32;
 typedef unsigned int    Uint16;
@@ -98,18 +98,7 @@ typedef float           float32;
 typedef long double     float64;
 #endif
 
-#ifndef MY_STD_TYPE
-#define MY_STD_TYPE
-	typedef unsigned char  uint8_t;
-	typedef 		 char   int8_t;
-	typedef unsigned  int uint16_t;
-	typedef           int  int16_t;
-	typedef unsigned long uint32_t;
-	typedef          long  int32_t;
-
-#endif
-
-
+#include "sysTypes.h"
 
 
 #if DSP28_28335
@@ -197,7 +186,7 @@ typedef long double     float64;
 // --------------- The below headers is added by QUENTIN -------------------
 #include "swfifo.h"
 #include "SST39VF800A.h"				// external Flash driver files
-#include "mymotors.h"					// FPGA's Motor control
+#include "myFPGA.h"
 
 // --------------- no more ----------------------------------------
 #include "DSP2833x_Adc.h"                // ADC Registers

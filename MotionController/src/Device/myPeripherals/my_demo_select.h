@@ -26,7 +26,7 @@
 //###########################################################################
 //						 DEMO SELECT
 //###########################################################################
-#define MY_TEST_DEMO TEST_XINTF		// 测试模式的选择
+#define MY_TEST_DEMO TEST_SPIA		// 测试模式的选择
 
 
 
@@ -113,7 +113,14 @@
 //
 #elif( MY_TEST_DEMO == TEST_SPIA )
 #define USE_SPIA 		1
-#define USE_GPIO19_AS_SPISTEA    1
+// #define USE_GPIO19_AS_SPISTEA    1  // jzs 的板子该行注释掉
+
+// 修改你自己的FIFO长度, 注释掉使用默认长度16.
+//#define SPIA_SWFFTXDEEP 16	// 设置软件FIFO的TX空间大小
+//#define SPIA_SWFFRXDEEP 16	// 设置软件FIFO的RX空间大小
+
+
+
 
 
 //============================================================================

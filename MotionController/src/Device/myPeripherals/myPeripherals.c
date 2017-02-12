@@ -27,8 +27,8 @@ volatile Uint16 EXTRAM[0x8000];		// 片外RAM
 
 
 // 运动卡的FPGA用的zone0，
-//#pragma DATA_SECTION(EXTFPGA,"EXTFPGA_DATA");
-volatile Uint16 EXTFPGA[32];	// 片外FPGA, 0x1000,4kB.
+// #pragma DATA_SECTION(EXTFPGA,"Motor2RegsFiles");
+ volatile Uint16 EXTFPGA[0x20];	// 片外FPGA, 0x1000,4kB.
 
 
 // Configure DMA Channel
@@ -89,7 +89,6 @@ void InitPeripherals(void)
 	// ==============================================================================
 	InitGpio();     	// 把GPIO0~95设置为： 1，普通IO口，不使用特殊功能；2，输入方向；
 //						// 3，CLK与SYSCLKOUT同步；4，使用上拉电阻；
-	InitMyTask();   	// 初始化任务
 
 	InitCpuTimers();   	// Peripheral 2: Cpu timer 初始化，if used.
 	InitScis();			// Peripheral 3: SCI 初始化，if used.
@@ -97,7 +96,7 @@ void InitPeripherals(void)
 	InitXintf();		// initializes the External Interface the default reset state.
 	InitDmas();			// Peripheral 5: DMA 初始化，if used.
 
-	StartDMACHx( &Dma.RegsAddr->CH1);
+	// StartDMACHx( &Dma.RegsAddr->CH1);
 	// InitAdc();			// Initializes ADC to a known state.
 
 	// InitECan();			// Initialize eCAN-A module
@@ -121,40 +120,6 @@ void InitPeripherals(void)
 
 
 
-// 此次demo的任务（功能）初始化
-void InitMyTask(void)
-{
-	//---------------- 1. GPIO 测试模式 ---------------------------------------------
-#if( MY_TEST_DEMO == TEST_GPIO_TIMER_LED)
-	EALLOW;
-
-	/* output */
-	LED2_DIR = 1;
-	LED3_DIR = 1;
-	LED4_DIR = 1;
-
-	/* all off. */
-	LED2    = LED_OFF;
-	LED3    = LED_OFF;
-	LED4    = LED_OFF;
-
-	EDIS;
-#endif
-#if( MY_TEST_DEMO == TEST_DMA || MY_TEST_DEMO == TEST_XINTF )
-	int i;
-	for(i=0;i<1024;i++){
-#if ( MY_TEST_DEMO == TEST_DMA)
-		dstBuf[i] = 0;
-		srcBuf[i] = i;
-#else
-		srcBuf[i] = i;
-#endif
-	}
-#endif
-
-}
-
-
 // 此次任务内容
 void ExecuteMyTask(void)
 {
@@ -172,5 +137,6 @@ void ExecuteMyTask(void)
 	EXTFPGA_Test();
 	while(1);
 #endif
+
 
 }

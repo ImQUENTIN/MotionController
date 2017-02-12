@@ -32,8 +32,8 @@ void TestSci(void)
 #define Scix_puts(a)			Scic_puts(a)
 #endif
 
+#if( USE_SCIA || USE_SCIB || USE_SCIC )
 #if(TEST_SCI_CHAR)
-
 
 // ===============================================================================
 // 下面测试Scix_putchar 及 Scix_getchar
@@ -90,14 +90,20 @@ void TestSci(void)
 
 	}
 #endif
+#endif
+
 }
 
 #endif // ( MY_TEST_DEMO == TEST_SCIA || MY_TEST_DEMO == TEST_SCIB || MY_TEST_DEMO == TEST_SCIC )
 
 
-#if( MY_TEST_DEMO == TEST_SPIA )
+#if( MY_TEST_DEMO == TEST_SPIA && USE_SPIA )
 void TestSpi(void)
 {
+	// 说明：绿色的运动控制卡 使用的GPIO19作为SPIA_STE
+	//       所以在使用金子舒用的开发板进行调试时需要把“USE_GPIO19_AS_SPISTEA” 注释掉
+	//       该宏定义在 my_demo_select.h @line 116
+
 	int i = 17+SPIA_SWFFRXDEEP;
 	static char tmp[17+SPIA_SWFFRXDEEP]={0};
 
@@ -106,9 +112,9 @@ void TestSpi(void)
 	}
 	for(;;) {
 		DELAY_US(500000);
-		Spia_puts("nothing is received.\n");
+		//Spia_puts("nothing is received.\n");
 		if( !Spia_gets(tmp)) {
-	//		ESTOP0;	// stop here.
+		//	ESTOP0;	// stop here.
 		}
 	}
 }
@@ -130,19 +136,10 @@ void TestXintf(void)
 
 void EXTFPGA_Test(void)
 {
-	extern volatile Uint16 EXTFPGA[32];
 	volatile int i,tmp;
 
 	testMymotor();
 
-    EXTFPGA[0x11] = 6400*5;      // set inpos LSB
-    EXTFPGA[0x12] = 0;      // set inpos HSB
-	EXTFPGA[0x10] = 3;      // set status
-
-    
-
-	for( i=0; i<20;i++)
-		tmp = EXTFPGA[i];
 }
 #endif //( MY_TEST_DEMO == TEST_XINTF )
 
