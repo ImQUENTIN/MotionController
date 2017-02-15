@@ -114,7 +114,7 @@ void TestSpi(void)
 		DELAY_US(500000);
 		//Spia_puts("nothing is received.\n");
 		if( !Spia_gets(tmp)) {
-		//	ESTOP0;	// stop here.
+			ESTOP0;	// stop here.
 		}
 	}
 }
