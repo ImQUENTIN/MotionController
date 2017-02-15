@@ -1,133 +1,133 @@
 
 #include "sysTypes.h"
 #include "PTmode.h"
+#include "math.h"
 
-#define  pt_segment_start 1
-#define  pt_segment_normal 2
-#define  pt_segment_stop 3
 
-typedef struct
+struct DDA_SET_VARS{
+	int32_t inpos;
+	int32_t invel;
+	int32_t inacc;
+	int32_t injerk;
+};
+
+struct DDA_SET_VARS dda_setvars[3];
+int ins_num = 0;	// 指令个数
+
+
+
+int PT_Mode(int axis, double pos)
 {
-	int accnow;
-    int velnow;
-	int posnow;
-}comandbuf;
 
+		float rise_vel;
+		float rise_pos;
+		float uniform_pos;
 
-int ptmode(int axis, double pos, int time,int type,int period)
-{
-		uint16_t div_num;
-		uint16_t i;
+		int t;
 
-		float acc;
-		float vel;
-		float divpos;
+		if(pos == 0)
+		{
+			int i;
+			for(i = 0; i < 3; i++)
+			{
+				dda_setvars[ins_num].inacc = 0;
+				dda_setvars[ins_num].invel = 0;
+				dda_setvars[ins_num].inpos = 0;
+				dda_setvars[ins_num++].injerk = 0;
+			}
+		}
 
-		comandbuf  combuf;
+		if(pos > 0)
+		{
+			if(pos <= critical_pos)
+			{
+				t = sqrt(pos/acc_to_cmd);
+				rise_vel = acc_to_cmd * t;
+				rise_pos = 0.5 * pos;
 
-		static float prevel[8]={0};
-		static float pretotalt[8]={0};
-		static double prepos[8]={0};
+				dda_setvars[ins_num].inpos = rise_pos;
+				dda_setvars[ins_num].invel = rise_vel;
+				dda_setvars[ins_num].inacc = acc_to_cmd;
+				dda_setvars[ins_num++].injerk = 0;
 
-		int cmdpos;
-		static float recoup=0;
-		  if(type == pt_segment_start)
-		     {
-		        div_num = time / period;
+				dda_setvars[ins_num].inacc = 0;
+				dda_setvars[ins_num].invel = 0;
+				dda_setvars[ins_num].inpos = 0;
+				dda_setvars[ins_num++].injerk = 0;
 
-		        if(pos<0)
-		  	  {
-		  			acc = -2*pos/(time*time);//求加速度
-		  	  }
-		  	  else
-		  	  {
-		  			acc = 2*pos/(time*time);
-		        }
+				dda_setvars[ins_num].inpos = pos;
+				dda_setvars[ins_num].invel = 0;
+				dda_setvars[ins_num].inacc = -acc_to_cmd;
+				dda_setvars[ins_num].injerk = 0;
 
+			}
+			else
+			{
+				t = vel_to_cmd/acc_to_cmd;
+				rise_pos = 0.5*vel_to_cmd*t;
+				dda_setvars[ins_num].inpos = rise_pos;
+				dda_setvars[ins_num].invel = vel_to_cmd;
+				dda_setvars[ins_num].inacc = acc_to_cmd;
+				dda_setvars[ins_num++].injerk = 0;
 
-		        for(i=0;i<div_num;i++)//分段循环
-		        {
-		  		vel = acc * i * period;
-		  		if(pos<0)
-		  		{
-		  			divpos = -(vel*period + 0.5*acc*period*period);
-		  	    }else
-		  		{
-		  			divpos = vel*period + 0.5*acc*period*period;
-		  		}
+				uniform_pos = pos - rise_pos;
+				dda_setvars[ins_num].inacc = 0;
+				dda_setvars[ins_num].invel = vel_to_cmd;
+				dda_setvars[ins_num].inpos = uniform_pos;
+				dda_setvars[ins_num++].injerk = 0;
 
-		  	    combuf.accnow = (int)(acc_to_cmd * acc *1000000 + 0.5);
-		  	    combuf.velnow =(int)(vel_to_cmd * vel * 1000 + 0.5);
-		  	  cmdpos = (int)(divpos +recoup+0.5);
-		  	    recoup = (float)(divpos +recoup-cmdpos);//算余数
-		  	  combuf.posnow = cmdpos;
-		  	   // mtputdatatofifo( &stmtcmd, axis);
-		        }
+				dda_setvars[ins_num].inpos = pos;
+				dda_setvars[ins_num].invel = 0;
+				dda_setvars[ins_num].inacc = -acc_to_cmd;
+				dda_setvars[ins_num].injerk = 0;
 
-		        prevel[axis]=div_num*acc*period;
-		        prepos[axis]=pos;
-		        pretotalt[axis]= time;
-		     }
+			}
+		}
+		if(pos < 0)
+		{
+			if(pos >= -critical_pos)
+			{
+				t = sqrt(-pos/acc_to_cmd);
+				rise_vel = -acc_to_cmd * t;
+				rise_pos = 0.5 * pos;
 
-		    if(type == pt_segment_normal)
-		    {
-		       div_num = (time-pretotalt[axis])/period;
-		      if(pos<0){
-		        acc= -((pos-prepos[axis])+prevel[axis]*(time-pretotalt[axis]))*2/((time-pretotalt[axis])*(time-pretotalt[axis]));
-		      }else{
-		        acc=((pos-prepos[axis])-prevel[axis]*(time-pretotalt[axis]))*2/((time-pretotalt[axis])*(time-pretotalt[axis]));
-		      }
-		      for(i=0;i<div_num;i++)
-		      {
-		        vel = prevel[axis]+acc*i*period;
-		        if(pos<0){
-		  	divpos=-(vel*period+0.5*acc*period*period) ;
-		  	cmdpos=(int)(divpos+recoup-0.5);
-		        }else{
-		  	divpos=vel*period+0.5*acc*period*period ;
-		  	cmdpos=(int)(divpos+recoup+0.5);
-		        }
-		       // stmtcmd.cmdacc = (int)(acc_to_cmd * acc *1000000 + 0.5);
-		        combuf.accnow = (int)(acc_to_cmd * acc *1000000 + 0.5);
-		        combuf.velnow =(int)(vel_to_cmd * vel * 1000 + 0.5);
-		        recoup = (float)(divpos +recoup-cmdpos);
-		        combuf.posnow = cmdpos;
-		        //mtputdatatofifo(&stmtcmd, axis);
-		      }
-		      prevel[axis]=prevel[axis]+div_num*acc*period;
-		      prepos[axis]=pos;
-		      pretotalt[axis]=time;
-		    }
+				dda_setvars[ins_num].inpos = rise_pos;
+				dda_setvars[ins_num].invel = rise_vel;
+				dda_setvars[ins_num].inacc = -acc_to_cmd;
+				dda_setvars[ins_num++].injerk = 0;
 
-		    pos = 640000;
-		    time = 20000;
+				dda_setvars[ins_num].inacc = 0;
+				dda_setvars[ins_num].invel = 0;
+				dda_setvars[ins_num].inpos = 0;
+				dda_setvars[ins_num++].injerk = 0;
 
-		    if(type == pt_segment_stop)
-		    {
-		       div_num=(time-pretotalt[axis])/period;
-		      if(pos<0){
-		        acc=2*(pos-prepos[axis])/((time-pretotalt[axis])*(time-pretotalt[axis]));
-		      }else{
-		        acc=-2*(pos-prepos[axis])/((time-pretotalt[axis])*(time-pretotalt[axis]));
-		      }
-		      prevel[axis]= -acc*(time-pretotalt[axis]);
-		      for(i=0;i<div_num;i++)
-		      {
-		        if(pos<0){
-		  	vel=prevel[axis]-acc*i*period;
-		  	divpos=-vel*period + 0.5*acc*period*period;
-		  	cmdpos= (int)(divpos+recoup-0.5);
-		        }else{
-		  	vel=prevel[axis]+acc*i*period;
-		  	divpos=vel*period + 0.5*acc*period*period;
-		  	cmdpos= (int)(divpos+recoup+0.5);
-		        }
-		        combuf.accnow = (int)(acc_to_cmd * acc *1000000 - 0.5);
-		        combuf.velnow =(int)(vel_to_cmd * vel * 1000 + 0.5);
-		        recoup = (float)(divpos +recoup-cmdpos);
-		        combuf.posnow = cmdpos;
-		        //mtputdatatofifo(&stmtcmd, axis);
-		      }
-		    }
-		    return div_num;
-		  }
+				dda_setvars[ins_num].inpos = pos;
+				dda_setvars[ins_num].invel = 0;
+				dda_setvars[ins_num].inacc = acc_to_cmd;
+				dda_setvars[ins_num].injerk = 0;
+			}
+			else
+			{
+				t = vel_to_cmd/acc_to_cmd;
+				rise_pos = -0.5*vel_to_cmd*t;
+
+				dda_setvars[ins_num].inpos = rise_pos;
+				dda_setvars[ins_num].invel = -vel_to_cmd;
+				dda_setvars[ins_num].inacc = -acc_to_cmd;
+				dda_setvars[ins_num++].injerk = 0;
+				uniform_pos = pos + rise_pos;
+
+				dda_setvars[ins_num].inacc = 0;
+				dda_setvars[ins_num].invel = -vel_to_cmd;
+				dda_setvars[ins_num].inpos = uniform_pos;
+				dda_setvars[ins_num++].injerk = 0;
+
+				dda_setvars[ins_num].inpos = pos;
+				dda_setvars[ins_num].invel = 0;
+				dda_setvars[ins_num].inacc = acc_to_cmd;
+				dda_setvars[ins_num].injerk = 0;
+			}
+		}
+		return ok;
+}
+
