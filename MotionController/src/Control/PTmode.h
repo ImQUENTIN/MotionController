@@ -7,7 +7,6 @@ int PT_Mode(int axis, double pos) ;
 #define vel_to_cmd 100
 #define critical_pos 20000
 
-#define MESS 4
 #define ok 1
 
 #endif
