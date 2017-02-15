@@ -65,7 +65,7 @@ void main(void)
 
 	// step 1: initial devices
 	InitDevices();
-
+	TestSpi();
 	while(1)
      {
 		rtn = checkNewCommand();
