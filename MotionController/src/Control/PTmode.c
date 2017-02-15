@@ -25,7 +25,7 @@ int PT_Mode(int axis, double pos)
 		float uniform_pos;
 		float down_vel;
 		float down_pos;
-
+//  fdsjajfil;asjfil;asj
 
 		if(pos >= 0)
 		{
