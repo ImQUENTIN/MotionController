@@ -36,8 +36,10 @@ union MSTA_REG{
 //
 struct MCTL_BITS{
 	uint16_t RST:1;         // reset
-    uint16_t ENA:1;         // enable
-    uint16_t rsvd:5;
+	uint16_t ENA:1;         // enable
+	uint16_t START:1;       // start motion
+
+    uint16_t rsvd:4;
     uint16_t EDITA:1;      // Edit allow bit
     uint16_t rsvd2:8;
 	};
@@ -52,7 +54,7 @@ union MCTL_REG{
 //
 struct MOTORS_REGS{
 		
-		uint16_t			INPL;   // In Position Low 16-bit Register
+		uint16_t			INPL;   // now Position Low 16-bit Register
         uint16_t			INPH;   // In Position High 16-bit Register
         uint16_t			INVL;   // velocity
         uint16_t			INVH;   
@@ -78,8 +80,24 @@ struct MOTORS_REGS{
         union MSTA_REG	    MSTA;	        // Motor Status register
 	};
 
+
 extern volatile struct MOTORS_REGS MotorRegs[AXIS_ITEM];
 
+// DDA 设置变量
+struct DDA_SET_VARS{
+	int32_t inpos;
+	int32_t invel;
+	int32_t inacc;
+	int32_t injerk;
+};
+
+// DDA 信息变量
+struct DDA_INFO_VARS{
+	int32_t nowpos;
+	int32_t nowvel;
+	int32_t nowacc;
+	int32_t nowjerk;
+};
 
 // test the motor.
 void testMymotor(void);

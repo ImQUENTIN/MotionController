@@ -14,39 +14,62 @@
 
 #include "DSP2833x_Device.h"
 
+void M_SetDDA(struct DDA_SET_VARS dat){
 
+	MotorRegs[0].INPL = dat.inpos;
+	MotorRegs[0].INPH = dat.inpos >> 16;
+
+	MotorRegs[0].INVL = dat.invel;
+	MotorRegs[0].INVH = dat.invel >> 16;
+
+	MotorRegs[0].INAL = dat.inacc;
+	MotorRegs[0].INAH = dat.inacc >> 16;
+
+	MotorRegs[0].INJL = dat.injerk;
+	MotorRegs[0].INJH = dat.injerk >> 16;
+}
 void testMymotor(void)
 {
-	int32_t tmp;
-	volatile static int16 rValue;
+
+	struct DDA_SET_VARS dda_set ;
 
 	MotorRegs[0].MCTL.bit.RST = 1;
 	MotorRegs[0].MCTL.bit.ENA = 0;	// disable, and prepare the setting.
 
-	tmp = 6400*5;
-	MotorRegs[0].INPL = tmp;
-	MotorRegs[0].INPH = tmp >> 16;
-	tmp = 64000;
-	MotorRegs[0].INVL = tmp;
-	MotorRegs[0].INVH = tmp >> 16;
-	MotorRegs[0].INAH = 0;
-	MotorRegs[0].INAL = 0;
-	MotorRegs[0].INJH = 0;
-	MotorRegs[0].INJL = 0;
+	dda_set.inpos = 640;
+	dda_set.invel = 0;
+	dda_set.inacc = 1000;
+	dda_set.injerk = 0;
+	M_SetDDA(dda_set);
 
-	tmp =30;
-	while( tmp-- ){
-		rValue = MotorRegs[0].MSTA.all;
+	dda_set.inpos = 128000;
+	dda_set.invel =  64000;
+	dda_set.inacc = 0;
+	M_SetDDA(dda_set);
 
-		rValue = MotorRegs[0].NOWPH;
-		rValue = MotorRegs[0].NOWPL;
-		rValue = MotorRegs[0].NOWVH;
-		rValue = MotorRegs[0].NOWVL;
-		rValue = MotorRegs[0].NOWAH;
-		rValue = MotorRegs[0].NOWAL;
-		rValue = MotorRegs[0].NOWJH;
-		rValue = MotorRegs[0].NOWJL;
+	dda_set.inpos = 191000;
+	dda_set.invel =  64000;
+	dda_set.inacc = -500;
+	M_SetDDA(dda_set);
 
-	}
+	MotorRegs[0].MCTL.bit.ENA = 1;	// 使能电机
+	MotorRegs[0].MCTL.bit.START = 1;	// disable, and prepare the setting.
+
+
+	ESTOP0;
+//	tmp =30;
+//	while( tmp-- ){
+//		rValue = MotorRegs[0].MSTA.all;
+//
+//		rValue = MotorRegs[0].NOWPH;
+//		rValue = MotorRegs[0].NOWPL;
+//		rValue = MotorRegs[0].NOWVH;
+//		rValue = MotorRegs[0].NOWVL;
+//		rValue = MotorRegs[0].NOWAH;
+//		rValue = MotorRegs[0].NOWAL;
+//		rValue = MotorRegs[0].NOWJH;
+//		rValue = MotorRegs[0].NOWJL;
+//
+//	}
 
 }
