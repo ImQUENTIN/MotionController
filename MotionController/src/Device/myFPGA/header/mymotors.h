@@ -23,7 +23,9 @@
 //
 struct MSTA_BITS{
     uint16_t MBSY:1;        // Motor Busy
-    uint16_t rsvd:15;
+    uint16_t NSTA:2;		// Now Status of DDA
+    uint16_t NMSG:1;		// Next Message
+    uint16_t rsvd:12;
 	};
 
 union MSTA_REG{
@@ -37,7 +39,7 @@ union MSTA_REG{
 struct MCTL_BITS{
 	uint16_t RST:1;         // reset
 	uint16_t ENA:1;         // enable
-	uint16_t START:1;       // start motion
+	uint16_t PAUSE:1;       // PAUSE MODE
 
     uint16_t rsvd:4;
     uint16_t EDITA:1;      // Edit allow bit
@@ -54,23 +56,15 @@ union MCTL_REG{
 //
 struct MOTORS_REGS{
 		
-		uint16_t			INPL;   // now Position Low 16-bit Register
-        uint16_t			INPH;   // In Position High 16-bit Register
-        uint16_t			INVL;   // velocity
-        uint16_t			INVH;   
-		uint16_t			INAL;   // acceleration
-        uint16_t			INAH;
-		uint16_t			INJL;   // jerk
-        uint16_t			INJH;
-		
-        uint16_t			NOWPL;  // Now Position
-        uint16_t			NOWPH;
-		uint16_t			NOWVL;
-        uint16_t			NOWVH;
-		uint16_t			NOWAL;
-        uint16_t			NOWAH;
-		uint16_t			NOWJL;
-        uint16_t			NOWJH;
+		int32_t			INPOS;   // IN Position
+        int32_t			INVEL;   // velocity
+		int32_t			INACC;   // acceleration
+		int32_t			INJERK;  // jerk
+
+		int32_t			NOWPOS;
+		int32_t			NOWVEL;
+		int32_t			NOWACC;
+		int32_t			NOWJERK;
 
 		uint16_t            rsvdRegs[8];
         uint16_t            FFWP;           // Fifo write Pointer

@@ -14,49 +14,42 @@
 
 #include "DSP2833x_Device.h"
 
-void M_SetDDA(struct DDA_SET_VARS dat){
+void M_SetDDA(int32_t inpos, int32_t invel, int32_t inacc, int32_t injerk){
 
-	MotorRegs[0].INPL = dat.inpos;
-	MotorRegs[0].INPH = dat.inpos >> 16;
+	MotorRegs[0].INPOS = inpos;
+	MotorRegs[0].INVEL = invel;
+	MotorRegs[0].INACC = inacc;
+	MotorRegs[0].INJERK = injerk;
 
-	MotorRegs[0].INVL = dat.invel;
-	MotorRegs[0].INVH = dat.invel >> 16;
-
-	MotorRegs[0].INAL = dat.inacc;
-	MotorRegs[0].INAH = dat.inacc >> 16;
-
-	MotorRegs[0].INJL = dat.injerk;
-	MotorRegs[0].INJH = dat.injerk >> 16;
+	MotorRegs[0].MSTA.bit.NMSG = 1;	// push into the fifo of DDA.
 }
+#define ONE_CIRCLE 6400
+
 void testMymotor(void)
 {
 
 	struct DDA_SET_VARS dda_set ;
 
+	MotorRegs[0].MCTL.all = 0;// disable, and prepare the setting.
+
 	MotorRegs[0].MCTL.bit.RST = 1;
-	MotorRegs[0].MCTL.bit.ENA = 0;	// disable, and prepare the setting.
 
-	dda_set.inpos = 640;
-	dda_set.invel = 0;
-	dda_set.inacc = 1000;
-	dda_set.injerk = 0;
-	M_SetDDA(dda_set);
 
-	dda_set.inpos = 128000;
-	dda_set.invel =  64000;
-	dda_set.inacc = 0;
-	M_SetDDA(dda_set);
+//	M_SetDDA(45 ,     0,   1, 0);
+//	M_SetDDA(90 ,  2400,   -1, 0);
 
-	dda_set.inpos = 191000;
-	dda_set.invel =  64000;
-	dda_set.inacc = -500;
-	M_SetDDA(dda_set);
+	M_SetDDA(1000 ,     0,   32, 0);	// 还较好。
+	M_SetDDA(2000 ,64000,   -32, 0);
 
-	MotorRegs[0].MCTL.bit.ENA = 1;	// 使能电机
-	MotorRegs[0].MCTL.bit.START = 1;	// disable, and prepare the setting.
 
+//	M_SetDDA(4000, 000,  8, 0);
+//	M_SetDDA(4000 +4800, 64000,  0, 0);
+//	M_SetDDA(64000*2, 64000,  -8, 0);
+
+	MotorRegs[0].MCTL.all = 3;	// 使能电机
 
 	ESTOP0;
+MotorRegs[0].MCTL.bit.RST = 1;
 //	tmp =30;
 //	while( tmp-- ){
 //		rValue = MotorRegs[0].MSTA.all;

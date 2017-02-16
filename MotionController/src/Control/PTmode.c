@@ -23,7 +23,7 @@ int PT_Mode(int axis, double pos)
 		float rise_pos;
 		float uniform_pos;
 
-		int t;
+		double t;
 
 		if(pos == 0)
 		{
