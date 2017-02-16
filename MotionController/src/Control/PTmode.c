@@ -58,6 +58,7 @@ ERROR_CODE PT_Mode(int axis, int pos, int time)
 				down_data.pos = pos;
 				down_data.time = time;
 
+
 				//获取数据    int cb_append(CIRCLE_BUFFER_S *buf, void* block_dat)
 				cb_append(&pt_buf, &rise_data);
 				cb_append(&pt_buf, &uniform_data);
