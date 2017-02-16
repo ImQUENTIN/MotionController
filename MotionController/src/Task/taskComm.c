@@ -43,7 +43,7 @@ ERROR_CODE checkNewCommand()
 
 ERROR_CODE decoupleCommand(uint8_t *pCmd, short cmdLen)
 {
-	int i, k;
+	int i;
 	uint8_t *ptr;
 	ERROR_CODE rtn = RTN_SUCC;
 	if (cmdLen <= 0) return RTN_ERROR;

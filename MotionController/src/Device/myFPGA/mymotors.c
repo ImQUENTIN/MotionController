@@ -18,7 +18,7 @@
 void testMymotor(void)
 {
 	int32_t tmp;
-	volatile static int16 rValue;
+	static volatile  int16 rValue;
 
 	MotorRegs[0].MCTL.bit.RST = 1;
 	MotorRegs[0].MCTL.bit.ENA = 0;	// disable, and prepare the setting.
