@@ -18,6 +18,8 @@
 //============================================================================
 #define AXISNUM   8
 
+
+
 /*
  *  1. 缓存区大小定义
  */
@@ -55,9 +57,14 @@
 #define SCIA_BAUD 				115200	 	    // SCIA BAUD = 115200
 
 #define USE_SPIA 		1
-#if( TEST_BORD )
+#if( !TEST_BORD )
 #define USE_GPIO19_AS_SPISTEA    1 			 // jzs 的板子该行注释掉
+#else
+#define USE_GPIO57_AS_SPISTEA    1
 #endif
+#define USE_GPIO54_AS_SPISIMOA   1      // func:2
+#define USE_GPIO55_AS_SPISOMIA   1      // func:2
+#define USE_GPIO56_AS_SPICLKA    1      // func:2
 
 // 修改你自己的FIFO长度, 注释掉使用默认长度16.
 #define SPIA_SWFFTXDEEP 32						// 设置软件FIFO的TX空间大小
