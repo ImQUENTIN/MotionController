@@ -36,7 +36,8 @@ ERROR_CODE PT_Mode(int axis, int pos, int time)
 		if(pos <= critical_pos)
 		{
 			critical_t = sqrt(4*pos/max_acc);
-			if(time < critical_t) return RTN_INVALID_COMMAND; //位置和时间设置不合理
+			if(time < critical_t)
+				return RTN_INVALID_COMMAND; //位置和时间设置不合理
 
 			if(time == critical_t)    //时间为临界值-速度轨迹-三角
 			{
