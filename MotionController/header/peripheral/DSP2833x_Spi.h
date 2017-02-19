@@ -207,12 +207,12 @@ struct SPI_VARS {
 //
 
 // common
-	extern uint8_t Spi_IsFifoTxEmpty(struct SPI_VARS *Spi );
-	extern uint8_t Spi_putchar(uint8_t ch, struct SPI_VARS *Spi);
-	extern uint8_t Spi_puts(uint8_t * msg, struct SPI_VARS *Spi);
+	extern char Spi_IsFifoTxEmpty(struct SPI_VARS *Spi );
+	extern char Spi_putchar(char ch, struct SPI_VARS *Spi);
+	extern char Spi_puts(char * msg, struct SPI_VARS *Spi);
 	extern void Spi_TxFifoFullHandler(struct SPI_VARS *Spi);	// clear software TXFIFO
-	extern uint8_t Spi_getchar(uint8_t *ch, struct SPI_VARS *Spi);
-	extern uint8_t Spi_gets(uint8_t * msg, struct SPI_VARS *Spi);
+	extern char Spi_getchar(char *ch, struct SPI_VARS *Spi);
+	extern char Spi_gets(char * msg, struct SPI_VARS *Spi);
 	extern void Spi_RxFifoFullHandler(struct SPI_VARS *Spi);
 
 

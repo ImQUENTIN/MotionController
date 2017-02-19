@@ -49,7 +49,7 @@
 #define USE_GPIO56_AS_SPICLKA    1      // func:2
 
 // 修改你自己的FIFO长度, 注释掉使用默认长度16.
-#define SPIA_SWFFTXDEEP 32						// 设置软件FIFO的TX空间大小
+#define SPIA_SWFFTXDEEP CIRCLE_BUFFER_SIZE		// 设置软件FIFO的TX空间大小
 #define SPIA_SWFFRXDEEP CIRCLE_BUFFER_SIZE		// 设置软件FIFO的RX空间大小
 
 

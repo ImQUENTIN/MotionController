@@ -18,7 +18,7 @@ ERROR_CODE decoupleCommand(uint8_t *pCmd, short cmdLen);
  */
 ERROR_CODE checkNewCommand()
 {
-	uint8_t cTmp;
+	char cTmp;
 	ERROR_CODE rtn;
 	short cmdLen;
 

@@ -4,9 +4,8 @@
  *  Created on: 2017-2-16
  *      Author: Administrator
  */
-
+#include "sysTypes.h"
 #include "CircleBuffer.h"
-#include "../Config/sysTypes.h"
 #include "stdlib.h"
 #include "string.h"
 

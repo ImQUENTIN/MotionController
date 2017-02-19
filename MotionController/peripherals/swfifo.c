@@ -27,7 +27,7 @@ void swfifoReset( struct SWFIFO *swfifo )
 }
 
 // return val: 0, not full; 1: full.
-uint8_t swfifo_In( uint8_t dat, struct SWFIFO *swFifo)
+char swfifo_In( char dat, struct SWFIFO *swFifo)
 {
 	// ´ò¿ªFIFO ÖÐ¶Ï
 	if( swFifo->Sta >= swFifo->Deep) {
@@ -48,7 +48,7 @@ uint8_t swfifo_In( uint8_t dat, struct SWFIFO *swFifo)
 }
 
 // return val: 0, not empty; 1: empty.
-uint8_t swfifo_Out( uint8_t *dat, struct SWFIFO *swFifo)
+char swfifo_Out( char *dat, struct SWFIFO *swFifo)
 {
 	if( 0 == swFifo->Sta) {
 		return 1;	// no more new data.
@@ -63,12 +63,12 @@ uint8_t swfifo_Out( uint8_t *dat, struct SWFIFO *swFifo)
 	return 0;	// still have data.
 }
 
-uint8_t swfifo_IsEmpty(struct SWFIFO *swFifo)
+char swfifo_IsEmpty(struct SWFIFO *swFifo)
 {
 	return (swFifo->Sta == 0) ? 1 : 0;
 }
 
-uint8_t swfifo_IsFull(struct SWFIFO *swFifo)
+char swfifo_IsFull(struct SWFIFO *swFifo)
 {
 	return (swFifo->Sta >= swFifo->Deep) ? 1 : 0;
 }

@@ -17,12 +17,12 @@
     来自定义设置，在这里修改：line 118-120, @ my_demo_select.h
 
     2. 关于发送接收SPI的使用
-    SPIA 使用收发缓存的形式，你可以直接使用函数 uint8_t Spia_gets(uint8_t * msg)
+    SPIA 使用收发缓存的形式，你可以直接使用函数 char Spia_gets(char * msg)
     来读取接收的数据，msg的长度应大于16+SPIA_SWFFRXDEEP。
     当没有数据接收到时，Spia_gets 返回1；返回0说明msg信息有效可以进一步处理。
     注意：Spia_gets 会自动在msg的最后一个写0封尾，所以最后一位的数值是0时要注意。
 
-    发送的话，使用Spia_puts(uint8_t * msg);
+    发送的话，使用Spia_puts(char * msg);
 
     3. 缓存满的情况
     a) 如果没有即使清空缓存，当接收缓存满了之后将不会再接收新的数据，直到有空闲
@@ -52,8 +52,8 @@ void InitSpiFifo( struct SPI_VARS *Spi);
 
 #if(USE_SPIA)
 struct SPI_VARS Spia;
-uint8_t SPIA_SWFFTXBUF[SPIA_SWFFTXDEEP]={0};		// SPI Software FIFO Tx Buffer.
-uint8_t SPIA_SWFFRXBUF[SPIA_SWFFRXDEEP]={0};		// SPI Software FIFO Rx Buffer.
+char SPIA_SWFFTXBUF[SPIA_SWFFTXDEEP]={0};		// SPI Software FIFO Tx Buffer.
+char SPIA_SWFFRXBUF[SPIA_SWFFRXDEEP]={0};		// SPI Software FIFO Rx Buffer.
 
 
 // Test 1,SPIA , 8-bit word,
@@ -230,28 +230,28 @@ void ConfigSpi(struct SPI_VARS *Spi)
 //           supports for Spi_gets
 //----------------------------------------------------------
 
-uint8_t SPIFFRX_IsNotEmpty( struct SPI_VARS *Spi){	return (Spi->RegsAddr->SPIFFRX.bit.RXFFST > 0) ? 1: 0; }
-uint8_t SPIFFRX_Out( struct SPI_VARS *Spi){	return ( (Spi->RegsAddr->SPIRXBUF) & 0x00ff );}
+char SPIFFRX_IsNotEmpty( struct SPI_VARS *Spi){	return (Spi->RegsAddr->SPIFFRX.bit.RXFFST > 0) ? 1: 0; }
+char SPIFFRX_Out( struct SPI_VARS *Spi){	return ( (Spi->RegsAddr->SPIRXBUF) & 0x00ff );}
 void SPIFFRX_ClearINT( struct SPI_VARS *Spi){	Spi->RegsAddr->SPIFFRX.bit.RXFFINTCLR = 1;}
 
-uint8_t SPIFFRX_IsOn( struct SPI_VARS *Spi){return( Spi->RegsAddr->SPIFFTX.bit.SPIFFENA );}
+char SPIFFRX_IsOn( struct SPI_VARS *Spi){return( Spi->RegsAddr->SPIFFTX.bit.SPIFFENA );}
 void SPIFFRX_TurnOn( struct SPI_VARS *Spi){Spi->RegsAddr->SPIFFTX.bit.SPIFFENA = 1;}
 void SPIFFRX_TurnOff( struct SPI_VARS *Spi){	Spi->RegsAddr->SPIFFTX.bit.SPIFFENA = 0;}
 
-uint8_t Spi_IsFifoTxEmpty(struct SPI_VARS *Spi ) {	return ( !SPIFFRX_IsNotEmpty(Spi) && swfifo_IsEmpty( &Spi->swfifoTx) ) ? 1 : 0;}
+char Spi_IsFifoTxEmpty(struct SPI_VARS *Spi ) {	return ( !SPIFFRX_IsNotEmpty(Spi) && swfifo_IsEmpty( &Spi->swfifoTx) ) ? 1 : 0;}
 
 //----------------------------------------------------------
 //           supports for Spi_puts
 //----------------------------------------------------------
-uint8_t SPIFFTX_IsNotFull( struct SPI_VARS *Spi){	return (Spi->RegsAddr->SPIFFTX.bit.TXFFST < 16) ? 1: 0;}
-void SPIFFTX_In( uint8_t dat, struct SPI_VARS *Spi){	Spi->RegsAddr->SPITXBUF = dat;}
+char SPIFFTX_IsNotFull( struct SPI_VARS *Spi){	return (Spi->RegsAddr->SPIFFTX.bit.TXFFST < 16) ? 1: 0;}
+void SPIFFTX_In( char dat, struct SPI_VARS *Spi){	Spi->RegsAddr->SPITXBUF = dat;}
 void SPIFFTX_ClearINT( struct SPI_VARS *Spi){	Spi->RegsAddr->SPIFFTX.bit.TXFFINTCLR = 1;	}// clear INT flag.
-//uint8_t SPI_IsMater( struct SPI_VARS *Spi ){	return(Spi->RegsAddr->SPICTL.bit.MASTER_SLAVE);}
+//char SPI_IsMater( struct SPI_VARS *Spi ){	return(Spi->RegsAddr->SPICTL.bit.MASTER_SLAVE);}
 //void SPI_SetMater( struct SPI_VARS *Spi ){	Spi->RegsAddr->SPICTL.bit.MASTER_SLAVE = 1;}
 //void SPI_SetSlaver( struct SPI_VARS *Spi ){	Spi->RegsAddr->SPICTL.bit.MASTER_SLAVE = 0;}
 
 
-uint8_t Spi_putchar(uint8_t dat, struct SPI_VARS *Spi)
+char Spi_putchar(char dat, struct SPI_VARS *Spi)
 {
 	// 在swFIFO为空的情况下，优先使用硬件FIFO.
 	if( SPIFFTX_IsNotFull(Spi) && swfifo_IsEmpty(&Spi->swfifoTx) )
@@ -268,7 +268,7 @@ uint8_t Spi_putchar(uint8_t dat, struct SPI_VARS *Spi)
 //----------------------------------------------------------
 //           supports for Spi_puts
 //----------------------------------------------------------
-uint8_t Spi_puts(uint8_t * msg, struct SPI_VARS *Spi)
+char Spi_puts(char * msg, struct SPI_VARS *Spi)
 {
 	int i;
 	i = 0;
@@ -288,7 +288,7 @@ uint8_t Spi_puts(uint8_t * msg, struct SPI_VARS *Spi)
 // 下面函数在中断中执行，旨在清空（发送）软件FIFO的数据。
 void Spi_TxFifoFullHandler(struct SPI_VARS *Spi)
 {
-	uint8_t tmpData;
+	char tmpData;
 	if( !swfifo_IsEmpty(&Spi->swfifoTx) ) {		// swFIFOTX is not empty, load them to SPI TXFIFO.
 		while(  SPIFFTX_IsNotFull(Spi) &&
 		       !swfifo_IsEmpty(&Spi->swfifoTx) ) {
@@ -311,7 +311,7 @@ void Spi_TxFifoFullHandler(struct SPI_VARS *Spi)
 }
 
 // 可以用于固定个数的读取
-uint8_t Spi_getchar(uint8_t *dat, struct SPI_VARS *Spi)
+char Spi_getchar(char *dat, struct SPI_VARS *Spi)
 {
 	if( !swfifo_IsEmpty(&Spi->swfifoRx) ) {
 //		优先从 swFIFO中取数据
@@ -328,7 +328,7 @@ uint8_t Spi_getchar(uint8_t *dat, struct SPI_VARS *Spi)
 
 
 // 读取全部收到的数据
-uint8_t Spi_gets(uint8_t * msg, struct SPI_VARS *Spi)
+char Spi_gets(char * msg, struct SPI_VARS *Spi)
 {
 	int i=0;
 
@@ -354,7 +354,7 @@ uint8_t Spi_gets(uint8_t * msg, struct SPI_VARS *Spi)
 
 void Spi_RxFifoFullHandler(struct SPI_VARS *Spi)
 {
-	uint8_t tmpData;
+	char tmpData;
 	// 硬件的SPI RXFIFO满了，存入软件FIFO（即swFIFORX）以保证SPI RXFIFO继续接收数据。
 	if( !swfifo_IsFull( &Spi->swfifoRx) ) {
 		while( !swfifo_IsFull( &Spi->swfifoRx) &&
