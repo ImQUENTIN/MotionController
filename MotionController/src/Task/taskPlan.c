@@ -1,8 +1,9 @@
 #include "my_project.h"
+#include "taskExecute.h"
 
 // 指令缓冲区
 extern COMMAND_S gCmd;
-MOTOR_INFO gInfo;
+SYS_INFO gSysInfo;
 
 
 ERROR_CODE taskPlan()
@@ -10,7 +11,7 @@ ERROR_CODE taskPlan()
 	ERROR_CODE rtn = RTN_SUCC;
 	if (gCmd.serial == gCmd.echoSerial) return RTN_ERROR;
 
-	switch(gInfo.state)
+	switch(gSysInfo.state)
 	{
 	case STATE_IDLE:
 		switch(gCmd.type)
@@ -21,7 +22,9 @@ ERROR_CODE taskPlan()
 			break;
 		case CMD_START_MOTION:
 			break;
-
+		case CMD_PT_MODE:
+			rtn = handleCommand(&gCmd);
+			break;
 		default:
 			rtn = RTN_INVALID_COMMAND;
 		}
@@ -64,28 +67,16 @@ ERROR_CODE taskPlan()
 	return rtn;
 }
 
-ERROR_CODE upload_encoders(unsigned short mark)
-{
-	//
-	//getEncoderFromFPGA();
-	//upload();
-	return RTN_SUCC;
-}
 
-ERROR_CODE reset_estop()
-{
-	//
-	return RTN_SUCC;
-}
-
-ERROR_CODE handleCommand(COMMAND_S *pCmd)
+ERROR_CODE handleCommand(COMMAND_S *pCmd )
 {
 	ERROR_CODE rtn = RTN_ERROR;
 	// 新指令
 	switch(gCmd.type)
 	{
 //	case CMD_UPLOAD_ENCODERS:	rtn = upload_encoders(pCmd->mark);	break;
-	case CMD_ESTOP:		rtn = reset_estop();				break;
+	case CMD_ESTOP:		rtn = reset_estop();			break;
+	case CMD_PT_MODE:	rtn = EnterPTmode(gCmd.mark);				break;
 	default:
 		rtn = RTN_INVALID_COMMAND;
 		break;

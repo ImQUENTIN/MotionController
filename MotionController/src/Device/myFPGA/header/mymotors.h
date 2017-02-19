@@ -77,21 +77,6 @@ struct MOTORS_REGS{
 
 extern volatile struct MOTORS_REGS MotorRegs[AXIS_ITEM];
 
-// DDA 设置变量
-struct DDA_SET_VARS{
-	int32_t inpos;
-	int32_t invel;
-	int32_t inacc;
-	int32_t injerk;
-};
-
-// DDA 信息变量
-struct DDA_INFO_VARS{
-	int32_t nowpos;
-	int32_t nowvel;
-	int32_t nowacc;
-	int32_t nowjerk;
-};
 
 // test the motor.
 void testMymotor(void);

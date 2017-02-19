@@ -14,6 +14,7 @@
 
 #include "DSP2833x_Device.h"
 
+
 void M_SetDDA(int32_t inpos, int32_t invel, int32_t inacc, int32_t injerk){
 
 	MotorRegs[0].INPOS = inpos;
@@ -27,8 +28,6 @@ void M_SetDDA(int32_t inpos, int32_t invel, int32_t inacc, int32_t injerk){
 
 void testMymotor(void)
 {
-
-	struct DDA_SET_VARS dda_set ;
 
 	MotorRegs[0].MCTL.all = 0;// disable, and prepare the setting.
 

@@ -8,11 +8,6 @@
 
 #include "my_project.h"
 
-
-// 指令缓冲区
-uint8_t cmdBuf[COMMUNICATION_MAX_LEN];
-short cmdLen = 0;
-
 // 全局变量
 COMMAND_S gCmd;
 
@@ -25,6 +20,9 @@ ERROR_CODE checkNewCommand()
 {
 	uint8_t cTmp;
 	ERROR_CODE rtn;
+	short cmdLen;
+
+	static uint8_t cmdBuf[COMMUNICATION_MAX_LEN];	// 指令缓冲区
 	/*
 	 *  退出条件：
 	 *  SPI接收到的数据取空，或者取空之前遇到一帧完整的指令。
@@ -57,10 +55,10 @@ ERROR_CODE decoupleCommand(uint8_t *pCmd, short cmdLen)
 		ptr = &pCmd[2];
 		for (i = 0; i < AXISNUM; i++) {
 			if ((gCmd.mark >> i) & 0x01) {
-				gCmd.position[i] 	 = *((int32_t*)(&ptr[0]));
-				gCmd.velocity[i] 	 = *((int32_t*)(&ptr[4]));
-				gCmd.acceleration[i] = *((int32_t*)(&ptr[8]));
-				gCmd.jerk[i] 		= *((int32_t*)(&ptr[12]));
+				gCmd.setDDA[i].pos	= *((int32_t*)(&ptr[0]));
+				gCmd.setDDA[i].vel	= *((int32_t*)(&ptr[4]));
+				gCmd.setDDA[i].acc	= *((int32_t*)(&ptr[8]));
+				gCmd.setDDA[i].jerk	= *((int32_t*)(&ptr[12]));
 				ptr += 16;
 			}
 		}
@@ -95,6 +93,12 @@ ERROR_CODE decoupleCommand(uint8_t *pCmd, short cmdLen)
 		gCmd.serial++;
 		break;
 
+  /* PT模式 */
+	case CMD_PT_MODE_ADDR:
+		gCmd.type = CMD_START_MOTION; //
+		gCmd.mark = pCmd[1];
+		gCmd.serial++;
+		break;
 
 	default:
 		rtn = RTN_INVALID_COMMAND;

@@ -32,10 +32,33 @@ typedef enum COMMAND_TYPE {
 	CMD_ESTOP,
 	CMD_GO_HOME,
 	CMD_SET_MOTION,
-	CMD_START_MOTION
+	CMD_START_MOTION,
+	CMD_PT_MODE
 //	CMD_UPLOAD_ENCODERS,
 
 }COMMAND_TYPE;
+
+/* Velocity Planning Parameters
+ * 速度规划的运动参数
+ */
+typedef struct {
+	int32_t max_rise_acc;		// 最大上升加速度
+	int32_t max_down_acc;		// 最大下降加速度
+	int32_t max_even_vel;		// 匀速阶段最大速度
+}VP_PARAM_S;
+
+struct DDA_VARS{
+	int32_t pos;
+	int32_t vel;
+	int32_t acc;
+	int32_t jerk;
+};
+typedef struct {
+	int32_t pos;
+	int32_t vel;
+	int32_t acc;
+	int32_t jerk;
+}DDA_VARS_S;
 
 // user 指令结构体
 typedef struct {
@@ -45,11 +68,14 @@ typedef struct {
 	// parameters
 	unsigned short mark;
 
-	// axis varibles
-	int32_t position[AXISNUM];
-	int32_t velocity[AXISNUM];
-	int32_t acceleration[AXISNUM];
-	int32_t jerk[AXISNUM];
+	// axis variables
+	DDA_VARS_S setDDA[AXISNUM];
+
+	// PT variables
+//	VP_PARAM_S vp_param[AXISNUM];		// velocity plan parameters.
+	int32_t	ptPos[AXISNUM];
+	int32_t ptTime[AXISNUM];
+
 
 }COMMAND_S;
 
@@ -81,25 +107,28 @@ typedef enum STATE_TYPE {
 	STATE_ESTOP
 }STATE_TYPE;
 
+// 电机结构体变量
+typedef struct {
+	int encoder;
+	int profile_pos;
+	int profile_vel;
+	int profile_acc;
+	//
+	unsigned int state;  // 0: alarm,  1:
+
+}AXIS_S;
+
+
 // 状态结构体
 typedef struct {
 	STATE_TYPE state;
-	int encoders[AXISNUM];
+	AXIS_S axis[AXISNUM];
 
-}MOTOR_INFO;
+}SYS_INFO;
 
 
-// 电机结构体变量
-typedef struct {
-	int encoder[AXISNUM];
-	int profile_pos[AXISNUM];
-	int profile_vel[AXISNUM];
-	int profile_acc[AXISNUM];
 
-	//
-	unsigned int state[AXISNUM];  // 0: alarm,  1:
 
-}AXIS_S;
 
 
 
