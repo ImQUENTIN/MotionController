@@ -11,12 +11,15 @@
 // 报文的头
 #define MSG_HEAD  '#'
 
+#define CMD_MSG_ADDR			0x00
 #define CMD_RESET_ADDR			0x01
 #define CMD_ESTOP_ADDR			0x02
-#define CMD_GO_HOME_ADDR		0x03
-#define CMD_SET_MOTION_ADDR		0x04
-#define CMD_START_MOTION_ADDR	0x05
-#define CMD_PT_MODE_ADDR		0x06
+#define CMD_ACTIVATE_ADDR		0x03
+#define CMD_START_ADDR			0x04
+#define CMD_SET_DDA_ADDR		0x05
+#define CMD_GO_HOME_ADDR		0x06
+#define CMD_PT_MODE_ADDR		0x07
+
 
 
 

@@ -16,13 +16,13 @@ ERROR_CODE taskPlan()
 	case STATE_IDLE:
 		switch(gCmd.type)
 		{
-		case CMD_GO_HOME:
-			break;
-		case CMD_SET_MOTION:
-			break;
-		case CMD_START_MOTION:
-			break;
+		case CMD_MSG:
+		case CMD_RESET:
+		case CMD_ACTIVATE:
+		case CMD_START:
+		case CMD_SET_DDA:
 		case CMD_PT_MODE:
+		case CMD_GO_HOME:
 			rtn = handleCommand(&gCmd);
 			break;
 		default:
@@ -36,7 +36,7 @@ ERROR_CODE taskPlan()
 	case STATE_RUNNING:
 		switch(gCmd.type)
 		{
-		case CMD_SET_MOTION:
+		case CMD_SET_DDA:
 //		case CMD_UPLOAD_ENCODERS:
 			rtn = handleCommand(&gCmd);
 			break;
@@ -74,9 +74,14 @@ ERROR_CODE handleCommand(COMMAND_S *pCmd )
 	// ÐÂÖ¸Áî
 	switch(gCmd.type)
 	{
-//	case CMD_UPLOAD_ENCODERS:	rtn = upload_encoders(pCmd->mark);	break;
-	case CMD_ESTOP:		rtn = reset_estop();			break;
-	case CMD_PT_MODE:	rtn = EnterPTmode(gCmd.mark);				break;
+	case CMD_MSG:			rtn = Message();		break;
+	case CMD_RESET:			rtn = Reset();			break;
+	case CMD_ESTOP:			rtn = Estop();			break;
+	case CMD_ACTIVATE:		rtn = Activate();		break;
+	case CMD_START:			rtn = Start();			break;
+	case CMD_SET_DDA:		rtn = SetDDA();			break;
+	case CMD_PT_MODE:		rtn = EnterPTmode();	break;
+
 	default:
 		rtn = RTN_INVALID_COMMAND;
 		break;

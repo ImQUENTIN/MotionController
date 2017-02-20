@@ -66,12 +66,6 @@ void InitSpia(void)
 	Spia.RegsAddr 	= &SpiaRegs;
 	Spia.Baud		= SPIA_BAUD;		// get from user's configuration.
 
-	swfifoReset(&Spia.swfifoTx);
-	swfifoReset(&Spia.swfifoRx);
-	Spia.swfifoTx.Buffer = SPIA_SWFFTXBUF;		// tx buffer addr
-	Spia.swfifoTx.Deep   = SPIA_SWFFTXDEEP;		// tx buffer size
-	Spia.swfifoRx.Buffer = SPIA_SWFFRXBUF;		// Rx buffer addr
-	Spia.swfifoRx.Deep   = SPIA_SWFFRXDEEP;		// Rx buffer size
 
 #if DSP28_SPIA
 	InitSpiaGpio();
@@ -79,7 +73,6 @@ void InitSpia(void)
 #error hardware is not support for 'SPIA'.
 #endif
 
-#if(USE_SPI_INT)
 	// 	修改中断向量表：
 	EALLOW;  // This is needed to write to EALLOW protected registers
 	PieVectTable.SPIRXINTA = &spia_rx_isr;	// 6.1
@@ -91,13 +84,13 @@ void InitSpia(void)
 	PieCtrlRegs.PIEIER6.bit.INTx2 = 1;          //
 	IER |= M_INT6;  	                		// 3. CPU核中断打开。
 	//										    // 4. 开启总中断，INTM。在最后统一打开，这里不开启。
-#endif
 
     // Make sure this peripheral clock is enabled
 	EALLOW;
 	SysCtrlRegs.PCLKCR0.bit.SPIAENCLK = 1;   // SPI-A
 	EDIS;
-	InitSpiFifo(&Spia);
+
+//	InitSpiFifo(&Spia);
 	ConfigSpi(&Spia);
 
 
@@ -196,7 +189,7 @@ void ConfigSpi(struct SPI_VARS *Spi)
 //	   Uint16 CLK_PHASE:1;       // 3      Clock phase select: 0, no delay; 1,SPICLK signal delayed by one half-cycle;
 //	   Uint16 OVERRUNINTENA:1;   // 4      Overrun interrupt enable, overwiten.
 //	   Uint16 rsvd:11;           // 15:5   reserved
-	Spi->RegsAddr->SPICTL.all = 0x0002;   // Enable slave mode, normal phase, Enables interrupt.
+	Spi->RegsAddr->SPICTL.all = 0x0013;	//0x0002;   // Enable slave mode, normal phase, Enables interrupt.
 
 
 //// 清楚标志位
@@ -216,8 +209,8 @@ void ConfigSpi(struct SPI_VARS *Spi)
 	Spi->RegsAddr->SPIFFTX.bit.TXFFIENA = 1;
 #endif
 
-	Spi->RegsAddr->SPIPRI.bit.FREE = 1;                // Set so breakpoints don't disturb xmission
-	Spi->RegsAddr->SPICCR.bit.SPISWRESET = 1;  // Relinquish SPI from Reset
+	Spi->RegsAddr->SPIPRI.bit.FREE = 1;			// Set so breakpoints don't disturb xmission
+	Spi->RegsAddr->SPICCR.bit.SPISWRESET = 1;  	// Relinquish SPI from Reset
 
 }
 

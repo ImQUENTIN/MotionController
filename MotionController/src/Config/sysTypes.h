@@ -28,11 +28,13 @@ typedef enum ERROR_CODE {
 //////////////////////////////////////////////////////////
 // ÷∏¡Ó¿‡–Õ
 typedef enum COMMAND_TYPE {
-	CMD_RESET =0,	// Clear data
+	CMD_MSG   = 0,
+	CMD_RESET ,		// Clear data
 	CMD_ESTOP,
+	CMD_ACTIVATE,
+	CMD_START,
+	CMD_SET_DDA,
 	CMD_GO_HOME,
-	CMD_SET_MOTION,
-	CMD_START_MOTION,
 	CMD_PT_MODE
 //	CMD_UPLOAD_ENCODERS,
 

@@ -198,23 +198,46 @@ PieCtrlRegs.PIEACK.bit.ACK8 = 1;
 #if(USE_SPIA)
 interrupt void spia_rx_isr(void)
 {
-	if(Spia.RegsAddr->SPIFFRX.bit.RXFFINT){
-//		RXFIFO 中断，我们设置的TXFFIL=16，所以当TXFFST=16时会触发中断。
-		Spi_RxFifoFullHandler(&Spia);
-	}
-	if(Spia.RegsAddr->SPIFFRX.bit.RXFFOVF){
-//		overflow.
-		Spi_RxFifoFullHandler(&Spia);
-		Spia.RegsAddr->SPIFFRX.bit.RXFFOVFCLR = 1;
-	}
+//	if(Spia.RegsAddr->SPIFFRX.bit.RXFFINT){
+////		RXFIFO 中断，我们设置的TXFFIL=16，所以当TXFFST=16时会触发中断。
+//		Spi_RxFifoFullHandler(&Spia);
+//	}
+//	if(Spia.RegsAddr->SPIFFRX.bit.RXFFOVF){
+////		overflow.
+//		Spi_RxFifoFullHandler(&Spia);
+//		Spia.RegsAddr->SPIFFRX.bit.RXFFOVFCLR = 1;
+//	}
+//	if(SpiaRegs.SPISTS.bit.BUFFULL_FLAG)
+//		SpiaRegs.SPISTS.bit.BUFFULL_FLAG =1;
+//	else
+	char tmp;
+		if(SpiaRegs.SPISTS.bit.OVERRUN_FLAG)
+		SpiaRegs.SPISTS.bit.OVERRUN_FLAG = 1;
+
+		if(SpiaRegs.SPISTS.bit.INT_FLAG){
+			tmp  = SpiaRegs.SPIRXBUF;
+		}
+			//SpiaRegs.SPISTS.bit.INT_FLAG = 1;
+
+
 	PieCtrlRegs.PIEACK.bit.ACK6 = 1;
 }
 interrupt void spia_tx_isr(void)
 {
-	if( Spia.RegsAddr->SPIFFTX.bit.TXFFINT ) {
-//		TXFIFO 中断，我们设置的TXFFIL=0，所以当TXFFST=0时会触发中断。
-		Spi_TxFifoFullHandler(&Spia);
-	}
+//	if( Spia.RegsAddr->SPIFFTX.bit.TXFFINT ) {
+////		TXFIFO 中断，我们设置的TXFFIL=0，所以当TXFFST=0时会触发中断。
+//		Spi_TxFifoFullHandler(&Spia);
+//	}
+//	else
+
+	if(SpiaRegs.SPISTS.bit.INT_FLAG)
+		SpiaRegs.SPISTS.bit.INT_FLAG = 1;
+
+ if(SpiaRegs.SPISTS.bit.BUFFULL_FLAG)
+		SpiaRegs.SPISTS.bit.BUFFULL_FLAG =1;
+//	else if(SpiaRegs.SPISTS.bit.OVERRUN_FLAG)
+//		SpiaRegs.SPISTS.bit.OVERRUN_FLAG = 1;
+
 // Acknowledge this interrupt to receive more interrupts from group 6
 PieCtrlRegs.PIEACK.bit.ACK6 = 1;
 }

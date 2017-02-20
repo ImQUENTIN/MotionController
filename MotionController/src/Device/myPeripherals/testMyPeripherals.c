@@ -106,16 +106,32 @@ void TestSpi(void)
 
 	int i = 17+SPIA_SWFFRXDEEP;
 	static char tmp[17+SPIA_SWFFRXDEEP]={0};
+	static char tx[] = "hello\n";
 
 	for(;i>0;i--){
 		tmp[i] = 0;
 	}
+
 	for(;;) {
-		DELAY_US(500000);
+		//DELAY_US(100000);
 		//Spia_puts("nothing is received.\n");
-		if( !Spia_gets(tmp)) {
-			ESTOP0;	// stop here.
-		}
+		if( !SpiaRegs.SPISTS.bit.BUFFULL_FLAG)
+			SpiaRegs.SPITXBUF = 0x17;
+			//SpiaRegs.SPITXBUF = 0x13;
+//		if( !Spia_gets(tmp)) {
+//			i =0 ;
+//			while(tmp[i++] != 0){
+//				if( tmp[i-1] == '#'){
+//					SpiaRegs.SPITXBUF = 'h';
+//					SpiaRegs.SPITXBUF = 'e';
+//					SpiaRegs.SPITXBUF = 'l';
+//					SpiaRegs.SPITXBUF = 'l';
+//					SpiaRegs.SPITXBUF = '0';
+//					SpiaRegs.SPIDAT   = 0x11;
+//				}
+//			}
+//			//ESTOP0;	// stop here.
+//		}
 	}
 }
 #endif //( MY_TEST_DEMO == TEST_SPIA )
