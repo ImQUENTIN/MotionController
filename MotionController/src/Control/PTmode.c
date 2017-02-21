@@ -1,6 +1,6 @@
 
 #include "sysTypes.h"
-#include "../CircleBuffer/CircleBuffer.h"
+#include "CircleBuffer.h"
 #include "PTmode.h"
 #include "math.h"
 #include "string.h"

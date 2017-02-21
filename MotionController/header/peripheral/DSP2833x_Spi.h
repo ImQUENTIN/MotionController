@@ -38,7 +38,7 @@ struct  SPIFFTX_BITS {       // bit    description
    Uint16 TXFFINTCLR:1;      // 6      Clear INT flag
    Uint16 TXFFINT:1;         // 7      INT flag
    Uint16 TXFFST:5;          // 12:8   FIFO status
-   Uint16 TXFIFO:1;          // 13     FIFO reset
+   Uint16 TXFIFORESET:1;          // 13     FIFO reset
    Uint16 SPIFFENA:1;        // 14     Enhancement enable
    Uint16 SPIRST:1;          // 15     Reset SPI
 }; 
@@ -197,8 +197,10 @@ struct SPI_VARS {
 //   *** added by QUENTIN ****
 	float   LSPCLKFreq;						// 系统主频，单位hz。
 	float   Baud;							// 波特率，单位Bps
-	struct SWFIFO swfifoTx;					// software fifo Tx.
-	struct SWFIFO swfifoRx;					// software fifo Rx.
+
+	CIRCLE_BUFFER_S cb_tx;					// tx 循环缓存区
+	CIRCLE_BUFFER_S cb_rx;					// rx 循环缓存区
+
 };
 
 
@@ -207,22 +209,22 @@ struct SPI_VARS {
 //
 
 // common
-	extern char Spi_IsFifoTxEmpty(struct SPI_VARS *Spi );
-	extern char Spi_putchar(char ch, struct SPI_VARS *Spi);
-	extern char Spi_puts(char * msg, struct SPI_VARS *Spi);
-	extern void Spi_TxFifoFullHandler(struct SPI_VARS *Spi);	// clear software TXFIFO
-	extern char Spi_getchar(char *ch, struct SPI_VARS *Spi);
-	extern char Spi_gets(char * msg, struct SPI_VARS *Spi);
-	extern void Spi_RxFifoFullHandler(struct SPI_VARS *Spi);
-
+//	extern char Spi_IsFifoTxEmpty(struct SPI_VARS *Spi );
+//	extern char Spi_putchar(char ch, struct SPI_VARS *Spi);
+//	extern char Spi_puts(char * msg, struct SPI_VARS *Spi);
+//	extern void Spi_TxFifoFullHandler(struct SPI_VARS *Spi);	// clear software TXFIFO
+//	extern char Spi_getchar(char *ch, struct SPI_VARS *Spi);
+//	extern char Spi_gets(char * msg, struct SPI_VARS *Spi);
+//	extern void Spi_RxFifoFullHandler(struct SPI_VARS *Spi);
+//
+//
+//
+//#define Spia_putchar(a) 	Spi_putchar(a,&Spia)
+//#define Spia_puts(a)   		Spi_puts(a,&Spia)
+//#define Spia_getchar(a)		Spi_getchar(a,&Spia)
+//#define Spia_gets(a)		Spi_gets(a,&Spia)
 
 extern struct SPI_VARS Spia;
-#define Spia_putchar(a) 	Spi_putchar(a,&Spia)
-#define Spia_puts(a)   		Spi_puts(a,&Spia)
-#define Spia_getchar(a)		Spi_getchar(a,&Spia)
-#define Spia_gets(a)		Spi_gets(a,&Spia)
-
-
 extern void InitSpis(void);
 // ========================================================================================
 //       no more.

@@ -29,7 +29,8 @@ ERROR_CODE checkNewCommand()
 	 *  退出条件：
 	 *  SPI接收到的数据取空，或者取空之前遇到一帧完整的指令。
 	 */
-	while( RTN_SUCC == Spia_getchar(&cTmp)  ){
+//	while( RTN_SUCC == Spia_getchar(&cTmp)  )
+	{
 		// 有接收到数据，从数据包提取指令。
 		if (RTN_SUCC == protocol(cTmp, cmdBuf, &cmdLen)) {
 			rtn = decoupleCommand(cmdBuf, cmdLen);

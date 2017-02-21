@@ -110,13 +110,19 @@ void TestSpi(void)
 
 	for(;i>0;i--){
 		tmp[i] = 0;
+		if(SpiaRegs.SPIFFTX.bit.TXFFST < 15)
+		{
+			SpiaRegs.SPITXBUF = i;
+		}
 	}
 
 	for(;;) {
+
 		//DELAY_US(100000);
 		//Spia_puts("nothing is received.\n");
-		if( !SpiaRegs.SPISTS.bit.BUFFULL_FLAG)
-			SpiaRegs.SPITXBUF = 0x17;
+//		if( !SpiaRegs.SPISTS.bit.BUFFULL_FLAG)
+//			SpiaRegs.SPITXBUF = 0x17;
+
 			//SpiaRegs.SPITXBUF = 0x13;
 //		if( !Spia_gets(tmp)) {
 //			i =0 ;
