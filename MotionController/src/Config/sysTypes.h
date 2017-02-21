@@ -7,6 +7,7 @@
 
 #ifndef MY_STD_TYPE
 #define MY_STD_TYPE
+	typedef            int word;
 	typedef unsigned char byte;
 	typedef unsigned char  uint8_t;
 	typedef 		 char   int8_t;
@@ -19,10 +20,10 @@
 // ·µ»ØÂë
 typedef enum ERROR_CODE {
 	RTN_SUCC = 0,
-	RTN_ERROR,
-	RTN_INVALID_COMMAND,
-	RTN_INVALID_MEMORY,
-	RTN_DIVIDED_BY_ZERO
+	RTN_ERROR = -1,
+	RTN_INVALID_COMMAND = -2,
+	RTN_INVALID_MEMORY = -3,
+	RTN_DIVIDED_BY_ZERO = -4
 }ERROR_CODE;
 
 //////////////////////////////////////////////////////////

@@ -119,7 +119,7 @@ void InitSpiFifo( struct SPI_VARS *Spi)
 //	   Uint16 TXFIFOXRESET:1;    // 13     1, FIFO reset,low active.
 //	   Uint16 SPIFFENA:1;        // 14     1, FIFO Enable
 //	   Uint16 SPIRST:1;          // 15     1, SPI reset rx/tx channels
-	Spi->RegsAddr->SPIFFTX.all=0xc028; // SPI reset rx/tx channels, tx FIFO; low active.
+	Spi->RegsAddr->SPIFFTX.all=0xc022; // SPI reset rx/tx channels, tx FIFO; low active.
 //										//  Clear tx Fifo INT flag, Enhancement enable.
 
 //    struct  SPIFFRX_BITS {       // bits   description
@@ -131,7 +131,7 @@ void InitSpiFifo( struct SPI_VARS *Spi)
 //       Uint16 RXFIFORESET:1;     // 13     1, FIFO reset
 //       Uint16 RXFFOVRCLR:1;      // 14     1, Clear overflow
 //       Uint16 RXFFOVF:1;         // 15     0, FIFO overflow
-	Spi->RegsAddr->SPIFFRX.all=0x0028;//0x2070;	// ** 别忘了改回来***
+	Spi->RegsAddr->SPIFFRX.all=0x0021;//0x2070;
 
 //	Spi->RegsAddr->SPIFFTX.bit.TXFFIENA 	= 1;	// tx fifo intterrupt enable.
 //	Spi->RegsAddr->SPIFFRX.bit.RXFFIENA 	= 1;	// tx fifo intterrupt enable.

@@ -213,28 +213,25 @@ interrupt void spia_rx_isr(void)
 		Spia.RegsAddr->SPIFFRX.bit.RXFFOVFCLR = 1;
 	}
 
-	//	char tmp;
-	//		if(SpiaRegs.SPISTS.bit.OVERRUN_FLAG)
-	//		SpiaRegs.SPISTS.bit.OVERRUN_FLAG = 1;
-	//
-	//		if(SpiaRegs.SPISTS.bit.INT_FLAG){
-	//			tmp  = SpiaRegs.SPIRXBUF;
-	//		}
-
 	PieCtrlRegs.PIEACK.bit.ACK6 = 1;
 }
 interrupt void spia_tx_isr(void)
 {
-		if( Spia.RegsAddr->SPIFFTX.bit.TXFFINT ) {
-	//		TXFIFO 中断，我们设置的TXFFIL=0，所以当TXFFST=0时会触发中断。
-//			Spi_TxFifoFullHandler(&Spia);
-//			SpiaRegs.SPIFFTX.bit.TXFFINTCLR = 1;
+	int tmp;
+	if( Spia.RegsAddr->SPIFFTX.bit.TXFFINT ) {
+		//		TXFIFO 中断，我们设置的TXFFIL=0，所以当TXFFST=0时会触发中断。
+		//			Spi_TxFifoFullHandler(&Spia);
+		while ( RTN_ERROR != cb_get(&Spia.cb_tx , &tmp)
+				&& SpiaRegs.SPIFFTX.bit.TXFFST < 16){
+			SpiaRegs.SPITXBUF = tmp;
 		}
+		//SpiaRegs.SPIFFTX.bit.TXFFINTCLR = 1;
+	}
 
-//	if(SpiaRegs.SPISTS.bit.INT_FLAG)
-//		SpiaRegs.SPISTS.bit.INT_FLAG = 1;
-//	if(SpiaRegs.SPISTS.bit.BUFFULL_FLAG)
-//		SpiaRegs.SPISTS.bit.BUFFULL_FLAG = 1;
+	//	if(SpiaRegs.SPISTS.bit.INT_FLAG)
+	//		SpiaRegs.SPISTS.bit.INT_FLAG = 1;
+	//	if(SpiaRegs.SPISTS.bit.BUFFULL_FLAG)
+	//		SpiaRegs.SPISTS.bit.BUFFULL_FLAG = 1;
 
 	// Acknowledge this interrupt to receive more interrupts from group 6
 	PieCtrlRegs.PIEACK.bit.ACK6 = 1;

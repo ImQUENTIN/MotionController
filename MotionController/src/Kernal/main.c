@@ -66,8 +66,8 @@ void main(void)
 
 	// step 1: initial devices
 	InitDevices();
-	TestSpi();	// 注释掉，不需要测试的时候。
-	testMymotor();
+//	TestSpi();	// 注释掉，不需要测试的时候。
+//	testMymotor();
 
 	while(1)
      {

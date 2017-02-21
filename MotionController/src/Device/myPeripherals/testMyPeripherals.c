@@ -35,12 +35,12 @@ void TestSci(void)
 #if( USE_SCIA || USE_SCIB || USE_SCIC )
 #if(TEST_SCI_CHAR)
 
-// ===============================================================================
-// 下面测试Scix_putchar 及 Scix_getchar
-// ===============================================================================
+	// ===============================================================================
+	// 下面测试Scix_putchar 及 Scix_getchar
+	// ===============================================================================
 	static uint8_t receivedData=0;
 	for(;;) {
-//			receivedData[1] = 0;
+		//			receivedData[1] = 0;
 
 		if(!Scix_getchar(&receivedData)){
 
@@ -51,7 +51,7 @@ void TestSci(void)
 		}
 
 
-		}
+	}
 
 #else
 	// ===============================================================================
@@ -104,40 +104,27 @@ void TestSpi(void)
 	//       所以在使用金子舒用的开发板进行调试时需要把“USE_GPIO19_AS_SPISTEA” 注释掉
 	//       该宏定义在 my_demo_select.h @line 116
 
-	int i = 17+SPIA_SWFFRXDEEP;
-	static char tmp[17+SPIA_SWFFRXDEEP]={0};
-	static char tx[] = "hello\n";
+	int i = 17+SPIA_SWFFRXDEEP , num=0;
+	static int tmp[17+SPIA_SWFFRXDEEP]={0}, buf;
+	static int test[16]={ 0,6,3,2,2,5,2,1,2,3,2};
 
 	for(;i>0;i--){
 		tmp[i] = 0;
-		if(SpiaRegs.SPIFFTX.bit.TXFFST < 15)
-		{
-			SpiaRegs.SPITXBUF = i;
-		}
+		//		cb_append(&Spia.cb_tx, &num);
+		num++;
 	}
-
+	// 接收ARM 发送的数据，并且返回
 	for(;;) {
+		if( cb_get(&Spia.cb_rx, &buf) != RTN_ERROR){
+			tmp[i++] = buf;
+			if(buf == 0x23){
+				for(num =0; num<11;num++){
+					cb_append(&Spia.cb_tx, &test[num]);
+				}
 
-		//DELAY_US(100000);
-		//Spia_puts("nothing is received.\n");
-//		if( !SpiaRegs.SPISTS.bit.BUFFULL_FLAG)
-//			SpiaRegs.SPITXBUF = 0x17;
-
-			//SpiaRegs.SPITXBUF = 0x13;
-//		if( !Spia_gets(tmp)) {
-//			i =0 ;
-//			while(tmp[i++] != 0){
-//				if( tmp[i-1] == '#'){
-//					SpiaRegs.SPITXBUF = 'h';
-//					SpiaRegs.SPITXBUF = 'e';
-//					SpiaRegs.SPITXBUF = 'l';
-//					SpiaRegs.SPITXBUF = 'l';
-//					SpiaRegs.SPITXBUF = '0';
-//					SpiaRegs.SPIDAT   = 0x11;
-//				}
-//			}
-//			//ESTOP0;	// stop here.
-//		}
+				SpiaRegs.SPIFFTX.bit.TXFFINTCLR = 1;
+			}
+		}
 	}
 }
 #endif //( MY_TEST_DEMO == TEST_SPIA )

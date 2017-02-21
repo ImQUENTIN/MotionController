@@ -11,7 +11,7 @@
 // 全局变量
 COMMAND_S gCmd;
 
-ERROR_CODE decoupleCommand(uint8_t *pCmd, short cmdLen);
+ERROR_CODE decoupleCommand(word *pCmd, short cmdLen);
 
 
 
@@ -20,28 +20,41 @@ ERROR_CODE decoupleCommand(uint8_t *pCmd, short cmdLen);
  */
 ERROR_CODE checkNewCommand()
 {
-	char cTmp;
+	int dat;
 	ERROR_CODE rtn = RTN_ERROR;
 	static short cmdLen;
 
-	static uint8_t cmdBuf[COMMUNICATION_MAX_LEN];	// 指令缓冲区
+	static word cmdBuf[COMMUNICATION_MAX_LEN] = {1,3,6,3,3,6,0,0,2,5,1,};	// 指令缓冲区
 	/*
 	 *  退出条件：
 	 *  SPI接收到的数据取空，或者取空之前遇到一帧完整的指令。
 	 */
-//	while( RTN_SUCC == Spia_getchar(&cTmp)  )
+
+	while( RTN_ERROR != cb_get(&Spia.cb_rx, &dat)  )
 	{
+#if 1
+		// 测试部分
+		if( dat == 0x23){
+			for( cmdLen =0; cmdLen <11; cmdLen++)
+				if(SpiaRegs.SPIFFTX.bit.TXFFST < 16)
+					SpiaRegs.SPITXBUF = cmdBuf[cmdLen];
+//				else
+//					cb_append(&Spia.cb_tx, &cmdBuf[cmdLen]);
+			SpiaRegs.SPIFFTX.bit.TXFFINTCLR = 1;
+		}
+#else
 		// 有接收到数据，从数据包提取指令。
-		if (RTN_SUCC == protocol(cTmp, cmdBuf, &cmdLen)) {
+		if (RTN_SUCC == protocol(dat, cmdBuf, &cmdLen)) {
 			rtn = decoupleCommand(cmdBuf, cmdLen);
 			cmdLen = 0;
 			return rtn;
 		}
+#endif
 	}
 	return rtn;
 }
 
-int32_t my_atoi(uint8_t *dat){
+int32_t my_atoi(word *dat){
 	int32_t tmp = 0;
 	int i;
 	for(i=0; i<4; i++){
@@ -51,10 +64,10 @@ int32_t my_atoi(uint8_t *dat){
 	return tmp;
 }
 
-ERROR_CODE decoupleCommand(uint8_t *pCmd, short cmdLen)
+ERROR_CODE decoupleCommand(word *pCmd, short cmdLen)
 {
 	int i;
-	uint8_t *ptr;
+	word *ptr;
 	ERROR_CODE rtn = RTN_SUCC;
 	if (cmdLen <= 0) return RTN_ERROR;
 
@@ -132,7 +145,7 @@ ERROR_CODE decoupleCommand(uint8_t *pCmd, short cmdLen)
 
 
 
-ERROR_CODE receiveCommand(uint8_t *cmd, int *size)
+ERROR_CODE receiveCommand(word *cmd, int *size)
 {
 
 	return RTN_SUCC;

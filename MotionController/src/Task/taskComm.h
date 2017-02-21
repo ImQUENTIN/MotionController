@@ -11,7 +11,7 @@
 #include "sysTypes.h"
 
 ERROR_CODE checkNewCommand();
-ERROR_CODE receiveCommand(uint8_t *cmd, int *size);
+ERROR_CODE receiveCommand(word *cmd, int *size);
 ERROR_CODE sendData();
 
 

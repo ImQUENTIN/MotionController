@@ -24,6 +24,6 @@
 
 
 
-ERROR_CODE protocol(uint8_t chc, uint8_t *dat_buf, short *dat_len);
+ERROR_CODE protocol(word chc, word *dat_buf, short *dat_len);
 
 #endif
