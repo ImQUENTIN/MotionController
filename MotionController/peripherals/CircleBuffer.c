@@ -32,7 +32,7 @@ int cb_append(CIRCLE_BUFFER_S *buf, void* block_dat)
 	int tail;
 	tail = (buf->tail + 1) % buf->block_number;
 	if (tail == buf->head) return RTN_ERROR;
-	memcpy((int *)(buf->dat) + tail*buf->block_size, block_dat, buf->block_size);
+	memcpy((int *)(buf->dat) + tail * buf->block_size, block_dat, buf->block_size);
 	buf->tail = tail;
 	return buf->tail;
 }
@@ -47,13 +47,15 @@ int cb_get(CIRCLE_BUFFER_S *buf, void* block_dat)
 //buf->block_size * buf->head
 	return head;
 }
-/*
-int cb_available_size(CIRCLE_BUFFER_S *buf)
+
+
+// available
+int cb_usedSpace(CIRCLE_BUFFER_S *buf)
 {
 	int tail = buf->tail;
-	if (tail < buf->head) tail += buf->block_size;
+	if (tail < buf->head) tail += buf->block_number;
 	return (tail - buf->head);
 }
-*/
+
 
 

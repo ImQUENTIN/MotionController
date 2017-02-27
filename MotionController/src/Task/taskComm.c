@@ -37,10 +37,10 @@ ERROR_CODE checkNewCommand()
 		if( dat == 0x23){
 			for( cmdLen =0; cmdLen <11; cmdLen++)
 				if(SpiaRegs.SPIFFTX.bit.TXFFST < 16)
-					SpiaRegs.SPITXBUF = cmdBuf[cmdLen];
+//					SpiaRegs.SPITXBUF = cmdBuf[cmdLen];
 //				else
-//					cb_append(&Spia.cb_tx, &cmdBuf[cmdLen]);
-			SpiaRegs.SPIFFTX.bit.TXFFINTCLR = 1;
+					cb_append(&Spia.cb_tx, &cmdBuf[cmdLen]);
+			SpiaRegs.SPIFFTX.bit.TXFFINTCLR = 1;	// load
 		}
 #else
 		// 有接收到数据，从数据包提取指令。

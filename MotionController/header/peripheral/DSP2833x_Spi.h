@@ -207,22 +207,7 @@ struct SPI_VARS {
 //---------------------------------------------------------------------------
 // Function prototypes and external definitions:
 //
-
-// common
-//	extern char Spi_IsFifoTxEmpty(struct SPI_VARS *Spi );
-//	extern char Spi_putchar(char ch, struct SPI_VARS *Spi);
-//	extern char Spi_puts(char * msg, struct SPI_VARS *Spi);
-//	extern void Spi_TxFifoFullHandler(struct SPI_VARS *Spi);	// clear software TXFIFO
-//	extern char Spi_getchar(char *ch, struct SPI_VARS *Spi);
-//	extern char Spi_gets(char * msg, struct SPI_VARS *Spi);
-//	extern void Spi_RxFifoFullHandler(struct SPI_VARS *Spi);
-//
-//
-//
-//#define Spia_putchar(a) 	Spi_putchar(a,&Spia)
-//#define Spia_puts(a)   		Spi_puts(a,&Spia)
-//#define Spia_getchar(a)		Spi_getchar(a,&Spia)
-//#define Spia_gets(a)		Spi_gets(a,&Spia)
+//#define Spia_startSend	 SpiaRegs.SPIFFTX.bit.TXFFINTCLR = 1	// 允许下次进入中断
 
 extern struct SPI_VARS Spia;
 extern void InitSpis(void);

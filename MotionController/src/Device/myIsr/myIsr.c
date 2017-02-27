@@ -215,24 +215,25 @@ interrupt void spia_rx_isr(void)
 
 	PieCtrlRegs.PIEACK.bit.ACK6 = 1;
 }
+
 interrupt void spia_tx_isr(void)
 {
 	int tmp;
+
 	if( Spia.RegsAddr->SPIFFTX.bit.TXFFINT ) {
 		//		TXFIFO 中断，我们设置的TXFFIL=0，所以当TXFFST=0时会触发中断。
-		//			Spi_TxFifoFullHandler(&Spia);
-		while ( RTN_ERROR != cb_get(&Spia.cb_tx , &tmp)
-				&& SpiaRegs.SPIFFTX.bit.TXFFST < 16){
-			SpiaRegs.SPITXBUF = tmp;
+		if( cb_usedSpace(&Spia.cb_tx) > 0 ) {
+			// 循环缓冲区有数据
+			while ( RTN_ERROR != cb_get(&Spia.cb_tx , &tmp)
+					&& SpiaRegs.SPIFFTX.bit.TXFFST < 16){
+				SpiaRegs.SPITXBUF = tmp;
+			}
+			SpiaRegs.SPIFFTX.bit.TXFFINTCLR = 1;	// 允许下次进入中断
+		} else {
+			// 循环缓冲区 为空
+			// do nothing, and exit.
 		}
-		//SpiaRegs.SPIFFTX.bit.TXFFINTCLR = 1;
 	}
-
-	//	if(SpiaRegs.SPISTS.bit.INT_FLAG)
-	//		SpiaRegs.SPISTS.bit.INT_FLAG = 1;
-	//	if(SpiaRegs.SPISTS.bit.BUFFULL_FLAG)
-	//		SpiaRegs.SPISTS.bit.BUFFULL_FLAG = 1;
-
 	// Acknowledge this interrupt to receive more interrupts from group 6
 	PieCtrlRegs.PIEACK.bit.ACK6 = 1;
 }
