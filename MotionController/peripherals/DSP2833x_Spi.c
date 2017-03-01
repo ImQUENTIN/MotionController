@@ -173,7 +173,7 @@ void ConfigSpi(struct SPI_VARS *Spi)
 //	   Uint16 CLKPOLARITY:1;     // 6      Clock polarity: 0,Data is output on rising edge and input on falling edge.
 //	   Uint16 SPISWRESET:1;      // 7      SPI SW Reset
 //	   Uint16 rsvd2:8;           // 15:8   reserved
-	Spi->RegsAddr->SPICCR.all =0x000f;   	// Reset on, rising edge, 8-bit char bits
+	Spi->RegsAddr->SPICCR.all =0x0007;   	// Reset on, rising edge, 8-bit char bits
 
 
 	//----------------------------------------------------------

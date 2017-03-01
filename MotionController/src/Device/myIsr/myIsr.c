@@ -200,9 +200,9 @@ interrupt void spia_rx_isr(void)
 {
 	int tmp;
 	if(Spia.RegsAddr->SPIFFRX.bit.RXFFINT){
-		//		RXFIFO 中断，我们设置的TXFFIL=16，所以当TXFFST=16时会触发中断。
+		//		RXFIFO 中断，我们设置的TXFFIL=1，所以当TXFFST=1时会触发中断。
 		while( SpiaRegs.SPIFFRX.bit.RXFFST){
-			tmp = SpiaRegs.SPIRXBUF;
+			tmp = SpiaRegs.SPIRXBUF&0x00ff;
 			cb_append(&Spia.cb_rx, &tmp);
 		}
 		SpiaRegs.SPIFFRX.bit.RXFFINTCLR = 1;

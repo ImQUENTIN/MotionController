@@ -28,6 +28,10 @@ void M_SetDDA( int32_t inpos, int32_t invel, int32_t inacc, int32_t injerk){
 }
 #define ONE_CIRCLE 6400
 
+void testAD(void)
+{
+//	MotorRegs[0].MCTL.bit.AD_CONV = 1;
+}
 void testMymotor(void)
 {
 
