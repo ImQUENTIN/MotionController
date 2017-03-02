@@ -196,22 +196,33 @@ interrupt void scic_tx_isr(void)
 //      Peripheral 4. SPI
 //============================================================================
 #if(USE_SPIA)
+extern word recordtx[100], itx;
 interrupt void spia_rx_isr(void)
 {
 	int tmp;
-	if(Spia.RegsAddr->SPIFFRX.bit.RXFFINT){
+
+	if(Spia.RegsAddr->SPISTS.bit.INT_FLAG){
 		//		RXFIFO 中断，我们设置的TXFFIL=1，所以当TXFFST=1时会触发中断。
-		while( SpiaRegs.SPIFFRX.bit.RXFFST){
+//		while( SpiaRegs.SPIFFRX.bit.RXFFST){
 			tmp = SpiaRegs.SPIRXBUF&0x00ff;
 			cb_append(&Spia.cb_rx, &tmp);
-		}
-		SpiaRegs.SPIFFRX.bit.RXFFINTCLR = 1;
+			// 发送
+			tmp = 0;
+			if( RTN_ERROR != cb_get(&Spia.cb_tx, &tmp) ){
+			SpiaRegs.SPITXBUF = tmp;
+			recordtx[itx++] = tmp;
+			if(itx>=30) itx = 0;
+			}
+//		}
+//		SpiaRegs.SPIFFRX.bit.RXFFINTCLR = 1;
 	}
-	if(Spia.RegsAddr->SPIFFRX.bit.RXFFOVF){
-		//		overflow.
-		//		Spi_RxFifoFullHandler(&Spia);
-		Spia.RegsAddr->SPIFFRX.bit.RXFFOVFCLR = 1;
-	}
+	if(Spia.RegsAddr->SPISTS.bit.OVERRUN_FLAG)
+		SpiaRegs.SPISTS.bit.OVERRUN_FLAG = 1;
+//	if(Spia.RegsAddr->SPIFFRX.bit.RXFFOVF){
+//		//		overflow.
+//		//		Spi_RxFifoFullHandler(&Spia);
+//		Spia.RegsAddr->SPIFFRX.bit.RXFFOVFCLR = 1;
+//	}
 
 	PieCtrlRegs.PIEACK.bit.ACK6 = 1;
 }
@@ -219,6 +230,8 @@ interrupt void spia_rx_isr(void)
 interrupt void spia_tx_isr(void)
 {
 	int tmp;
+	static int i=0;
+	int txbuf[100];
 
 	if( Spia.RegsAddr->SPIFFTX.bit.TXFFINT ) {
 		//		TXFIFO 中断，我们设置的TXFFIL=0，所以当TXFFST=0时会触发中断。
@@ -226,9 +239,11 @@ interrupt void spia_tx_isr(void)
 			// 循环缓冲区有数据
 			while ( RTN_ERROR != cb_get(&Spia.cb_tx , &tmp)
 					&& SpiaRegs.SPIFFTX.bit.TXFFST < 16){
+
 				SpiaRegs.SPITXBUF = tmp;
+				txbuf[i++] = tmp;
 			}
-			SpiaRegs.SPIFFTX.bit.TXFFINTCLR = 1;	// 允许下次进入中断
+			SpiaRegs.SPIFFTX.bit.TXFFINTCLR = 1;
 		} else {
 			// 循环缓冲区 为空
 			// do nothing, and exit.

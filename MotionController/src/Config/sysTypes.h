@@ -7,7 +7,7 @@
 
 #ifndef MY_STD_TYPE
 #define MY_STD_TYPE
-	typedef            int word;
+	typedef           int word;
 	typedef unsigned char byte;
 	typedef unsigned char  uint8_t;
 	typedef 		 char   int8_t;

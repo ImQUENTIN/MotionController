@@ -65,8 +65,8 @@ void InitSpia(void)
 	Spia.RegsAddr 	= &SpiaRegs;
 	Spia.Baud		= SPIA_BAUD;		// get from user's configuration.
 
-	cb_create(&Spia.cb_rx, sizeof(Uint16), 30);		// 循环缓冲区
-	cb_create(&Spia.cb_tx, sizeof(Uint16), 30);		// 循环缓冲区
+	cb_create(&Spia.cb_rx, sizeof(char), 22);		// 循环缓冲区
+	cb_create(&Spia.cb_tx, sizeof(char), 24);		// 循环缓冲区
 
 	InitSpiaGpio();
 
@@ -87,7 +87,7 @@ void InitSpia(void)
 	SysCtrlRegs.PCLKCR0.bit.SPIAENCLK = 1;   // SPI-A
 	EDIS;
 
-	InitSpiFifo(&Spia);
+//	InitSpiFifo(&Spia);
 	ConfigSpi(&Spia);
 
 
@@ -119,7 +119,7 @@ void InitSpiFifo( struct SPI_VARS *Spi)
 //	   Uint16 TXFIFOXRESET:1;    // 13     1, FIFO reset,low active.
 //	   Uint16 SPIFFENA:1;        // 14     1, FIFO Enable
 //	   Uint16 SPIRST:1;          // 15     1, SPI reset rx/tx channels
-	Spi->RegsAddr->SPIFFTX.all=0xc022; // SPI reset rx/tx channels, tx FIFO; low active.
+	Spi->RegsAddr->SPIFFTX.all=0xc021; // SPI reset rx/tx channels, tx FIFO; low active.
 //										//  Clear tx Fifo INT flag, Enhancement enable.
 
 //    struct  SPIFFRX_BITS {       // bits   description
@@ -197,9 +197,9 @@ void ConfigSpi(struct SPI_VARS *Spi)
 	// Step4. Enable interrupt, if needed. And Start up.
 	//----------------------------------------------------------
 //#if (USE_SPI_INT && !USE_SPI_FIFO)
-////	没有开启SPI FIFO功能，打开RX,TX的中断
-//	Spi->RegsAddr->SPICTL.bit.SPIINTENA 		= 1;
-//	Spi->RegsAddr->SPICTL.bit.OVERRUNINTENA 	= 1;
+//	没有开启SPI FIFO功能，打开RX,TX的中断
+	Spi->RegsAddr->SPICTL.bit.SPIINTENA 		= 1;
+	Spi->RegsAddr->SPICTL.bit.OVERRUNINTENA 	= 1;
 //#elif (USE_SPI_INT)
 //	Spi->RegsAddr->SPIFFRX.bit.RXFFIENA = 1;
 //	Spi->RegsAddr->SPIFFTX.bit.TXFFIENA = 1;
