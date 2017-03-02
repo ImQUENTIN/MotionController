@@ -8,7 +8,7 @@
 #include "CircleBuffer.h"
 #include "stdlib.h"
 #include "string.h"
-
+#include "DSP2833x_Device.h"
 
 int cb_create(CIRCLE_BUFFER_S *buf, int block_size, int block_number)
 {
@@ -30,26 +30,21 @@ int cb_release(CIRCLE_BUFFER_S *buf)
 
 int cb_append(CIRCLE_BUFFER_S *buf, void* block_dat)
 {
-	int tail;
-	tail = (buf->tail + 1) % buf->block_number;
+	int tail = (buf->tail + 1) % buf->block_number;
 	if (tail == buf->head) return RTN_ERROR;
-	memcpy((int *)(buf->dat) + buf->tail * buf->block_size, block_dat, buf->block_size);
+	memcpy((Uint16 *)(buf->dat) + tail * buf->block_size, (Uint16 *)block_dat, buf->block_size);
 	buf->tail = tail;
 	return buf->tail;
 }
-//buf->block_size * buf->tail
+
 int cb_get(CIRCLE_BUFFER_S *buf, void* block_dat)
 {
-//	int head;
+	int head = (buf->head + 1) % buf->block_number;
 	if (buf->head == buf->tail ) return RTN_ERROR;
-//	buf->busy = 1;
-//	head = (buf->head + 1) % buf->block_number;
-	memcpy(block_dat, (int *)buf->dat + buf->head * buf->block_size, buf->block_size);
-	buf->head = (buf->head + 1) % buf->block_number;
-//	buf->busy = 0;
+	memcpy((Uint16 *)block_dat, (Uint16 *)(buf->dat) + head * buf->block_size, buf->block_size);
+	buf->head = head;
 	return buf->head;
 }
-
 
 // available
 int cb_usedSpace(CIRCLE_BUFFER_S *buf)

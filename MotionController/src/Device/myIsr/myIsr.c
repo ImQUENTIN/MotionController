@@ -197,22 +197,28 @@ interrupt void scic_tx_isr(void)
 //============================================================================
 #if(USE_SPIA)
 extern word recordtx[100], itx;
+extern word testtx[16];
 interrupt void spia_rx_isr(void)
 {
 	int tmp;
+	static int i=0;
 
 	if(Spia.RegsAddr->SPISTS.bit.INT_FLAG){
 		//		RXFIFO 中断，我们设置的TXFFIL=1，所以当TXFFST=1时会触发中断。
 //		while( SpiaRegs.SPIFFRX.bit.RXFFST){
-			tmp = SpiaRegs.SPIRXBUF&0x00ff;
-			cb_append(&Spia.cb_rx, &tmp);
+
 			// 发送
-			tmp = 0;
 			if( RTN_ERROR != cb_get(&Spia.cb_tx, &tmp) ){
+			}else tmp = 0xeeee;
 			SpiaRegs.SPITXBUF = tmp;
 			recordtx[itx++] = tmp;
 			if(itx>=30) itx = 0;
-			}
+
+			tmp = SpiaRegs.SPIRXBUF;
+			cb_append(&Spia.cb_rx, &tmp);
+//			tmp = testtx[i];
+//			if(++i >= 16) i=0;
+
 //		}
 //		SpiaRegs.SPIFFRX.bit.RXFFINTCLR = 1;
 	}

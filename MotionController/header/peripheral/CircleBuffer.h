@@ -5,8 +5,7 @@ typedef struct
 {
 	int head;
 	int tail;
-	int block_size:8;
-	int busy:8;
+	int block_size;
 	int block_number;
 	void* dat;
 }CIRCLE_BUFFER_S;

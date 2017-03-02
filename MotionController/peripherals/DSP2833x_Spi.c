@@ -43,7 +43,7 @@
 
 #include "DSP2833x_Device.h"     // DSP2833x Headerfile Include File
 #include "DSP2833x_Examples.h"   // DSP2833x Examples Include File
-
+#include "sysDefines.h"
 // ========================================================================================
 //       The following is added by QUENTIN.
 // ========================================================================================
@@ -53,7 +53,6 @@ void InitSpiFifo( struct SPI_VARS *Spi);
 #if(USE_SPIA)
 
 struct SPI_VARS Spia;		// Spia 变量
-
 
 // Test 1,SPIA , 8-bit word,
 void InitSpia(void)
@@ -65,8 +64,8 @@ void InitSpia(void)
 	Spia.RegsAddr 	= &SpiaRegs;
 	Spia.Baud		= SPIA_BAUD;		// get from user's configuration.
 
-	cb_create(&Spia.cb_rx, sizeof(char), 22);		// 循环缓冲区
-	cb_create(&Spia.cb_tx, sizeof(char), 24);		// 循环缓冲区
+	cb_create(&Spia.cb_rx, sizeof(Uint16), CIRCLE_BUFFER_SIZE);		// 循环缓冲区
+	cb_create(&Spia.cb_tx, sizeof(Uint16), CIRCLE_BUFFER_SIZE);		// 循环缓冲区
 
 	InitSpiaGpio();
 
@@ -173,7 +172,7 @@ void ConfigSpi(struct SPI_VARS *Spi)
 //	   Uint16 CLKPOLARITY:1;     // 6      Clock polarity: 0,Data is output on rising edge and input on falling edge.
 //	   Uint16 SPISWRESET:1;      // 7      SPI SW Reset
 //	   Uint16 rsvd2:8;           // 15:8   reserved
-	Spi->RegsAddr->SPICCR.all =0x0007;   	// Reset on, rising edge, 8-bit char bits
+	Spi->RegsAddr->SPICCR.all =0x000f;   	// Reset on, rising edge, 8-bit char bits
 
 
 	//----------------------------------------------------------

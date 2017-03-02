@@ -99,7 +99,7 @@ void TestSci(void)
 
 
 #if( MY_TEST_DEMO == TEST_SPIA && USE_SPIA )
-word testtx[16] ={ 1,3,6,3,3,6,0,0,2,5,1};
+word testtx[16] ={ 0,6,3,2,7, 1,3,6,3,3,6,0,0,2,5,1};
 word recordtx[30], itx=0;
 word recordrx[30], irx=0;
 
@@ -112,12 +112,18 @@ void TestSpi(void)
 	memset(recordtx, 0, sizeof recordtx);
 	memset(recordrx, 0, sizeof recordrx);
 
+	for (num = 0; num < Spia.cb_tx.block_number; num++) {
+		tmp = 0x37;
+		cb_append(&Spia.cb_tx, &tmp);
+		cb_get(&Spia.cb_tx, &tmp);
+	}
+
 	// 接收ARM 发送的数据，并且返回
 	for(;;) {
 		if( cb_get(&Spia.cb_rx, &tmp) != RTN_ERROR){
 			recordrx[irx++] = tmp;
 			if(tmp == 0x23){
-				for(num =0; num<11;num++){
+				for(num =5; num<16;num++){
 					cb_append(&Spia.cb_tx, &testtx[num]);
 				}
 			}
