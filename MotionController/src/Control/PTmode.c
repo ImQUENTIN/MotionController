@@ -1,36 +1,45 @@
 
 #include "sysTypes.h"
+#include "CircleBuffer.h"
 #include "PTmode.h"
 #include "math.h"
 #include "string.h"
 
 
-struct DDA_SET_VARS{
-	int32_t inpos;
-	int32_t invel;
-	int32_t inacc;
-	int32_t injerk;
-};
+CIRCLE_BUFFER_S pt_buf[AXISNUM];	// AXISNUM个轴的pt_buf.
+VP_PARAM_S vp_param[AXISNUM];		// velocity plan parameters.
 
-struct DDA_SET_VARS dda_setvars[3];
-int ins_num = 0;	// 指令个数
 
 int PT_Initial()    //初始化 PT模式的循环缓冲区 pt_buf
 {
-	memset(&pt_buf, 0, sizeof(CIRCLE_BUFFER_S));
-	cb_create(&pt_buf, sizeof(PT_DATA_S), 6);
+	int axis;
+	for( axis=0; axis<AXISNUM; axis++){
+		memset(&pt_buf[axis], 0, sizeof(CIRCLE_BUFFER_S));
+		cb_create(&pt_buf[axis], sizeof(PT_DATA_S), 6);
+
+		// 加载
+		vp_param[axis].max_rise_acc 	 = DEFUALT_MAX_RISE_ACC;
+		vp_param[axis].max_down_acc 	 = DEFUALT_MAX_DOWN_ACC;
+		vp_param[axis].max_even_vel 	 = DEFUALT_MAX_EVEN_VEL;
+	}
 	return RTN_SUCC;
 }
 
-
-
+// 上升和下降的加速度相同
 ERROR_CODE PT_Mode(int axis, int pos, int time)
 {
 	PT_DATA_S rise_data;
-	PT_DATA_S uniform_data;
+	PT_DATA_S even_data;
 	PT_DATA_S down_data;
+	int critical_t, critical_pos ;
+	int max_acc = vp_param[axis].max_rise_acc;
+	int max_vel = vp_param[axis].max_even_vel;
 
-	int critical_t ;
+	critical_pos = max_vel * max_vel / max_acc;
+//	critical_pos = vp_param[axis].max_even_vel *
+//			(0.5 * vp_param[axis].max_even_vel / vp_param[axis].max_rise_acc +
+//			 0.5 * vp_param[axis].max_even_vel / vp_param[axis].max_down_acc );
+
 	if(pos > 0)
 	{
 		if(pos <= critical_pos)
@@ -47,11 +56,11 @@ ERROR_CODE PT_Mode(int axis, int pos, int time)
 				rise_data.pos = 0.5*pos;
 				rise_data.time = 0.5*time;
 
-				uniform_data.jerk = 0;
-				uniform_data.acc = 0;
-				uniform_data.vel = 0;
-				uniform_data.pos = 0;
-				uniform_data.time = 0;
+				even_data.jerk = 0;
+				even_data.acc = 0;
+				even_data.vel = 0;
+				even_data.pos = 0;
+				even_data.time = 0;
 
 				down_data.jerk = 0;
 				down_data.acc = -max_acc;
@@ -61,9 +70,9 @@ ERROR_CODE PT_Mode(int axis, int pos, int time)
 
 
 				//获取数据    int cb_append(CIRCLE_BUFFER_S *buf, void* block_dat)
-				cb_append(&pt_buf, &rise_data);
-				cb_append(&pt_buf, &uniform_data);
-				cb_append(&pt_buf, &down_data);
+				cb_append(&pt_buf[axis], &rise_data);
+				cb_append(&pt_buf[axis], &even_data);
+				cb_append(&pt_buf[axis], &down_data);
 
 				return RTN_SUCC;
 			}
@@ -78,11 +87,11 @@ ERROR_CODE PT_Mode(int axis, int pos, int time)
 				rise_data.pos = 0.5*max_acc*critical_t*critical_t;
 				rise_data.time = critical_t;
 
-				uniform_data.jerk = 0;
-				uniform_data.acc = 0;
-				uniform_data.vel = rise_data.vel;
-				uniform_data.pos = pos - rise_data.pos;
-				uniform_data.time = time - critical_t;
+				even_data.jerk = 0;
+				even_data.acc = 0;
+				even_data.vel = rise_data.vel;
+				even_data.pos = pos - rise_data.pos;
+				even_data.time = time - critical_t;
 
 				down_data.jerk = 0;
 				down_data.acc = -max_acc;
@@ -91,9 +100,9 @@ ERROR_CODE PT_Mode(int axis, int pos, int time)
 				down_data.time = time;
 
 				//获取数据
-				cb_append(&pt_buf, &rise_data);
-				cb_append(&pt_buf, &uniform_data);
-				cb_append(&pt_buf, &down_data);
+				cb_append(&pt_buf[axis], &rise_data);
+				cb_append(&pt_buf[axis], &even_data);
+				cb_append(&pt_buf[axis], &down_data);
 
 				return RTN_SUCC;
 
@@ -114,11 +123,11 @@ ERROR_CODE PT_Mode(int axis, int pos, int time)
 				rise_data.pos = 0.5*max_vel*max_vel/max_acc;
 				rise_data.time = max_vel/max_acc;
 
-				uniform_data.jerk = 0;
-				uniform_data.acc = 0;
-				uniform_data.vel = max_vel;
-				uniform_data.pos = pos - rise_data.pos;
-				uniform_data.time = time - rise_data.time;
+				even_data.jerk = 0;
+				even_data.acc = 0;
+				even_data.vel = max_vel;
+				even_data.pos = pos - rise_data.pos;
+				even_data.time = time - rise_data.time;
 
 				down_data.jerk = 0;
 				down_data.acc = -max_acc;
@@ -127,9 +136,9 @@ ERROR_CODE PT_Mode(int axis, int pos, int time)
 				down_data.time = time;
 
 				//获取数据
-				cb_append(&pt_buf, &rise_data);
-				cb_append(&pt_buf, &uniform_data);
-				cb_append(&pt_buf, &down_data);
+				cb_append(&pt_buf[axis], &rise_data);
+				cb_append(&pt_buf[axis], &even_data);
+				cb_append(&pt_buf[axis], &down_data);
 
 				return RTN_SUCC;
 			}
@@ -143,11 +152,11 @@ ERROR_CODE PT_Mode(int axis, int pos, int time)
 				rise_data.pos = 0.5*max_acc*critical_t*critical_t;
 				rise_data.time = critical_t;
 
-				uniform_data.jerk = 0;
-				uniform_data.acc = 0;
-				uniform_data.vel = rise_data.vel;
-				uniform_data.pos = pos - rise_data.pos;
-				uniform_data.time = time - critical_t;
+				even_data.jerk = 0;
+				even_data.acc = 0;
+				even_data.vel = rise_data.vel;
+				even_data.pos = pos - rise_data.pos;
+				even_data.time = time - critical_t;
 
 				down_data.jerk = 0;
 				down_data.acc = -max_acc;
@@ -156,9 +165,9 @@ ERROR_CODE PT_Mode(int axis, int pos, int time)
 				down_data.time = time;
 
 				//获取数据
-				cb_append(&pt_buf, &rise_data);
-				cb_append(&pt_buf, &uniform_data);
-				cb_append(&pt_buf, &down_data);
+				cb_append(&pt_buf[axis], &rise_data);
+				cb_append(&pt_buf[axis], &even_data);
+				cb_append(&pt_buf[axis], &down_data);
 
 				return RTN_SUCC;
 
@@ -181,11 +190,11 @@ ERROR_CODE PT_Mode(int axis, int pos, int time)
 				rise_data.pos = 0.5*pos;
 				rise_data.time = 0.5*time;
 
-				uniform_data.jerk = 0;
-				uniform_data.acc = 0;
-				uniform_data.vel = 0;
-				uniform_data.pos = 0;
-				uniform_data.time = 0;
+				even_data.jerk = 0;
+				even_data.acc = 0;
+				even_data.vel = 0;
+				even_data.pos = 0;
+				even_data.time = 0;
 
 				down_data.jerk = 0;
 				down_data.acc = max_acc;
@@ -194,9 +203,9 @@ ERROR_CODE PT_Mode(int axis, int pos, int time)
 				down_data.time = time;
 
 				//获取数据
-				cb_append(&pt_buf, &rise_data);
-				cb_append(&pt_buf, &uniform_data);
-				cb_append(&pt_buf, &down_data);
+				cb_append(&pt_buf[axis], &rise_data);
+				cb_append(&pt_buf[axis], &even_data);
+				cb_append(&pt_buf[axis], &down_data);
 
 				return RTN_SUCC;
 			}
@@ -211,11 +220,11 @@ ERROR_CODE PT_Mode(int axis, int pos, int time)
 				rise_data.pos = -0.5*max_acc*critical_t*critical_t;
 				rise_data.time = critical_t;
 
-				uniform_data.jerk = 0;
-				uniform_data.acc = 0;
-				uniform_data.vel = rise_data.vel;
-				uniform_data.pos = pos - rise_data.pos;
-				uniform_data.time = time - critical_t;
+				even_data.jerk = 0;
+				even_data.acc = 0;
+				even_data.vel = rise_data.vel;
+				even_data.pos = pos - rise_data.pos;
+				even_data.time = time - critical_t;
 
 				down_data.jerk = 0;
 				down_data.acc = max_acc;
@@ -224,9 +233,9 @@ ERROR_CODE PT_Mode(int axis, int pos, int time)
 				down_data.time = time;
 
 				//获取数据
-				cb_append(&pt_buf, &rise_data);
-				cb_append(&pt_buf, &uniform_data);
-				cb_append(&pt_buf, &down_data);
+				cb_append(&pt_buf[axis], &rise_data);
+				cb_append(&pt_buf[axis], &even_data);
+				cb_append(&pt_buf[axis], &down_data);
 
 				return RTN_SUCC;
 			}
@@ -246,11 +255,11 @@ ERROR_CODE PT_Mode(int axis, int pos, int time)
 				rise_data.pos = -0.5*max_vel*max_vel/max_acc;
 				rise_data.time = max_vel/max_acc;
 
-				uniform_data.jerk = 0;
-				uniform_data.acc = 0;
-				uniform_data.vel = -max_vel;
-				uniform_data.pos = pos - rise_data.pos;
-				uniform_data.time = time - rise_data.time;
+				even_data.jerk = 0;
+				even_data.acc = 0;
+				even_data.vel = -max_vel;
+				even_data.pos = pos - rise_data.pos;
+				even_data.time = time - rise_data.time;
 
 				down_data.jerk = 0;
 				down_data.acc = max_acc;
@@ -259,9 +268,9 @@ ERROR_CODE PT_Mode(int axis, int pos, int time)
 				down_data.time = time;
 
 				//获取数据
-				cb_append(&pt_buf, &rise_data);
-				cb_append(&pt_buf, &uniform_data);
-				cb_append(&pt_buf, &down_data);
+				cb_append(&pt_buf[axis], &rise_data);
+				cb_append(&pt_buf[axis], &even_data);
+				cb_append(&pt_buf[axis], &down_data);
 
 				return RTN_SUCC;
 			}
@@ -275,11 +284,11 @@ ERROR_CODE PT_Mode(int axis, int pos, int time)
 				rise_data.pos = -0.5*max_acc*critical_t*critical_t;
 				rise_data.time = critical_t;
 
-				uniform_data.jerk = 0;
-				uniform_data.acc = 0;
-				uniform_data.vel = -rise_data.vel;
-				uniform_data.pos = pos - rise_data.pos;
-				uniform_data.time = time - critical_t;
+				even_data.jerk = 0;
+				even_data.acc = 0;
+				even_data.vel = -rise_data.vel;
+				even_data.pos = pos - rise_data.pos;
+				even_data.time = time - critical_t;
 
 				down_data.jerk = 0;
 				down_data.acc = max_acc;
@@ -288,14 +297,15 @@ ERROR_CODE PT_Mode(int axis, int pos, int time)
 				down_data.time = time;
 
 				//获取数据
-				cb_append(&pt_buf, &rise_data);
-				cb_append(&pt_buf, &uniform_data);
-				cb_append(&pt_buf, &down_data);
+				cb_append(&pt_buf[axis], &rise_data);
+				cb_append(&pt_buf[axis], &even_data);
+				cb_append(&pt_buf[axis], &down_data);
 
 				return RTN_SUCC;
 			}
 
 		}
 	}
+	return RTN_SUCC;
 }
 

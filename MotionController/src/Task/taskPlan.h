@@ -10,5 +10,6 @@
 
 
 ERROR_CODE taskPlan();
+ERROR_CODE handleCommand(COMMAND_S *pCmd );
 
 #endif /* TASKPLAN_H_ */

@@ -51,6 +51,7 @@
 
 void main(void)
 {
+
 /* 
 	tmp = sizeof(char);			// 1 - 16bit
 	tmp = sizeof(int);			// 1
@@ -65,8 +66,8 @@ void main(void)
 
 	// step 1: initial devices
 	InitDevices();
-	//TestSpi();	// 注释掉，不需要测试的时候。
-	while(1) testMymotor();
+	TestSpi();	// 注释掉，不需要测试的时候。
+//	testMymotor();
 
 	while(1)
      {

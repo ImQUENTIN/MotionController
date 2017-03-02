@@ -1,21 +1,21 @@
 
 #include "procotol.h"
 
-static uint8_t cmd_buf[COMMUNICATION_MAX_LEN];
+static word cmd_buf[COMMUNICATION_MAX_LEN];
 static short cmd_ptr = 0;
 static short protocol_len = 0;
 
-static uint8_t check_sum(uint8_t* pdat, short len)
+static word check_sum(word* pdat, short len)
 {
 	int i;
-	uint8_t sum = 0, *pudat = (uint8_t*)pdat;
+	word sum = 0;
 	for (i = 0; i < len; i++)
-		sum += pudat[i];
- 	return sum;
+		sum += pdat[i];
+ 	return sum&0x00ff;
 }
 
 
-ERROR_CODE protocol(uint8_t chc, uint8_t *dat_buf, short *dat_len)
+ERROR_CODE protocol(word chc, word *dat_buf, short *dat_len)
 {
 	if (cmd_ptr <= 0) {
 		if (chc == MSG_HEAD) {
@@ -34,12 +34,13 @@ ERROR_CODE protocol(uint8_t chc, uint8_t *dat_buf, short *dat_len)
 			return RTN_ERROR;
 		}
 		//
+
 		cmd_buf[cmd_ptr++] = chc;
 		if (cmd_ptr == protocol_len + 3) {
-			if (chc == check_sum(cmd_buf, cmd_ptr -1)) {
-				*dat_len = cmd_ptr - 4;
-				memcpy(dat_buf, &cmd_buf[2], *dat_len);
+			if (chc == check_sum(cmd_buf+2, protocol_len)) {
+				memcpy(dat_buf, &cmd_buf[2], protocol_len);
 				cmd_ptr = 0;
+				*dat_len = protocol_len;
 				return RTN_SUCC;
 			}
 			cmd_ptr = 0;

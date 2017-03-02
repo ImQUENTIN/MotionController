@@ -39,8 +39,8 @@ void InitSciFifo( struct SCI_VARS *Sci);
 
 struct SCI_VARS Scia;	// SCI A
 
-uint8_t SCIA_SWFFTXBUF[SCIA_SWFFTXDEEP];		// SCI Software FIFO Tx Buffer.
-uint8_t SCIA_SWFFRXBUF[SCIA_SWFFRXDEEP];		// SCI Software FIFO Rx Buffer.
+char SCIA_SWFFTXBUF[SCIA_SWFFTXDEEP];		// SCI Software FIFO Tx Buffer.
+char SCIA_SWFFRXBUF[SCIA_SWFFRXDEEP];		// SCI Software FIFO Rx Buffer.
 
 // Test 1,SCIA  DLB, 8-bit word, baud rate 0x000F, default, 1 STOP bit, no parity
 void InitScia(void)
@@ -100,8 +100,8 @@ void InitScia(void)
 
 struct SCI_VARS Scib;	// SCI B
 
-uint8_t SCIB_SWFFTXBUF[SCIB_SWFFTXDEEP];		// SCI Software FIFO Tx Buffer.
-uint8_t SCIB_SWFFRXBUF[SCIB_SWFFRXDEEP];		// SCI Software FIFO Rx Buffer.
+char SCIB_SWFFTXBUF[SCIB_SWFFTXDEEP];		// SCI Software FIFO Tx Buffer.
+char SCIB_SWFFRXBUF[SCIB_SWFFRXDEEP];		// SCI Software FIFO Rx Buffer.
 
 // Test 1,SCIA  DLB, 8-bit word, baud rate 0x000F, default, 1 STOP bit, no parity
 void InitScib(void)
@@ -158,8 +158,8 @@ void InitScib(void)
 
 struct SCI_VARS Scic;	// SCI C
 
-uint8_t SCIC_SWFFTXBUF[SCIC_SWFFTXDEEP];		// SCI Software FIFO Tx Buffer.
-uint8_t SCIC_SWFFRXBUF[SCIC_SWFFRXDEEP];		// SCI Software FIFO Rx Buffer.
+char SCIC_SWFFTXBUF[SCIC_SWFFTXDEEP];		// SCI Software FIFO Tx Buffer.
+char SCIC_SWFFRXBUF[SCIC_SWFFRXDEEP];		// SCI Software FIFO Rx Buffer.
 
 // Test 1,SCIC  DLB, 8-bit word, baud rate 0x000F, default, 1 STOP bit, no parity
 void InitScic(void)
@@ -224,15 +224,15 @@ void InitScis(void)
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////
 ///////////////////////////                     common                   //////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////
-uint8_t SCIFFTX_IsNotFull( struct SCI_VARS *Sci)
+char SCIFFTX_IsNotFull( struct SCI_VARS *Sci)
 {
 	return (Sci->RegsAddr->SCIFFTX.bit.TXFFST < 16) ? 1: 0;
 }
-uint8_t SCIFFTX_IsEmpty( struct SCI_VARS *Sci)
+char SCIFFTX_IsEmpty( struct SCI_VARS *Sci)
 {
 	return (Sci->RegsAddr->SCIFFTX.bit.TXFFST == 0) ? 1: 0;
 }
-void SCIFFTX_In( uint8_t dat, struct SCI_VARS *Sci)
+void SCIFFTX_In( char dat, struct SCI_VARS *Sci)
 {
 	Sci->RegsAddr->SCITXBUF = dat;
 }
@@ -240,16 +240,16 @@ void SCIFFTX_ClearINT( struct SCI_VARS *Sci)
 {
 	Sci->RegsAddr->SCIFFTX.bit.TXFFINTCLR = 1;	       // clear INT flag.
 }
-uint8_t Sci_IsFifoTxEmpty(struct SCI_VARS *Sci )
+char Sci_IsFifoTxEmpty(struct SCI_VARS *Sci )
 {
 	return ( SCIFFTX_IsEmpty(Sci) && swfifo_IsEmpty( &Sci->swfifoTx) ) ? 1 : 0;
 }
 
-uint8_t SCIFFRX_IsNotEmpty( struct SCI_VARS *Sci)
+char SCIFFRX_IsNotEmpty( struct SCI_VARS *Sci)
 {
 	return (Sci->RegsAddr->SCIFFRX.bit.RXFFST > 0) ? 1: 0;
 }
-uint8_t SCIFFRX_Out( struct SCI_VARS *Sci)
+char SCIFFRX_Out( struct SCI_VARS *Sci)
 {
 	return ( Sci->RegsAddr->SCIRXBUF.bit.RXDT );
 }
@@ -257,7 +257,7 @@ void SCIFFRX_ClearINT( struct SCI_VARS *Sci)
 {
 	Sci->RegsAddr->SCIFFRX.bit.RXFFINTCLR = 1;
 }
-uint8_t SCIRX_IsOn( struct SCI_VARS *Sci)
+char SCIRX_IsOn( struct SCI_VARS *Sci)
 {
 	return( Sci->RegsAddr->SCICTL1.bit.RXENA );
 }
@@ -271,7 +271,7 @@ void SCIRX_TurnOff( struct SCI_VARS *Sci)
 }
 
 
-uint8_t Sci_putchar(uint8_t dat, struct SCI_VARS *Sci)
+char Sci_putchar(char dat, struct SCI_VARS *Sci)
 {
 	// 在swFIFO为空的情况下，优先使用硬件FIFO.
 	if( SCIFFTX_IsNotFull(Sci) && swfifo_IsEmpty(&Sci->swfifoTx) )
@@ -288,7 +288,7 @@ uint8_t Sci_putchar(uint8_t dat, struct SCI_VARS *Sci)
 //----------------------------------------------------------
 //           supports for Sci_puts
 //----------------------------------------------------------
-uint8_t Sci_puts(uint8_t * msg, struct SCI_VARS *Sci)
+char Sci_puts(char * msg, struct SCI_VARS *Sci)
 {
 	int i;
 	i = 0;
@@ -331,7 +331,7 @@ uint8_t Sci_puts(uint8_t * msg, struct SCI_VARS *Sci)
 // 下面函数在中断中执行，旨在清空（发送）软件FIFO的数据。
 void Sci_TxFifoFullHandler(struct SCI_VARS *Sci)
 {
-	uint8_t tmpData;
+	char tmpData;
 	if( !swfifo_IsEmpty(&Sci->swfifoTx) ) {		// swFIFOTX is not empty, load them to SCI TXFIFO.
 		while(  SCIFFTX_IsNotFull(Sci) &&
 		        !swfifo_IsEmpty(&Sci->swfifoTx) ) {
@@ -362,7 +362,7 @@ void Sci_TxFifoFullHandler(struct SCI_VARS *Sci)
 //----------------------------------------------------------
 
 // 可以用于固定个数的读取
-uint8_t Sci_getchar(uint8_t *dat, struct SCI_VARS *Sci)
+char Sci_getchar(char *dat, struct SCI_VARS *Sci)
 {
 	if( !swfifo_IsEmpty(&Sci->swfifoRx) ) {
 //		优先从 swFIFO中取数据
@@ -379,7 +379,7 @@ uint8_t Sci_getchar(uint8_t *dat, struct SCI_VARS *Sci)
 
 
 // 读取全部收到的数据
-uint8_t Sci_gets(uint8_t * msg, struct SCI_VARS *Sci)
+char Sci_gets(char * msg, struct SCI_VARS *Sci)
 {
 	int i=0;
 
@@ -406,7 +406,7 @@ uint8_t Sci_gets(uint8_t * msg, struct SCI_VARS *Sci)
 
 void Sci_RxFifoFullHandler(struct SCI_VARS *Sci)
 {
-	uint8_t tmpData;
+	char tmpData;
 	// 硬件的SCI RXFIFO满了，存入软件FIFO（即swFIFORX）以保证SCI RXFIFO继续接收数据。
 	if( !swfifo_IsFull( &Sci->swfifoRx) ) {
 		while( !swfifo_IsFull( &Sci->swfifoRx) &&

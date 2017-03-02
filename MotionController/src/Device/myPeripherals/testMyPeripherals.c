@@ -5,6 +5,7 @@
  *      Author: Administrator
  */
 #include "my_project.h"
+#include "sysTypes.h"
 
 #if( MY_TEST_DEMO == TEST_SCIA || MY_TEST_DEMO == TEST_SCIB || MY_TEST_DEMO == TEST_SCIC )
 void TestSci(void)
@@ -35,12 +36,12 @@ void TestSci(void)
 #if( USE_SCIA || USE_SCIB || USE_SCIC )
 #if(TEST_SCI_CHAR)
 
-// ===============================================================================
-// 下面测试Scix_putchar 及 Scix_getchar
-// ===============================================================================
+	// ===============================================================================
+	// 下面测试Scix_putchar 及 Scix_getchar
+	// ===============================================================================
 	static uint8_t receivedData=0;
 	for(;;) {
-//			receivedData[1] = 0;
+		//			receivedData[1] = 0;
 
 		if(!Scix_getchar(&receivedData)){
 
@@ -51,7 +52,7 @@ void TestSci(void)
 		}
 
 
-		}
+	}
 
 #else
 	// ===============================================================================
@@ -98,23 +99,36 @@ void TestSci(void)
 
 
 #if( MY_TEST_DEMO == TEST_SPIA && USE_SPIA )
+word testtx[16] ={ 0,6,3,2,7, 1,3,6,3,3,6,0,0,2,5,1};
+word recordtx[30], itx=0;
+word recordrx[30], irx=0;
+
 void TestSpi(void)
 {
 	// 说明：绿色的运动控制卡 使用的GPIO19作为SPIA_STE
 	//       所以在使用金子舒用的开发板进行调试时需要把“USE_GPIO19_AS_SPISTEA” 注释掉
 	//       该宏定义在 my_demo_select.h @line 116
+	word tmp,num;
+	memset(recordtx, 0, sizeof recordtx);
+	memset(recordrx, 0, sizeof recordrx);
 
-	int i = 17+SPIA_SWFFRXDEEP;
-	static char tmp[17+SPIA_SWFFRXDEEP]={0};
-
-	for(;i>0;i--){
-		tmp[i] = 0;
+	for (num = 0; num < Spia.cb_tx.block_number; num++) {
+		tmp = 0x37;
+		cb_append(&Spia.cb_tx, &tmp);
+		cb_get(&Spia.cb_tx, &tmp);
 	}
+
+	// 接收ARM 发送的数据，并且返回
 	for(;;) {
-		DELAY_US(500000);
-		//Spia_puts("nothing is received.\n");
-		if( !Spia_gets(tmp)) {
-			ESTOP0;	// stop here.
+		if( cb_get(&Spia.cb_rx, &tmp) != RTN_ERROR){
+			recordrx[irx++] = tmp;
+			if(tmp == 0x23){
+				for(num =5; num<16;num++){
+					cb_append(&Spia.cb_tx, &testtx[num]);
+				}
+			}
+
+			if(irx>=30) irx =0;
 		}
 	}
 }

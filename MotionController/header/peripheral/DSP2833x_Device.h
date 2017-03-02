@@ -185,6 +185,7 @@ typedef long double     float64;
 //
 // --------------- The below headers is added by QUENTIN -------------------
 #include "swfifo.h"
+#include "CircleBuffer.h"
 #include "SST39VF800A.h"				// external Flash driver files
 #include "myFPGA.h"
 

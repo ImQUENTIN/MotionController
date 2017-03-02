@@ -372,7 +372,7 @@ extern "C" {
 #define USE_SPI_INT     1   // ** MUST BE 1, DO NOT CHANGE **
 #endif
 #ifndef USE_SPI_FIFO
-#define USE_SPI_FIFO 	1   // ** MUST BE 1, DO NOT CHANGE **
+#define USE_SPI_FIFO 	0   // ** MUST BE 1, DO NOT CHANGE **
 #endif
 
 // 默认波特率设为500Khz

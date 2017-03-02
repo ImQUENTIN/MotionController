@@ -18,7 +18,6 @@
 #include "DSP2833x_Device.h"     	// DSP2833x Headerfile Include File
 #include "DSP2833x_Examples.h"   	// DSP2833x Examples Include File
 
-#include "common.h"
 #include "myPeripherals.h"		  	// QUENTIN 定义的外设调用文件
 
 

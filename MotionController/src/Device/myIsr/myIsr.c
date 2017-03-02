@@ -1,8 +1,8 @@
 ﻿/*
-*  Created on: 2016-12-2
-*      Author: QUENTIN
-*      E-mail: qiyuexin@yeah.net
-*/
+ *  Created on: 2016-12-2
+ *      Author: QUENTIN
+ *      E-mail: qiyuexin@yeah.net
+ */
 //###########################################################################
 //
 //  FILE:   myIsr.c
@@ -27,7 +27,7 @@ interrupt void cpu_timer0_isr(void)
 
 
 #if( MY_TEST_DEMO == TEST_GPIO_TIMER_LED)
-//   Functions of TEST_GPIO_TIMER_LED
+	//   Functions of TEST_GPIO_TIMER_LED
 	if(timer_int_cnt++ >= 12) {
 		timer_int_cnt = 0;
 		LED2 = LED_OFF;
@@ -118,11 +118,11 @@ interrupt void cpu_timer2_isr(void)
 interrupt void scia_rx_isr(void)
 {
 	if(Scia.RegsAddr->SCIFFRX.bit.RXFFINT){
-//		RXFIFO 中断，我们设置的TXFFIL=16，所以当TXFFST=16时会触发中断。
+		//		RXFIFO 中断，我们设置的TXFFIL=16，所以当TXFFST=16时会触发中断。
 		Sci_RxFifoFullHandler(&Scia);
 	}
 	if(Scia.RegsAddr->SCIFFRX.bit.RXFFOVF){
-//		overflow.
+		//		overflow.
 		Sci_RxFifoFullHandler(&Scia);
 		Scia.RegsAddr->SCIFFRX.bit.RXFFOVFCLR = 1;
 	}
@@ -131,11 +131,11 @@ interrupt void scia_rx_isr(void)
 interrupt void scia_tx_isr(void)
 {
 	if( Scia.RegsAddr->SCIFFTX.bit.TXFFINT ) {
-//		TXFIFO 中断，我们设置的TXFFIL=0，所以当TXFFST=0时会触发中断。
+		//		TXFIFO 中断，我们设置的TXFFIL=0，所以当TXFFST=0时会触发中断。
 		Sci_TxFifoFullHandler(&Scia);
 	}
-// Acknowledge this interrupt to receive more interrupts from group 9
-PieCtrlRegs.PIEACK.bit.ACK9 = 1;
+	// Acknowledge this interrupt to receive more interrupts from group 9
+	PieCtrlRegs.PIEACK.bit.ACK9 = 1;
 }
 #endif //(USE_SCIA)
 
@@ -143,11 +143,11 @@ PieCtrlRegs.PIEACK.bit.ACK9 = 1;
 interrupt void scib_rx_isr(void)
 {
 	if(Scib.RegsAddr->SCIFFRX.bit.RXFFINT){
-//		RXFIFO 中断，我们设置的TXFFIL=16，所以当TXFFST=16时会触发中断。
+		//		RXFIFO 中断，我们设置的TXFFIL=16，所以当TXFFST=16时会触发中断。
 		Sci_RxFifoFullHandler(&Scib);
 	}
 	if(Scib.RegsAddr->SCIFFRX.bit.RXFFOVF){
-//		overflow.
+		//		overflow.
 		Sci_RxFifoFullHandler(&Scib);
 		Scib.RegsAddr->SCIFFRX.bit.RXFFOVFCLR = 1;
 	}
@@ -156,11 +156,11 @@ interrupt void scib_rx_isr(void)
 interrupt void scib_tx_isr(void)
 {
 	if( Scib.RegsAddr->SCIFFTX.bit.TXFFINT ) {
-//		TXFIFO 中断，我们设置的TXFFIL=0，所以当TXFFST=0时会触发中断。
+		//		TXFIFO 中断，我们设置的TXFFIL=0，所以当TXFFST=0时会触发中断。
 		Sci_TxFifoFullHandler(&Scib);
 	}
-// Acknowledge this interrupt to receive more interrupts from group 9
-PieCtrlRegs.PIEACK.bit.ACK9 = 1;
+	// Acknowledge this interrupt to receive more interrupts from group 9
+	PieCtrlRegs.PIEACK.bit.ACK9 = 1;
 }
 #endif // (USE_SCIB)
 
@@ -168,11 +168,11 @@ PieCtrlRegs.PIEACK.bit.ACK9 = 1;
 interrupt void scic_rx_isr(void)
 {
 	if(Scic.RegsAddr->SCIFFRX.bit.RXFFINT){
-//		RXFIFO 中断，我们设置的TXFFIL=16，所以当TXFFST=16时会触发中断。
+		//		RXFIFO 中断，我们设置的TXFFIL=16，所以当TXFFST=16时会触发中断。
 		Sci_RxFifoFullHandler(&Scic);
 	}
 	if(Scic.RegsAddr->SCIFFRX.bit.RXFFOVF){
-//		overflow.
+		//		overflow.
 		Sci_RxFifoFullHandler(&Scic);
 		Scic.RegsAddr->SCIFFRX.bit.RXFFOVFCLR = 1;
 	}
@@ -181,11 +181,11 @@ interrupt void scic_rx_isr(void)
 interrupt void scic_tx_isr(void)
 {
 	if( Scic.RegsAddr->SCIFFTX.bit.TXFFINT ) {
-//		TXFIFO 中断，我们设置的TXFFIL=0，所以当TXFFST=0时会触发中断。
+		//		TXFIFO 中断，我们设置的TXFFIL=0，所以当TXFFST=0时会触发中断。
 		Sci_TxFifoFullHandler(&Scic);
 	}
-// Acknowledge this interrupt to receive more interrupts from group 9
-PieCtrlRegs.PIEACK.bit.ACK8 = 1;
+	// Acknowledge this interrupt to receive more interrupts from group 9
+	PieCtrlRegs.PIEACK.bit.ACK8 = 1;
 }
 #endif // (USE_SCIC)
 
@@ -196,27 +196,67 @@ PieCtrlRegs.PIEACK.bit.ACK8 = 1;
 //      Peripheral 4. SPI
 //============================================================================
 #if(USE_SPIA)
+extern word recordtx[100], itx;
+extern word testtx[16];
 interrupt void spia_rx_isr(void)
 {
-	if(Spia.RegsAddr->SPIFFRX.bit.RXFFINT){
-//		RXFIFO 中断，我们设置的TXFFIL=16，所以当TXFFST=16时会触发中断。
-		Spi_RxFifoFullHandler(&Spia);
+	int tmp;
+	static int i=0;
+
+	if(Spia.RegsAddr->SPISTS.bit.INT_FLAG){
+		//		RXFIFO 中断，我们设置的TXFFIL=1，所以当TXFFST=1时会触发中断。
+//		while( SpiaRegs.SPIFFRX.bit.RXFFST){
+
+			// 发送
+			if( RTN_ERROR != cb_get(&Spia.cb_tx, &tmp) ){
+			}else tmp = 0xeeee;
+			SpiaRegs.SPITXBUF = tmp;
+			recordtx[itx++] = tmp;
+			if(itx>=30) itx = 0;
+
+			tmp = SpiaRegs.SPIRXBUF;
+			cb_append(&Spia.cb_rx, &tmp);
+//			tmp = testtx[i];
+//			if(++i >= 16) i=0;
+
+//		}
+//		SpiaRegs.SPIFFRX.bit.RXFFINTCLR = 1;
 	}
-	if(Spia.RegsAddr->SPIFFRX.bit.RXFFOVF){
-//		overflow.
-		Spi_RxFifoFullHandler(&Spia);
-		Spia.RegsAddr->SPIFFRX.bit.RXFFOVFCLR = 1;
-	}
+	if(Spia.RegsAddr->SPISTS.bit.OVERRUN_FLAG)
+		SpiaRegs.SPISTS.bit.OVERRUN_FLAG = 1;
+//	if(Spia.RegsAddr->SPIFFRX.bit.RXFFOVF){
+//		//		overflow.
+//		//		Spi_RxFifoFullHandler(&Spia);
+//		Spia.RegsAddr->SPIFFRX.bit.RXFFOVFCLR = 1;
+//	}
+
 	PieCtrlRegs.PIEACK.bit.ACK6 = 1;
 }
+
 interrupt void spia_tx_isr(void)
 {
+	int tmp;
+	static int i=0;
+	int txbuf[100];
+
 	if( Spia.RegsAddr->SPIFFTX.bit.TXFFINT ) {
-//		TXFIFO 中断，我们设置的TXFFIL=0，所以当TXFFST=0时会触发中断。
-		Spi_TxFifoFullHandler(&Spia);
+		//		TXFIFO 中断，我们设置的TXFFIL=0，所以当TXFFST=0时会触发中断。
+		if( cb_usedSpace(&Spia.cb_tx) > 0 ) {
+			// 循环缓冲区有数据
+			while ( RTN_ERROR != cb_get(&Spia.cb_tx , &tmp)
+					&& SpiaRegs.SPIFFTX.bit.TXFFST < 16){
+
+				SpiaRegs.SPITXBUF = tmp;
+				txbuf[i++] = tmp;
+			}
+			SpiaRegs.SPIFFTX.bit.TXFFINTCLR = 1;
+		} else {
+			// 循环缓冲区 为空
+			// do nothing, and exit.
+		}
 	}
-// Acknowledge this interrupt to receive more interrupts from group 6
-PieCtrlRegs.PIEACK.bit.ACK6 = 1;
+	// Acknowledge this interrupt to receive more interrupts from group 6
+	PieCtrlRegs.PIEACK.bit.ACK6 = 1;
 }
 #endif // (USE_SPIA)
 
@@ -227,11 +267,11 @@ PieCtrlRegs.PIEACK.bit.ACK6 = 1;
 #if(USE_DMA_CH1)
 interrupt void dma_ch1_isr(void)
 {
-	  // Next two lines for debug only to halt the processor here
-	  // Remove after inserting ISR Code
-//	   asm ("      ESTOP0");
-//	   for(;;);
-//	StartDMACHx( &Dma.RegsAddr->CH1);
+	// Next two lines for debug only to halt the processor here
+	// Remove after inserting ISR Code
+	//	   asm ("      ESTOP0");
+	//	   for(;;);
+	//	StartDMACHx( &Dma.RegsAddr->CH1);
 	// Acknowledge this interrupt to receive more interrupts from group 6
 	PieCtrlRegs.PIEACK.bit.ACK7 = 1;
 }
@@ -240,11 +280,11 @@ interrupt void dma_ch1_isr(void)
 #if(USE_DMA_CH2)
 interrupt void dma_ch2_isr(void)
 {
-	  // Next two lines for debug only to halt the processor here
-	  // Remove after inserting ISR Code
-//	   asm ("      ESTOP0");
-//	   for(;;);
-//	StartDMACHx( &Dma.RegsAddr->CH2);
+	// Next two lines for debug only to halt the processor here
+	// Remove after inserting ISR Code
+	//	   asm ("      ESTOP0");
+	//	   for(;;);
+	//	StartDMACHx( &Dma.RegsAddr->CH2);
 	// Acknowledge this interrupt to receive more interrupts from group 6
 	PieCtrlRegs.PIEACK.bit.ACK7 = 1;
 }
@@ -253,11 +293,11 @@ interrupt void dma_ch2_isr(void)
 #if(USE_DMA_CH3)
 interrupt void dma_ch3_isr(void)
 {
-	  // Next two lines for debug only to halt the processor here
-	  // Remove after inserting ISR Code
-//	   asm ("      ESTOP0");
-//	   for(;;);
-//	StartDMACHx( &Dma.RegsAddr->CH2);
+	// Next two lines for debug only to halt the processor here
+	// Remove after inserting ISR Code
+	//	   asm ("      ESTOP0");
+	//	   for(;;);
+	//	StartDMACHx( &Dma.RegsAddr->CH2);
 	// Acknowledge this interrupt to receive more interrupts from group 6
 	PieCtrlRegs.PIEACK.bit.ACK7 = 1;
 }
