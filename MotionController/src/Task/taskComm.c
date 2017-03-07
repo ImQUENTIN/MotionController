@@ -134,6 +134,12 @@ ERROR_CODE decoupleCommand(word *pCmd, short cmdLen)
 		gCmd.serial++;
 		break;
 
+ /* ¶ÁDDR */
+	case CMD_RD_DDA_ADDR:
+		gCmd.type = CMD_RD_DDA;
+		gCmd.mark = pCmd[1];
+		gCmd.serial++;
+
 	default:
 		rtn = RTN_INVALID_COMMAND;
 		break;

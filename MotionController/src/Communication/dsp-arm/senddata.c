@@ -2,7 +2,7 @@
 
 SENDMODE databuf;     //直接将databuf放入spififo发送中断
 
-ERROR_CODE senddata(uint8_t *dat_buf, short dat_len)
+ERROR_CODE senddata(int *dat_buf, short dat_len)
 {
 
 	databuf.head = 0x23;
@@ -16,12 +16,13 @@ ERROR_CODE senddata(uint8_t *dat_buf, short dat_len)
 		{
 			databuf.sum = 0;
 			databuf.sum += databuf.data[i];
-			return RTN_SUCC;
+
 		}
+		memcpy(&Spia.cb_tx,&databuf,(dat_len+2));
+		return RTN_SUCC;
 	}
 	else{
 		return RTN_INVALID_COMMAND;
 	}
 
-	return RTN_SUCC;
 }

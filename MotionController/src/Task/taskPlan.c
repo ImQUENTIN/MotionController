@@ -23,6 +23,7 @@ ERROR_CODE taskPlan()
 		case CMD_SET_DDA:
 		case CMD_PT_MODE:
 		case CMD_GO_HOME:
+		case CMD_RD_DDA:
 			rtn = handleCommand(&gCmd);
 			break;
 		default:
@@ -38,6 +39,10 @@ ERROR_CODE taskPlan()
 		{
 		case CMD_SET_DDA:
 //		case CMD_UPLOAD_ENCODERS:
+			rtn = handleCommand(&gCmd);
+			break;
+
+		case CMD_RD_DDA:
 			rtn = handleCommand(&gCmd);
 			break;
 
@@ -81,6 +86,7 @@ ERROR_CODE handleCommand(COMMAND_S *pCmd )
 	case CMD_START:			rtn = Start();			break;
 	case CMD_SET_DDA:		rtn = SetDDA();			break;
 	case CMD_PT_MODE:		rtn = EnterPTmode();	break;
+	case CMD_RD_DDA:        rtn = ReadDDA();        break;
 
 	default:
 		rtn = RTN_INVALID_COMMAND;
