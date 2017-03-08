@@ -1,24 +1,27 @@
 #include "senddata.h"
 
-SENDMODE databuf;     //直接将databuf放入spififo发送中断
 
-ERROR_CODE senddata(int *dat_buf, short dat_len)
+
+ERROR_CODE senddata(word cmd,word mark,word *dat_buf, word dat_len)
 {
-
-	databuf.head = 0x23;
+	int str[COMMUNICATION_MAX_LEN];
+	str[0] = 0x23;
+	str[2] = cmd;
+	str[3] = mark;
 
 	if(dat_len > 0 || dat_len <= COMMUNICATION_MAX_LEN)
 	{
-		int i;
-		databuf.len = dat_len;
-		memcpy(databuf.data,dat_buf,dat_len);
+		int i, j;
+		str[1] = dat_len;
+		str[dat_len + 4] = 0;
+		memcpy(str+4, &dat_buf, dat_len);
 		for(i = 0; i < dat_len; i++)
 		{
-			databuf.sum = 0;
-			databuf.sum += databuf.data[i];
-
+			str[dat_len + 4] += str[4+i];
 		}
-		memcpy(&Spia.cb_tx,&databuf,(dat_len+2));
+		for(j = 0; j < (dat_len+5); j++){
+		cb_append(&Spia.cb_tx, &str[j]);
+		}
 		return RTN_SUCC;
 	}
 	else{

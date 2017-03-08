@@ -105,12 +105,14 @@ ERROR_CODE ReadDDA()
 	int dat_buf[COMMUNICATION_MAX_LEN];
 	for(axis = 0; axis < AXISNUM; axis++){
 		if((gCmd.mark >> axis) & 0x01){
-			MotorRegs[axis].NOWACC = dat_buf[i++];
-			MotorRegs[axis].NOWJERK = dat_buf[i++];
-			MotorRegs[axis].NOWPOS = dat_buf[i++];
-			MotorRegs[axis].NOWVEL = dat_buf[i++];
+
+			dat_buf[i++] = MotorRegs[axis].NOWPOS ;
+			dat_buf[i++] = MotorRegs[axis].NOWVEL ;
+			dat_buf[i++] = MotorRegs[axis].NOWACC;
+			dat_buf[i++] = MotorRegs[axis].NOWJERK ;
 		}
 	}
-	senddata(*dat_buf, i);
+	senddata(gCmd.type, gCmd.mark, *dat_buf, i);
+	return RTN_SUCC;
 }
 
