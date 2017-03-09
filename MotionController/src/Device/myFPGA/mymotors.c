@@ -34,20 +34,28 @@ void testAD(void)
 }
 void testMymotor(void)
 {
+	int time_us = 50;
 
 	MotorRegs[0].MCTL.all = 0;// disable, and prepare the setting.
 
 	MotorRegs[0].MCTL.bit.RST = 1;
 
+//	M_SetDDA(1000 ,     0,   32, 0);
+//	M_SetDDA(1000+64000 , 64000,    0, 0);
+//	M_SetDDA(2000+64000 ,64000,   -32, 0);
 
-//	M_SetDDA(45 ,     0,   1, 0);
-//	M_SetDDA(90 ,  2400,   -1, 0);
+	// 500ms加速到最大速度
+	// delta_pos = 0.5*a*t^2 = 16e3
+	M_SetDDA(500e3*time_us,    0, 2*64e3, 0);
+	// 最大速度运行3秒
+	// delta_pos = v*t = 192e3
+	M_SetDDA(3000e3*time_us, 64e3,      0, 0);
+	// 1s减速到0
+	// delta_pos = 0.5*a*t^2 = 32e3
+	M_SetDDA(1000e3*time_us,64e3,  -64e3, 0);
 
-	M_SetDDA(1000 ,     0,   32, 0);
-	M_SetDDA(1000+64000 , 64000,    0, 0);
-	M_SetDDA(2000+64000 ,64000,   -32, 0);
-
-
+	// nowpos should be 240e3
+//-------------------------------------------
 //	M_SetDDA(4000, 000,  8, 0);
 //	M_SetDDA(4000 +4800, 64000,  0, 0);
 //	M_SetDDA(64000*2, 64000,  -8, 0);

@@ -32,7 +32,7 @@ ERROR_CODE checkNewCommand()
 
 	while( RTN_ERROR != cb_get(&Spia.cb_rx, &dat)  )
 	{
-#if 1
+#if 0
 		// ≤‚ ‘≤ø∑÷
 		if( dat == 0x23){
 			for( cmdLen =0; cmdLen <11; cmdLen++)
@@ -139,6 +139,7 @@ ERROR_CODE decoupleCommand(word *pCmd, short cmdLen)
 		gCmd.type = CMD_RD_DDA;
 		gCmd.mark = pCmd[1];
 		gCmd.serial++;
+		break;
 
 	default:
 		rtn = RTN_INVALID_COMMAND;
