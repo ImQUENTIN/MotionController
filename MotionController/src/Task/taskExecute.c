@@ -65,8 +65,9 @@ ERROR_CODE Start(){
 	for (axis = 0; axis < AXISNUM; axis++) {
 		if ((gCmd.mark >> axis) & 0x01) {
 //			tmp = MotorRegs[0].MCTL.all;
+			MotorRegs[0].MCTL.bit.ENA = 1;			// 使能电机
 			MotorRegs[0].MCTL.bit.PAUSE = 0;			// 启动电机
-			ESTOP0;	// TEST HERE.
+//			ESTOP0;	// TEST HERE.
 		}
 	}
 	return RTN_SUCC;
@@ -105,7 +106,7 @@ ERROR_CODE ReadDDA()
 	int dat_buf[COMMUNICATION_MAX_LEN];
 	for(axis = 0; axis < AXISNUM; axis++){
 		if((gCmd.mark >> axis) & 0x01){
-			memcpy(dat_buf+i, &MotorRegs[axis].NOWPOS, 8);
+			memcpy(dat_buf+i, (Uint16 *)&MotorRegs[axis].NOWPOS, 8);
 			i += 8;
 //			dat_buf[i++] = MotorRegs[axis].NOWPOS>>16 ;
 //			dat_buf[i++] = MotorRegs[axis].NOWPOS;

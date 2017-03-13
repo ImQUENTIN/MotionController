@@ -42,8 +42,10 @@ void testMymotor(void)
 
 //	M_SetDDA(1000 ,     0,   32, 0);
 //	M_SetDDA(1000+64000 , 64000,    0, 0);
-//	M_SetDDA(2000+64000 ,64000,   -32, 0);
+//	M_SetDDA(2000+64000 ,64000,   -32, 0);]
 
+
+//	  时段控制的DDA数据格式为：[deltaTime, startVel, startAcc, Jerk];
 	// 500ms加速到最大速度
 	// delta_pos = 0.5*a*t^2 = 16e3
 	M_SetDDA(500e3*time_us,    0, 2*64e3, 0);
