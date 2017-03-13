@@ -52,7 +52,7 @@ ERROR_CODE PT_Mode(int axis, int pos, int time)
 			{
 				rise_data.jerk = 0;
 				rise_data.acc = max_acc;
-				rise_data.vel = 0.5*max_acc*time;
+				rise_data.vel = 0;		//0.5*max_acc*time;
 				rise_data.pos = 0.5*pos;
 				rise_data.time = 0.5*time;
 
@@ -64,7 +64,7 @@ ERROR_CODE PT_Mode(int axis, int pos, int time)
 
 				down_data.jerk = 0;
 				down_data.acc = -max_acc;
-				down_data.vel = 0;
+				down_data.vel = 0.5*max_acc*time;		//0;
 				down_data.pos = pos;
 				down_data.time = time;
 
@@ -83,19 +83,19 @@ ERROR_CODE PT_Mode(int axis, int pos, int time)
 
 				rise_data.jerk = 0;
 				rise_data.acc = max_acc;
-				rise_data.vel = critical_t*max_acc;
+				rise_data.vel =   0;//                  critical_t*max_acc;
 				rise_data.pos = 0.5*max_acc*critical_t*critical_t;
 				rise_data.time = critical_t;
 
 				even_data.jerk = 0;
 				even_data.acc = 0;
-				even_data.vel = rise_data.vel;
+				even_data.vel = critical_t*max_acc;//				rise_data.vel;
 				even_data.pos = pos - rise_data.pos;
 				even_data.time = time - critical_t;
 
 				down_data.jerk = 0;
 				down_data.acc = -max_acc;
-				down_data.vel = 0;
+				down_data.vel = even_data.vel;			//0;
 				down_data.pos = pos;
 				down_data.time = time;
 
@@ -119,7 +119,7 @@ ERROR_CODE PT_Mode(int axis, int pos, int time)
 			{
 				rise_data.jerk = 0;
 				rise_data.acc = max_acc;
-				rise_data.vel = max_vel;
+				rise_data.vel = 0;			//max_vel;
 				rise_data.pos = 0.5*max_vel*max_vel/max_acc;
 				rise_data.time = max_vel/max_acc;
 
@@ -131,7 +131,7 @@ ERROR_CODE PT_Mode(int axis, int pos, int time)
 
 				down_data.jerk = 0;
 				down_data.acc = -max_acc;
-				down_data.vel = 0;
+				down_data.vel = max_vel;			//0;
 				down_data.pos = pos;
 				down_data.time = time;
 
@@ -148,19 +148,19 @@ ERROR_CODE PT_Mode(int axis, int pos, int time)
 
 				rise_data.jerk = 0;
 				rise_data.acc = max_acc;
-				rise_data.vel = critical_t*max_acc;
+				rise_data.vel = 0;			//critical_t*max_acc;
 				rise_data.pos = 0.5*max_acc*critical_t*critical_t;
 				rise_data.time = critical_t;
 
 				even_data.jerk = 0;
 				even_data.acc = 0;
-				even_data.vel = rise_data.vel;
+				even_data.vel = critical_t*max_acc;		//rise_data.vel;
 				even_data.pos = pos - rise_data.pos;
 				even_data.time = time - critical_t;
 
 				down_data.jerk = 0;
 				down_data.acc = -max_acc;
-				down_data.vel = 0;
+				down_data.vel = even_data.vel ;		//0;
 				down_data.pos = pos;
 				down_data.time = time;
 
@@ -186,7 +186,7 @@ ERROR_CODE PT_Mode(int axis, int pos, int time)
 			{
 				rise_data.jerk = 0;
 				rise_data.acc = -max_acc;
-				rise_data.vel = -0.5*max_acc*time;
+				rise_data.vel = 0;		//-0.5*max_acc*time;
 				rise_data.pos = 0.5*pos;
 				rise_data.time = 0.5*time;
 
@@ -198,7 +198,7 @@ ERROR_CODE PT_Mode(int axis, int pos, int time)
 
 				down_data.jerk = 0;
 				down_data.acc = max_acc;
-				down_data.vel = 0;
+				down_data.vel = -0.5*max_acc*time;		//0;
 				down_data.pos = pos;
 				down_data.time = time;
 
@@ -216,19 +216,19 @@ ERROR_CODE PT_Mode(int axis, int pos, int time)
 
 				rise_data.jerk = 0;
 				rise_data.acc = -max_acc;
-				rise_data.vel = -critical_t*max_acc;
+				rise_data.vel = 0;		//-critical_t*max_acc;
 				rise_data.pos = -0.5*max_acc*critical_t*critical_t;
 				rise_data.time = critical_t;
 
 				even_data.jerk = 0;
 				even_data.acc = 0;
-				even_data.vel = rise_data.vel;
+				even_data.vel = -critical_t*max_acc;		//rise_data.vel;
 				even_data.pos = pos - rise_data.pos;
 				even_data.time = time - critical_t;
 
 				down_data.jerk = 0;
 				down_data.acc = max_acc;
-				down_data.vel = 0;
+				down_data.vel = even_data.vel;		//0;
 				down_data.pos = pos;
 				down_data.time = time;
 
@@ -251,7 +251,7 @@ ERROR_CODE PT_Mode(int axis, int pos, int time)
 			{
 				rise_data.jerk = 0;
 				rise_data.acc = -max_acc;
-				rise_data.vel = -max_vel;
+				rise_data.vel = 0;		//-max_vel;
 				rise_data.pos = -0.5*max_vel*max_vel/max_acc;
 				rise_data.time = max_vel/max_acc;
 
@@ -263,7 +263,7 @@ ERROR_CODE PT_Mode(int axis, int pos, int time)
 
 				down_data.jerk = 0;
 				down_data.acc = max_acc;
-				down_data.vel = 0;
+				down_data.vel = -max_vel;		//0;
 				down_data.pos = pos;
 				down_data.time = time;
 
@@ -280,19 +280,19 @@ ERROR_CODE PT_Mode(int axis, int pos, int time)
 
 				rise_data.jerk = 0;
 				rise_data.acc = -max_acc;
-				rise_data.vel = -critical_t*max_acc;
+				rise_data.vel = 0;		//-critical_t*max_acc;
 				rise_data.pos = -0.5*max_acc*critical_t*critical_t;
 				rise_data.time = critical_t;
 
 				even_data.jerk = 0;
 				even_data.acc = 0;
-				even_data.vel = -rise_data.vel;
+				even_data.vel = -critical_t*max_acc;		//-rise_data.vel;
 				even_data.pos = pos - rise_data.pos;
 				even_data.time = time - critical_t;
 
 				down_data.jerk = 0;
 				down_data.acc = max_acc;
-				down_data.vel = 0;
+				down_data.vel = even_data.vel;		//0;
 				down_data.pos = pos;
 				down_data.time = time;
 
