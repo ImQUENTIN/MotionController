@@ -18,7 +18,7 @@ ERROR_CODE senddata(word cmd,word mark,word *dat_buf, word dat_len)
 		memcpy(str+4, dat_buf, dat_len);
 		for(i = 0; i < dat_len; i++)
 		{
-//			str[4+i] = dat_buf[i];
+//			str[4+i] = gtgtjjdat_buf[i];
 			str[dat_len + 4] += str[2+i];
 		}
 		for(j = 0; j < (dat_len+5); j++){

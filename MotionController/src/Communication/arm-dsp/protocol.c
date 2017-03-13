@@ -11,7 +11,7 @@ static word check_sum(word* pdat, short len)
 	word sum = 0;
 	for (i = 0; i < len; i++)
 		sum += pdat[i];
- 	return sum&0x00ff;
+ 	return sum;
 }
 
 

@@ -18,9 +18,16 @@ ERROR_CODE taskPlan()
 		{
 		case CMD_MSG:
 		case CMD_RESET:
+			rtn = handleCommand(&gCmd);
+			break;
 		case CMD_ACTIVATE:
 		case CMD_START:
+			rtn = handleCommand(&gCmd);
+			break;
 		case CMD_SET_DDA:
+			//		case CMD_UPLOAD_ENCODERS:
+						rtn = handleCommand(&gCmd);
+			break;
 		case CMD_PT_MODE:
 		case CMD_GO_HOME:
 		case CMD_RD_DDA:
@@ -38,8 +45,7 @@ ERROR_CODE taskPlan()
 		switch(gCmd.type)
 		{
 		case CMD_SET_DDA:
-//		case CMD_UPLOAD_ENCODERS:
-			rtn = handleCommand(&gCmd);
+
 			break;
 
 		case CMD_RD_DDA:

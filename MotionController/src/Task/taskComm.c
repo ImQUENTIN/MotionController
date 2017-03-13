@@ -54,15 +54,6 @@ ERROR_CODE checkNewCommand()
 	return rtn;
 }
 
-int32_t my_atoi(word *dat){
-	int32_t tmp = 0;
-	int i;
-	for(i=0; i<4; i++){
-		tmp <<= 8;
-		tmp += dat[i]&0xff;
-	}
-	return tmp;
-}
 
 ERROR_CODE decoupleCommand(word *pCmd, short cmdLen)
 {
@@ -110,11 +101,12 @@ ERROR_CODE decoupleCommand(word *pCmd, short cmdLen)
 		ptr = &pCmd[2];
 		for (i = 0; i < AXISNUM; i++) {
 			if ((gCmd.mark >> i) & 0x01) {
-				gCmd.setDDA[i].pos	= my_atoi(ptr);
-				gCmd.setDDA[i].vel	= my_atoi(ptr+4);
-				gCmd.setDDA[i].acc	= my_atoi(ptr+8);
-				gCmd.setDDA[i].jerk	= my_atoi(ptr+12);
-				ptr += 16;
+				memcpy(&gCmd.setDDA[i].pos,ptr,8);
+//				gCmd.setDDA[i].pos	= *ptr++<<16 + *ptr++;
+//				gCmd.setDDA[i].vel	= *ptr++<<16 + *ptr++;
+//				gCmd.setDDA[i].acc	= *ptr++<<16 + *ptr++;
+//				gCmd.setDDA[i].jerk	= *ptr++<<16 + *ptr++;
+				ptr += 8;
 			}
 		}
 		gCmd.serial++;
