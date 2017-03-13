@@ -95,23 +95,6 @@ ERROR_CODE EnterPTmode()
 		if ((gCmd.mark >> axis) & 0x01) {
 			PT_Mode(axis, gCmd.ptPos[axis],gCmd.ptTime[axis]) ;
 
-		//	  时段控制的DDA数据格式为：[deltaTime, startVel, startAcc, Jerk];
-
-			int32_t dtime;
-			int32_t svel;
-			int32_t sacc;
-			int32_t jerk;
-			int32_t pos;
-			int i;
-			for(i = 0; i < 3; i++)
-			{//((pt_buf[axis].dat)+4+5*i)
-				cb_get(pt_buf[axis].dat, &jerk);
-				cb_get(pt_buf[axis].dat, &sacc);
-				cb_get(pt_buf[axis].dat, &svel);
-				cb_get(pt_buf[axis].dat, &pos);
-				cb_get(pt_buf[axis].dat, &dtime);
-				M_SetDDA(dtime, svel, sacc, jerk);
-			}
 		}
 	}
 	return RTN_SUCC;

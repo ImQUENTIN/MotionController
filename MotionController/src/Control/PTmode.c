@@ -6,24 +6,24 @@
 #include "string.h"
 
 
-CIRCLE_BUFFER_S pt_buf[AXISNUM];	// AXISNUM个轴的pt_buf.
+//CIRCLE_BUFFER_S pt_buf[AXISNUM];	// AXISNUM个轴的pt_buf.
 VP_PARAM_S vp_param[AXISNUM];		// velocity plan parameters.
 
 
-int PT_Initial()    //初始化 PT模式的循环缓冲区 pt_buf
-{
-	int axis;
-	for( axis=0; axis<AXISNUM; axis++){
-		memset(&pt_buf[axis], 0, sizeof(CIRCLE_BUFFER_S));
-		cb_create(&pt_buf[axis], sizeof(PT_DATA_S), 6);
+//int PT_Initial()    //初始化 PT模式的循环缓冲区 pt_buf
+//{
+//	int axis;
+//	for( axis=0; axis<AXISNUM; axis++){
+//		memset(&pt_buf[axis], 0, sizeof(CIRCLE_BUFFER_S));
+//		cb_create(&pt_buf[axis], sizeof(PT_DATA_S), 6);
 
 		// 加载
-		vp_param[axis].max_rise_acc 	 = DEFUALT_MAX_RISE_ACC;
-		vp_param[axis].max_down_acc 	 = DEFUALT_MAX_DOWN_ACC;
-		vp_param[axis].max_even_vel 	 = DEFUALT_MAX_EVEN_VEL;
-	}
-	return RTN_SUCC;
-}
+//		vp_param[axis].max_rise_acc 	 = DEFUALT_MAX_RISE_ACC;
+//		vp_param[axis].max_down_acc 	 = DEFUALT_MAX_DOWN_ACC;
+//		vp_param[axis].max_even_vel 	 = DEFUALT_MAX_EVEN_VEL;
+//	}
+//	return RTN_SUCC;
+//}
 
 // 上升和下降的加速度相同
 ERROR_CODE PT_Mode(int axis, int pos, int time)
@@ -70,9 +70,11 @@ ERROR_CODE PT_Mode(int axis, int pos, int time)
 
 
 				//获取数据    int cb_append(CIRCLE_BUFFER_S *buf, void* block_dat)
-				cb_append(&pt_buf[axis], &rise_data);
-				cb_append(&pt_buf[axis], &even_data);
-				cb_append(&pt_buf[axis], &down_data);
+				M_SetDDA(rise_data.time, rise_data.vel, rise_data.acc, rise_data.jerk);
+				M_SetDDA(down_data.time, down_data.vel, down_data.acc, down_data.jerk);
+				//cb_append(&pt_buf[axis], &rise_data);
+				//cb_append(&pt_buf[axis], &even_data);
+				//cb_append(&pt_buf[axis], &down_data);
 
 				return RTN_SUCC;
 			}
@@ -100,9 +102,12 @@ ERROR_CODE PT_Mode(int axis, int pos, int time)
 				down_data.time = time;
 
 				//获取数据
-				cb_append(&pt_buf[axis], &rise_data);
-				cb_append(&pt_buf[axis], &even_data);
-				cb_append(&pt_buf[axis], &down_data);
+				M_SetDDA(rise_data.time, rise_data.vel, rise_data.acc, rise_data.jerk);
+				M_SetDDA(even_data.time, even_data.vel, even_data.acc, even_data.jerk);
+				M_SetDDA(down_data.time, down_data.vel, down_data.acc, down_data.jerk);
+				//cb_append(&pt_buf[axis], &rise_data);
+				//cb_append(&pt_buf[axis], &even_data);
+				//cb_append(&pt_buf[axis], &down_data);
 
 				return RTN_SUCC;
 
@@ -136,9 +141,12 @@ ERROR_CODE PT_Mode(int axis, int pos, int time)
 				down_data.time = time;
 
 				//获取数据
-				cb_append(&pt_buf[axis], &rise_data);
-				cb_append(&pt_buf[axis], &even_data);
-				cb_append(&pt_buf[axis], &down_data);
+				M_SetDDA(rise_data.time, rise_data.vel, rise_data.acc, rise_data.jerk);
+				M_SetDDA(even_data.time, even_data.vel, even_data.acc, even_data.jerk);
+				M_SetDDA(down_data.time, down_data.vel, down_data.acc, down_data.jerk);
+				//cb_append(&pt_buf[axis], &rise_data);
+				//cb_append(&pt_buf[axis], &even_data);
+				//cb_append(&pt_buf[axis], &down_data);
 
 				return RTN_SUCC;
 			}
@@ -165,9 +173,12 @@ ERROR_CODE PT_Mode(int axis, int pos, int time)
 				down_data.time = time;
 
 				//获取数据
-				cb_append(&pt_buf[axis], &rise_data);
-				cb_append(&pt_buf[axis], &even_data);
-				cb_append(&pt_buf[axis], &down_data);
+				M_SetDDA(rise_data.time, rise_data.vel, rise_data.acc, rise_data.jerk);
+				M_SetDDA(even_data.time, even_data.vel, even_data.acc, even_data.jerk);
+				M_SetDDA(down_data.time, down_data.vel, down_data.acc, down_data.jerk);
+				//cb_append(&pt_buf[axis], &rise_data);
+				//cb_append(&pt_buf[axis], &even_data);
+				//cb_append(&pt_buf[axis], &down_data);
 
 				return RTN_SUCC;
 
@@ -203,9 +214,12 @@ ERROR_CODE PT_Mode(int axis, int pos, int time)
 				down_data.time = time;
 
 				//获取数据
-				cb_append(&pt_buf[axis], &rise_data);
-				cb_append(&pt_buf[axis], &even_data);
-				cb_append(&pt_buf[axis], &down_data);
+				M_SetDDA(rise_data.time, rise_data.vel, rise_data.acc, rise_data.jerk);
+				//M_SetDDA(even_data.time, even_data.vel, even_data.acc, even_data.jerk);
+				M_SetDDA(down_data.time, down_data.vel, down_data.acc, down_data.jerk);
+				//cb_append(&pt_buf[axis], &rise_data);
+				//cb_append(&pt_buf[axis], &even_data);
+				//cb_append(&pt_buf[axis], &down_data);
 
 				return RTN_SUCC;
 			}
@@ -233,9 +247,12 @@ ERROR_CODE PT_Mode(int axis, int pos, int time)
 				down_data.time = time;
 
 				//获取数据
-				cb_append(&pt_buf[axis], &rise_data);
-				cb_append(&pt_buf[axis], &even_data);
-				cb_append(&pt_buf[axis], &down_data);
+				M_SetDDA(rise_data.time, rise_data.vel, rise_data.acc, rise_data.jerk);
+				M_SetDDA(even_data.time, even_data.vel, even_data.acc, even_data.jerk);
+				M_SetDDA(down_data.time, down_data.vel, down_data.acc, down_data.jerk);
+				//cb_append(&pt_buf[axis], &rise_data);
+				//cb_append(&pt_buf[axis], &even_data);
+				//cb_append(&pt_buf[axis], &down_data);
 
 				return RTN_SUCC;
 			}
@@ -268,9 +285,12 @@ ERROR_CODE PT_Mode(int axis, int pos, int time)
 				down_data.time = time;
 
 				//获取数据
-				cb_append(&pt_buf[axis], &rise_data);
-				cb_append(&pt_buf[axis], &even_data);
-				cb_append(&pt_buf[axis], &down_data);
+				M_SetDDA(rise_data.time, rise_data.vel, rise_data.acc, rise_data.jerk);
+				M_SetDDA(even_data.time, even_data.vel, even_data.acc, even_data.jerk);
+				M_SetDDA(down_data.time, down_data.vel, down_data.acc, down_data.jerk);
+				//cb_append(&pt_buf[axis], &rise_data);
+				//cb_append(&pt_buf[axis], &even_data);
+				//cb_append(&pt_buf[axis], &down_data);
 
 				return RTN_SUCC;
 			}
@@ -297,9 +317,12 @@ ERROR_CODE PT_Mode(int axis, int pos, int time)
 				down_data.time = time;
 
 				//获取数据
-				cb_append(&pt_buf[axis], &rise_data);
-				cb_append(&pt_buf[axis], &even_data);
-				cb_append(&pt_buf[axis], &down_data);
+				M_SetDDA(rise_data.time, rise_data.vel, rise_data.acc, rise_data.jerk);
+				M_SetDDA(even_data.time, even_data.vel, even_data.acc, even_data.jerk);
+				M_SetDDA(down_data.time, down_data.vel, down_data.acc, down_data.jerk);
+				//cb_append(&pt_buf[axis], &rise_data);
+				//cb_append(&pt_buf[axis], &even_data);
+				//cb_append(&pt_buf[axis], &down_data);
 
 				return RTN_SUCC;
 			}
