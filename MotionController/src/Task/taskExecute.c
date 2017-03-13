@@ -101,13 +101,15 @@ ERROR_CODE EnterPTmode()
 			int32_t svel;
 			int32_t sacc;
 			int32_t jerk;
+			int32_t pos;
 			int i;
 			for(i = 0; i < 3; i++)
-			{
-				cb_get(((pt_buf[axis].dat)+4+5*i), &dtime);
-				cb_get((pt_buf[axis].dat+2+5*i), &svel);
-				cb_get((pt_buf[axis].dat+1+5*i), &sacc);
-				cb_get((pt_buf[axis].dat+5*i), &jerk);
+			{//((pt_buf[axis].dat)+4+5*i)
+				cb_get(pt_buf[axis].dat, &jerk);
+				cb_get(pt_buf[axis].dat, &sacc);
+				cb_get(pt_buf[axis].dat, &svel);
+				cb_get(pt_buf[axis].dat, &pos);
+				cb_get(pt_buf[axis].dat, &dtime);
 				M_SetDDA(dtime, svel, sacc, jerk);
 			}
 		}
