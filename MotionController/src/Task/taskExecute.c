@@ -94,6 +94,7 @@ ERROR_CODE EnterPTmode()
 	for (axis = 0; axis < AXISNUM; axis++) {
 		if ((gCmd.mark >> axis) & 0x01) {
 			PT_Mode(axis, gCmd.ptPos[axis],gCmd.ptTime[axis]) ;
+
 		}
 	}
 	return RTN_SUCC;
