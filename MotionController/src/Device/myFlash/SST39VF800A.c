@@ -30,7 +30,7 @@ void FlashSST39_Init(void)
   flashSST39.DeviceId = 0;
   FlashSST39_Reset();
   FlashSST39_ReadId();
-  FlashSST39_Test();
+//  FlashSST39_Test();
 }
 
 // Software ID Exit7/CFI Exit

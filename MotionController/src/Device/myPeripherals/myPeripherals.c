@@ -96,6 +96,9 @@ void InitPeripherals(void)
 	InitXintf();		// initializes the External Interface the default reset state.
 	InitDmas();			// Peripheral 5: DMA 初始化，if used.
 
+	InitMotors();		// 初始化电机
+
+
 	// StartDMACHx( &Dma.RegsAddr->CH1);
 	// InitAdc();			// Initializes ADC to a known state.
 
