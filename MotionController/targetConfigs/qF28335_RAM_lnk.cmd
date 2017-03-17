@@ -125,7 +125,7 @@ PAGE 1 :
    RAML6      : origin = 0x00E000, length = 0x001000    
    RAML7      : origin = 0x00F000, length = 0x001000 
 
-   ZONE6B	  : origin = 0x100000, length = 0x080000	// 用作片外RAM, 512KB, added by QUENTIN.
+   ZONE6B	  : origin = 0x100000, length = 0x080000	// external��RAM, 512KB, added by QUENTIN.
    ZONE7B     : origin = 0x200000, length = 0x080000    // 用作片外FLASH, 512KB, added by QUENTIN.
    //ZONE7B     : origin = 0x20FC00, length = 0x000400     /* XINTF zone 7 - data space */
 }

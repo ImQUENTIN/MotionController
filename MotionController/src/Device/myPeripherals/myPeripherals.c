@@ -20,38 +20,9 @@
 #include "my_project.h"
 
 // 运动卡的EXTRAM用的zone6，EXTFLASH用的zone7, FPGA用的zone0.
-
 // 运动卡的EXTRAM用的zone6，
-#pragma DATA_SECTION(EXTRAM,"EXTRAM_DATA");
-volatile Uint16 EXTRAM[0x8000];		// 片外RAM
-
-
 // 运动卡的FPGA用的zone0，
-// #pragma DATA_SECTION(EXTFPGA,"Motor2RegsFiles");
- volatile Uint16 EXTFPGA[0x20];	// 片外FPGA, 0x1000,4kB.
 
-
-// Configure DMA Channel
-#pragma DATA_SECTION(srcBuf,"DMARAML4");
-volatile Uint16  srcBuf[1024];
-
-#if( USE_DMA_CH1 )
-// ch1 -> 读flash：srcBuf到dst0Buf
-volatile Uint16 *DMACh1Dst = EXTFPGA;
-volatile Uint16 *DMACh1Src = srcBuf;
-#endif
-
-#if( USE_DMA_CH2 )
-// ch2 -> 写RAM：srcBuf到dst6Buf
-volatile Uint16 *DMACh2Dst = EXTRAM;
-volatile Uint16 *DMACh2Src = srcBuf;
-#endif
-
-#if( USE_DMA_CH3 )
-// ch3 -> 写flash：srcBuf到dst7Buf
-volatile Uint16 *DMACh3Dst = EXTFLASH;
-volatile Uint16 *DMACh3Src = srcBuf;
-#endif
 
 void InitPeripherals(void)
 {
@@ -94,10 +65,11 @@ void InitPeripherals(void)
 	InitScis();			// Peripheral 3: SCI 初始化，if used.
 	InitSpis();			// Peripheral 4: SPI 初始化，if used.
 	InitXintf();		// initializes the External Interface the default reset state.
-	InitDmas();			// Peripheral 5: DMA 初始化，if used.
+//	InitDmas();			// Peripheral 5: DMA 初始化，if used.
 
+	FlashSST39_Init();
 	InitMotors();		// 初始化电机
-
+	EXTRAM_init();		// 初始化外部RAM
 
 	// StartDMACHx( &Dma.RegsAddr->CH1);
 	// InitAdc();			// Initializes ADC to a known state.
@@ -117,29 +89,6 @@ void InitPeripherals(void)
 
 	// Enable global Interrupts and higher priority real-time debug events:
 	EnableInterrupts();
-
-
-}
-
-
-
-// 此次任务内容
-void ExecuteMyTask(void)
-{
-#if( MY_TEST_DEMO == TEST_SCIA || MY_TEST_DEMO == TEST_SCIB || MY_TEST_DEMO == TEST_SCIC )
-	TestSci();
-#endif
-
-#if( MY_TEST_DEMO == TEST_SPIA )
-	TestSpi();
-#endif
-
-#if( MY_TEST_DEMO == TEST_DMA || MY_TEST_DEMO == TEST_XINTF)
-	TestXintf();
-	FlashSST39_Init();
-	EXTFPGA_Test();
-	while(1);
-#endif
 
 
 }

@@ -9,6 +9,7 @@
 #ifndef CONFIG_H_
 #define CONFIG_H_
 
+#define USE_SPIA 		1		// 使用SPIA
 
 //#define TEST_BORD		1		// 金子舒用的开放板，该行不能注释掉！！
 

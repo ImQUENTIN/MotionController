@@ -16,45 +16,33 @@
 //============================================================================
 //      Peripheral 2. Cpu Timer
 //============================================================================
-#if( MY_TEST_DEMO == TEST_GPIO_TIMER_LED)
-volatile unsigned int timer_int_cnt;
-#endif
 
 #if( USE_CPU_TIMER0 )
 interrupt void cpu_timer0_isr(void)
 {
 	CpuTimer0.InterruptCount++;
 
+//	//   Functions of TEST_GPIO_TIMER_LED
+//	if(timer_int_cnt++ >= 12) {
+//		timer_int_cnt = 0;
+//		LED2 = LED_OFF;
+//		CpuTimer0Regs.TCR.bit.TIE	= 0;	// 设置TIE = 0，关闭定时器0中断
+//		CpuTimer1Regs.TCR.bit.TIE  	= 1;	// 设置TIE = 1，开启定时器1中断
+//		CpuTimer2Regs.TCR.bit.TIE  	= 0; 	// 设置TIE = 0，关闭定时器2中断
+//	}
+//
+//	LED2_TOG = 1;
 
-#if( MY_TEST_DEMO == TEST_GPIO_TIMER_LED)
-	//   Functions of TEST_GPIO_TIMER_LED
-	if(timer_int_cnt++ >= 12) {
-		timer_int_cnt = 0;
-		LED2 = LED_OFF;
-		CpuTimer0Regs.TCR.bit.TIE	= 0;	// 设置TIE = 0，关闭定时器0中断
-		CpuTimer1Regs.TCR.bit.TIE  	= 1;	// 设置TIE = 1，开启定时器1中断
-		CpuTimer2Regs.TCR.bit.TIE  	= 0; 	// 设置TIE = 0，关闭定时器2中断
-	}
 
-	LED2_TOG = 1;
-#endif
-
-#if(USE_DMA)
-	extern volatile Uint16 srcBuf[1024];
-	int i;
-	for(i=0;i<DMA_BSIZE*DMA_TSIZE*2;i++)
-		srcBuf[i] = 1000*CpuTimer0.InterruptCount;
-#if(USE_DMA_CH1)
-	StartDMACHx( &Dma.RegsAddr->CH1);
-#endif
-#if(USE_DMA_CH2)
-	StartDMACHx( &Dma.RegsAddr->CH2);
-#endif
-#if(USE_DMA_CH3)
-	StartDMACHx( &Dma.RegsAddr->CH3);
-#endif
-
-#endif
+//#if(USE_DMA)
+//	extern volatile Uint16 srcBuf[1024];
+//	int i;
+//	for(i=0;i<DMA_BSIZE*DMA_TSIZE*2;i++)
+//		srcBuf[i] = 1000*CpuTimer0.InterruptCount;
+//	StartDMACHx( &Dma.RegsAddr->CH1);
+//
+//	StartDMACHx( &Dma.RegsAddr->CH2);
+//#endif
 	// Acknowledge this interrupt to receive more interrupts from group 1
 	PieCtrlRegs.PIEACK.bit.ACK1 = 1;
 
@@ -201,8 +189,6 @@ extern word testtx[16];
 interrupt void spia_rx_isr(void)
 {
 	int tmp;
-	static int i=0;
-
 	if(Spia.RegsAddr->SPISTS.bit.INT_FLAG){
 		//		RXFIFO 中断，我们设置的TXFFIL=1，所以当TXFFST=1时会触发中断。
 //		while( SpiaRegs.SPIFFRX.bit.RXFFST){
@@ -237,18 +223,16 @@ interrupt void spia_tx_isr(void)
 {
 	int tmp;
 	static int i=0;
-	int txbuf[100];
-
 	if( Spia.RegsAddr->SPIFFTX.bit.TXFFINT ) {
 		//		TXFIFO 中断，我们设置的TXFFIL=0，所以当TXFFST=0时会触发中断。
 		if( cb_usedSpace(&Spia.cb_tx) > 0 ) {
 			// 循环缓冲区有数据
-			while ( RTN_ERROR != cb_get(&Spia.cb_tx , &tmp)
-					&& SpiaRegs.SPIFFTX.bit.TXFFST < 16){
-
-				SpiaRegs.SPITXBUF = tmp;
-				txbuf[i++] = tmp;
-			}
+//			while ( RTN_ERROR != cb_get(&Spia.cb_tx , &tmp)
+//					&& SpiaRegs.SPIFFTX.bit.TXFFST < 16){
+//
+//				SpiaRegs.SPITXBUF = tmp;
+//				txbuf[i++] = tmp;
+//			}
 			SpiaRegs.SPIFFTX.bit.TXFFINTCLR = 1;
 		} else {
 			// 循环缓冲区 为空
@@ -259,50 +243,6 @@ interrupt void spia_tx_isr(void)
 	PieCtrlRegs.PIEACK.bit.ACK6 = 1;
 }
 #endif // (USE_SPIA)
-
-
-//============================================================================
-//      Peripheral 5. DMA
-//============================================================================
-#if(USE_DMA_CH1)
-interrupt void dma_ch1_isr(void)
-{
-	// Next two lines for debug only to halt the processor here
-	// Remove after inserting ISR Code
-	//	   asm ("      ESTOP0");
-	//	   for(;;);
-	//	StartDMACHx( &Dma.RegsAddr->CH1);
-	// Acknowledge this interrupt to receive more interrupts from group 6
-	PieCtrlRegs.PIEACK.bit.ACK7 = 1;
-}
-#endif
-
-#if(USE_DMA_CH2)
-interrupt void dma_ch2_isr(void)
-{
-	// Next two lines for debug only to halt the processor here
-	// Remove after inserting ISR Code
-	//	   asm ("      ESTOP0");
-	//	   for(;;);
-	//	StartDMACHx( &Dma.RegsAddr->CH2);
-	// Acknowledge this interrupt to receive more interrupts from group 6
-	PieCtrlRegs.PIEACK.bit.ACK7 = 1;
-}
-#endif
-
-#if(USE_DMA_CH3)
-interrupt void dma_ch3_isr(void)
-{
-	// Next two lines for debug only to halt the processor here
-	// Remove after inserting ISR Code
-	//	   asm ("      ESTOP0");
-	//	   for(;;);
-	//	StartDMACHx( &Dma.RegsAddr->CH2);
-	// Acknowledge this interrupt to receive more interrupts from group 6
-	PieCtrlRegs.PIEACK.bit.ACK7 = 1;
-}
-#endif
-
 
 
 //============================================================================
