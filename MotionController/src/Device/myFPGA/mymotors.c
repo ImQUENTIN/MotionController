@@ -46,6 +46,9 @@ void testMymotor(void)
 	int time_us = 50;
 	MotorRegs[0].MCTL.all = 0;	// 复位电机
 	MotorRegs[1].MCTL.all = 0;	// 复位电机
+
+	MotorRegs[0].MCTL.all = 1;	// 复位电机
+	MotorRegs[1].MCTL.all = 1;	// 复位电机
 //	M_SetDDA(1000 ,     0,   32, 0);
 //	M_SetDDA(1000+64000 , 64000,    0, 0);
 //	M_SetDDA(2000+64000 ,64000,   -32, 0);]

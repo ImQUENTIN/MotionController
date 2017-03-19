@@ -239,16 +239,16 @@ void InitZone0(void)
 #elif(SYSCLKOUT_MHZ == 90)
 	// SYSCLK=90Mhz -> 11.11ns
     // Zone write timing
-	cfg.XWRLEAD 	= 1;	// one XTIMCLK cycle.
+	cfg.XWRLEAD 	= 2;	// one XTIMCLK cycle.
     cfg.XWRACTIVE 	= 2;	// two XTIMCLK cycle.
     cfg.XWRTRAIL 	= 0;
     // Zone read timing
-    cfg.XRDLEAD 	= 1;
+    cfg.XRDLEAD 	= 2;
     cfg.XRDACTIVE 	= 2;
     cfg.XRDTRAIL 	= 0;
 
     // double all Zone read/write lead/active/trail timing
-    cfg.X2TIMING 	= 0;
+    cfg.X2TIMING 	= 1;
 
     // Zone will sample XREADY signal
     cfg.USEREADY 	= 0;

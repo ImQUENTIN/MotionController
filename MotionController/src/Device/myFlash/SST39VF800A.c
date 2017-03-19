@@ -144,6 +144,7 @@ void FlashSST39_Test(void)
 	flashSST39.Busy = true;
   if (flashSST39.Active)//SST39VF800A测试正常
   {
+	ESTOP0;	// 说明读取成功。
     FlashSST39_Reset();
     FlashSST39_ChipErase();
     FlashSST39_Reset();
