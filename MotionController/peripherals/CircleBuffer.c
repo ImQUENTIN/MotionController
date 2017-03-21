@@ -13,8 +13,8 @@
 int cb_create(CIRCLE_BUFFER_S *buf, int block_size, int block_number)
 {
 	//cb_release(buf);
-	buf->dat =(int*) malloc(block_size * block_number);
 	memset(buf, 0, sizeof(CIRCLE_BUFFER_S));
+	buf->dat =(int*) malloc(block_size * block_number);
 	buf->block_number = block_number;
 	buf->block_size = block_size;
 	return buf->block_number;

@@ -482,14 +482,14 @@ extern "C" {
 //----------------------------------------------------------
 // Step1. Select the zones you use.
 //----------------------------------------------------------
-#ifndef USE_XINTF_ZONE0
-#define USE_XINTF_ZONE0		0
+#ifndef USE_XINTF_ZONE0			// 运动卡的FPGA用的zone0，
+#define USE_XINTF_ZONE0		1
 #endif
-#ifndef USE_XINTF_ZONE6
-#define USE_XINTF_ZONE6		0
+#ifndef USE_XINTF_ZONE6			// 运动卡的EXTRAM用的zone6，
+#define USE_XINTF_ZONE6		1
 #endif
-#ifndef USE_XINTF_ZONE7
-#define USE_XINTF_ZONE7		0
+#ifndef USE_XINTF_ZONE7			// EXTFLASH用的zone7
+#define USE_XINTF_ZONE7		1
 #endif
 
 #if( USE_XINTF_ZONE0 || USE_XINTF_ZONE6 || USE_XINTF_ZONE7 )

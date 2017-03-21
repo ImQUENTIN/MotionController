@@ -6,8 +6,8 @@
  */
 #include "my_project.h"
 #include "sysTypes.h"
+#include <string.h>
 
-#if( MY_TEST_DEMO == TEST_SCIA || MY_TEST_DEMO == TEST_SCIB || MY_TEST_DEMO == TEST_SCIC )
 void TestSci(void)
 {
 
@@ -95,10 +95,7 @@ void TestSci(void)
 
 }
 
-#endif // ( MY_TEST_DEMO == TEST_SCIA || MY_TEST_DEMO == TEST_SCIB || MY_TEST_DEMO == TEST_SCIC )
 
-
-#if( MY_TEST_DEMO == TEST_SPIA && USE_SPIA )
 word testtx[16] ={ 0,6,3,2,7, 1,3,6,3,3,6,0,0,2,5,1};
 word recordtx[30], itx=0;
 word recordrx[30], irx=0;
@@ -132,39 +129,3 @@ void TestSpi(void)
 		}
 	}
 }
-#endif //( MY_TEST_DEMO == TEST_SPIA )
-
-
-
-#if( MY_TEST_DEMO == TEST_XINTF )
-void TestXintf(void)
-{
-	extern volatile Uint16 EXTRAM[0x8000];		// ∆¨Õ‚RAM
-
-	EXTRAM[0] = (signed int)0x0009;
-	EXTRAM[1] = 0x0007;
-	EXTRAM[2] = 0x08;
-	EXTRAM[3] = 0x09;
-
-}
-
-void EXTFPGA_Test(void)
-{
-	volatile int i,tmp;
-
-	testMymotor();
-
-}
-#endif //( MY_TEST_DEMO == TEST_XINTF )
-
-
-
-
-
-
-
-
-
-
-
-

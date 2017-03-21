@@ -40,6 +40,7 @@
 									<listOptionValue builtIn="false" value="&quot;${PROJECT_LOC}\src\Device\myPeripherals&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${PROJECT_LOC}\src\Device\myIsr&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${PROJECT_LOC}\src\Device\myFlash&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${PROJECT_LOC}\src\Device\myRAM&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${PROJECT_LOC}\src\Device\myFPGA\header&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${PROJECT_LOC}\src\Config&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${PROJECT_LOC}\src\Control&quot;"/>

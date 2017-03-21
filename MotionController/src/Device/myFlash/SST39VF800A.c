@@ -17,9 +17,9 @@
 
 
 #pragma DATA_SECTION(EXTFLASH,"EXTFLASH_DATA");
-volatile uint16_t EXTFLASH[0x8000];
+volatile uint16_t EXTFLASH[0x8000];		//外部Flash的映射地址
 
-volatile struct FlashSST39_VARS flashSST39;	//外部Flash的映射地址
+volatile struct FlashSST39_VARS flashSST39;
 
 
 void FlashSST39_Init(void)

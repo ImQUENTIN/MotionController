@@ -188,7 +188,7 @@ typedef long double     float64;
 #include "CircleBuffer.h"
 #include "SST39VF800A.h"				// external Flash driver files
 #include "myFPGA.h"
-
+#include "myram.h"
 // --------------- no more ----------------------------------------
 #include "DSP2833x_Adc.h"                // ADC Registers
 #include "DSP2833x_DevEmu.h"             // Device Emulation Registers

@@ -113,14 +113,6 @@ ERROR_CODE ReadDDA()
 		if((gCmd.mark >> axis) & 0x01){
 			memcpy(dat_buf+i, (Uint16 *)&MotorRegs[axis].NOWPOS, 8);
 			i += 8;
-//			dat_buf[i++] = MotorRegs[axis].NOWPOS>>16 ;
-//			dat_buf[i++] = MotorRegs[axis].NOWPOS;
-//			dat_buf[i++] = MotorRegs[axis].NOWVEL>>16 ;
-//			dat_buf[i++] = MotorRegs[axis].NOWVEL ;
-//			dat_buf[i++] = MotorRegs[axis].NOWACC>>16;
-//			dat_buf[i++] = MotorRegs[axis].NOWACC;
-//			dat_buf[i++] = MotorRegs[axis].NOWJERK>>16 ;
-//			dat_buf[i++] = MotorRegs[axis].NOWJERK ;
 
 		}
 	}

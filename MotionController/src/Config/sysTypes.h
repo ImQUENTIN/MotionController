@@ -56,12 +56,6 @@ typedef struct {
 	int32_t max_even_vel;		// 匀速阶段最大速度
 }VP_PARAM_S;
 
-struct DDA_VARS{
-	int32_t pos;
-	int32_t vel;
-	int32_t acc;
-	int32_t jerk;
-};
 typedef struct {
 	int32_t pos;
 	int32_t vel;

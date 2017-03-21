@@ -79,9 +79,9 @@ void InitZone7(void)
 #if(USE_XINTF_ZONE7)
 	struct XTIMING_BITS cfg;
     // Zone 7------------------------------------
-	// 连接的是FLASH, SST39VF800A-70, 即70ns
+	// 杩炴帴鐨勬槸FLASH, SST39VF800A-70, 鍗�0ns
 #if(SYSCLKOUT_MHZ == 150)
-	//	F28335，SYSCLK=150Mhz -> 6.7ns
+	//	F28335锛孲YSCLK=150Mhz -> 6.7ns
     // Zone write timing
 	cfg.XWRLEAD 	= 1;	// one XTIMCLK cycle.
     cfg.XWRACTIVE 	= 1;	// two XTIMCLK cycle.
@@ -106,16 +106,16 @@ void InitZone7(void)
 #elif(SYSCLKOUT_MHZ == 90)
 	// SYSCLK=90Mhz -> 11.11ns
     // Zone write timing
-	cfg.XWRLEAD 	= 3;	// one XTIMCLK cycle.
-    cfg.XWRACTIVE 	= 7;	// two XTIMCLK cycle.
-    cfg.XWRTRAIL 	= 3;
+	cfg.XWRLEAD 	= 1;	// one XTIMCLK cycle.
+    cfg.XWRACTIVE 	= 2;	// two XTIMCLK cycle.
+    cfg.XWRTRAIL 	= 0;
     // Zone read timing
-    cfg.XRDLEAD 	= 3;
-    cfg.XRDACTIVE 	= 7;
-    cfg.XRDTRAIL 	= 3;
+    cfg.XRDLEAD 	= 1;
+    cfg.XRDACTIVE 	= 2;
+    cfg.XRDTRAIL 	= 0;
 
     // double all Zone read/write lead/active/trail timing
-    cfg.X2TIMING 	= 1;
+    cfg.X2TIMING 	= 0;
 
     // Zone will sample XREADY signal
     cfg.USEREADY 	= 0;
@@ -146,8 +146,8 @@ void InitZone6(void)
 	struct XTIMING_BITS cfg;
     // Zone 6------------------------------------
 #if(SYSCLKOUT_MHZ == 150)
-	// 开发板的zone7连的是RAM芯片：IS61LV256(512)16-10, 10ns
-	// 开发板的用的F28335，SYSCLK=150Mhz -> 6.7ns
+	// 寮�彂鏉跨殑zone7杩炵殑鏄疪AM鑺墖锛欼S61LV256(512)16-10, 10ns
+	// 寮�彂鏉跨殑鐢ㄧ殑F28335锛孲YSCLK=150Mhz -> 6.7ns
     // Zone write timing
 	cfg.XWRLEAD 	= 1;	// one XTIMCLK cycle.
     cfg.XWRACTIVE 	= 7;	// two XTIMCLK cycle.
@@ -214,8 +214,8 @@ void InitZone0(void)
 	struct XTIMING_BITS cfg;
     // Zone 0------------------------------------
 #if(SYSCLKOUT_MHZ == 150)
-	// 开发板的zone7连的是RAM芯片：IS01LV256(512)16-10, 10ns
-	// 开发板的用的F28335，SYSCLK=150Mhz -> 6.7ns
+	// 寮�彂鏉跨殑zone7杩炵殑鏄疪AM鑺墖锛欼S01LV256(512)16-10, 10ns
+	// 寮�彂鏉跨殑鐢ㄧ殑F28335锛孲YSCLK=150Mhz -> 6.7ns
     // Zone write timing
 	cfg.XWRLEAD 	= 1;	// one XTIMCLK cycle.
     cfg.XWRACTIVE 	= 7;	// two XTIMCLK cycle.
@@ -239,16 +239,16 @@ void InitZone0(void)
 #elif(SYSCLKOUT_MHZ == 90)
 	// SYSCLK=90Mhz -> 11.11ns
     // Zone write timing
-	cfg.XWRLEAD 	= 3;	// one XTIMCLK cycle.
-    cfg.XWRACTIVE 	= 7;	// two XTIMCLK cycle.
-    cfg.XWRTRAIL 	= 3;
+	cfg.XWRLEAD 	= 1;	// one XTIMCLK cycle.
+    cfg.XWRACTIVE 	= 2;	// two XTIMCLK cycle.
+    cfg.XWRTRAIL 	= 0;
     // Zone read timing
-    cfg.XRDLEAD 	= 3;
-    cfg.XRDACTIVE 	= 7;
-    cfg.XRDTRAIL 	= 3;
+    cfg.XRDLEAD 	= 1;
+    cfg.XRDACTIVE 	= 2;
+    cfg.XRDTRAIL 	= 0;
 
     // double all Zone read/write lead/active/trail timing
-    cfg.X2TIMING 	= 1;
+    cfg.X2TIMING 	= 0;
 
     // Zone will sample XREADY signal
     cfg.USEREADY 	= 0;
@@ -291,10 +291,10 @@ void InitXintf(void)
 //	XTIMCLK:
 //	000 XTIMCLK = SYSCLKOUT/1
 //	001 XTIMCLK = SYSCLKOUT/2 (default)
-    XintfRegs.XINTCNF2.bit.XTIMCLK = 0;    // 设置所有外部区域 XTIMCLK = SYSCLKOUT
-    // 3个写缓冲
+    XintfRegs.XINTCNF2.bit.XTIMCLK = 0;    // 璁剧疆鎵�湁澶栭儴鍖哄煙 XTIMCLK = SYSCLKOUT
+    // 3涓啓缂撳啿
     XintfRegs.XINTCNF2.bit.WRBUFF = 3;
-    // XCLKOUT被使能
+    // XCLKOUT琚娇鑳�
     XintfRegs.XINTCNF2.bit.CLKOFF = 0;
 //    CLKMODE:
 //    0 XCLKOUT is equal to XTIMCLK
@@ -305,9 +305,9 @@ void InitXintf(void)
 	// ------------------------------------------------------
     // Step 4. Initialize the specific zone.
 	//
-	InitZone0();
-	InitZone6();
-	InitZone7();
+	InitZone0();		// 运动卡的FPGA用的zone0，
+	InitZone6();		// 运动卡的EXTRAM用的zone6，
+	InitZone7();		// EXTFLASH用的zone7， 不用XINTF。
 
 
    InitXintf16Gpio();
@@ -459,7 +459,7 @@ void InitXintf16Gpio()
 //        The appropriate active SRC/DST_BEG_ADDR register is incremented by the signed value contained
 //           in the SRC/DST_WRAP_STEP register, then
 //
-//        • The new active SRC/DST_BEG_ADDR register is loaded into the active SRC/DST_ADDR register.
+//        鈥�The new active SRC/DST_BEG_ADDR register is loaded into the active SRC/DST_ADDR register.
 //
 //        SRC/DST_BEG_ADDR
 //        SRC/DST_TRANSFER_STEP
