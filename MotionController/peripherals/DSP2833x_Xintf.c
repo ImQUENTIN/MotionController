@@ -305,7 +305,7 @@ void InitXintf(void)
 	// ------------------------------------------------------
     // Step 4. Initialize the specific zone.
 	//
-	InitZone0();		// 运动卡的FPGA用的zone0，
+//	InitZone0();		// 运动卡的FPGA用的zone0，
 	InitZone6();		// 运动卡的EXTRAM用的zone6，
 	InitZone7();		// EXTFLASH用的zone7， 不用XINTF。
 

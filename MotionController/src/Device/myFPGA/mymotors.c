@@ -45,38 +45,9 @@ void testMymotor(void)
 {
 	int time_us = 50;
 	MotorRegs[0].MCTL.all = 0;	// 复位电机
-	MotorRegs[1].MCTL.all = 0;	// 复位电机
-
-	MotorRegs[0].MCTL.all = 1;	// 复位电机
-	MotorRegs[1].MCTL.all = 1;	// 复位电机
-//	M_SetDDA(1000 ,     0,   32, 0);
-//	M_SetDDA(1000+64000 , 64000,    0, 0);
-//	M_SetDDA(2000+64000 ,64000,   -32, 0);]
-
-
-//	  时段控制的DDA数据格式为：[deltaTime, startVel, startAcc, Jerk];
-	// 500ms加速到最大速度
-	// delta_pos = 0.5*a*t^2 = 16e3
-//	M_SetDDA(500e3*time_us,    0, 2*64e3, 0);
-	// 最大速度运行3秒
-	// delta_pos = v*t = 192e3
+	MotorRegs[0].MCTL.all = 1;
 	M_SetDDA(0, ONE_CIRCLE, 64e3,      0, 0);
-//	M_SetDDA(0, 0, -64e2,      0, 0);
-	M_SetDDA(1, ONE_CIRCLE, 64e2,      0, 0);
-//	M_SetDDA(1, 0, -64e2,      0, 0);
-
-	// 1s减速到0
-	// delta_pos = 0.5*a*t^2 = 32e3
-//	M_SetDDA(1000e3*time_us,64e3,  -64e3, 0);
-
-	// nowpos should be 240e3
-//-------------------------------------------
-//	M_SetDDA(4000, 000,  8, 0);
-//	M_SetDDA(4000 +4800, 64000,  0, 0);
-//	M_SetDDA(64000*2, 64000,  -8, 0);
-
 	MotorRegs[0].MCTL.all = 3;	// 使能电机
-	MotorRegs[1].MCTL.all = 3;	// 使能电机
 
 	ESTOP0;
 }
