@@ -123,12 +123,33 @@ ERROR_CODE decoupleCommand(word *pCmd, short cmdLen)
 	case CMD_PT_MODE_ADDR:
 		gCmd.type = CMD_PT_MODE; //
 		gCmd.mark = pCmd[1];
+		ptr = &pCmd[2];
+		for (i = 0; i < AXISNUM; i++) {
+			if ((gCmd.mark >> i) & 0x01) {
+				gCmd.ptdata[i].count++;
+				memcpy(&gCmd.ptdata[i].ptPos[gCmd.ptdata[i].count],ptr,2);
+				memcpy(&gCmd.ptdata[i].ptTime,ptr+2,2);
+				ptr += 4;
+			}
+		}
 		gCmd.serial++;
 		break;
 
  /* ¶ÁDDR */
 	case CMD_RD_DDA_ADDR:
 		gCmd.type = CMD_RD_DDA;
+		gCmd.mark = pCmd[1];
+		gCmd.serial++;
+		break;
+
+	case CMD_RD_MSTA_ADDR:
+		gCmd.type = CMD_RD_MSTA;
+		gCmd.mark = pCmd[1];
+		gCmd.serial++;
+		break;
+
+	case CMD_RD_MFIFO_ADDR:
+		gCmd.type = CMD_RD_MFIFO;
 		gCmd.mark = pCmd[1];
 		gCmd.serial++;
 		break;

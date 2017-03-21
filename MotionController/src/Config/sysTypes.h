@@ -23,7 +23,10 @@ typedef enum ERROR_CODE {
 	RTN_ERROR = -1,
 	RTN_INVALID_COMMAND = -2,
 	RTN_INVALID_MEMORY = -3,
-	RTN_DIVIDED_BY_ZERO = -4
+	RTN_DIVIDED_BY_ZERO = -4,
+	RTN_NO_SPACE = -5,
+	RTN_CMD_EXECUTING = -6
+
 }ERROR_CODE;
 
 //////////////////////////////////////////////////////////
@@ -37,7 +40,9 @@ typedef enum COMMAND_TYPE {
 	CMD_SET_DDA,
 	CMD_GO_HOME,
 	CMD_PT_MODE,
-	CMD_RD_DDA
+	CMD_RD_DDA,
+	CMD_RD_MSTA,
+	CMD_RD_MFIFO
 //	CMD_UPLOAD_ENCODERS,
 
 }COMMAND_TYPE;
@@ -64,6 +69,12 @@ typedef struct {
 	int32_t jerk;
 }DDA_VARS_S;
 
+typedef struct{
+	int32_t count;
+	int32_t ptPos[MAXNUM];
+	int32_t ptTime;
+}PT_VARS_S;
+
 // user 指令结构体
 typedef struct {
 	COMMAND_TYPE type;   		// 指令
@@ -76,10 +87,10 @@ typedef struct {
 	DDA_VARS_S setDDA[AXISNUM];
 
 	// PT variables
-//	VP_PARAM_S vp_param[AXISNUM];		// velocity plan parameters.
-	int32_t	ptPos[AXISNUM];
-	int32_t ptTime[AXISNUM];
-
+//		VP_PARAM_S vp_param[AXISNUM];		// velocity plan parameters.
+//		int32_t	ptPos[AXISNUM];
+//		int32_t ptTime[AXISNUM];
+	PT_VARS_S ptdata[AXISNUM];
 
 }COMMAND_S;
 

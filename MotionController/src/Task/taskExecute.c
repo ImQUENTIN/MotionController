@@ -91,12 +91,16 @@ ERROR_CODE SetDDA(){
 ERROR_CODE EnterPTmode()
 {
 	int axis;
-	for (axis = 0; axis < AXISNUM; axis++) {
-		if ((gCmd.mark >> axis) & 0x01) {
-			PT_Mode(axis, gCmd.ptPos[axis],gCmd.ptTime[axis]) ;
-
+		for (axis = 0; axis < AXISNUM; axis++) {
+			if ((gCmd.mark >> axis) & 0x01) {
+				if(gCmd.ptdata[axis].count == 0){
+					return RTN_SUCC;
+				}
+				else
+			PT_Mode(axis, gCmd.ptdata[axis].ptPos[gCmd.ptdata[axis].count-1],gCmd.ptdata[axis].ptPos[gCmd.ptdata[axis].count],gCmd.ptdata[axis].ptTime) ;
+			}
 		}
-	}
+
 	return RTN_SUCC;
 }
 
@@ -124,3 +128,32 @@ ERROR_CODE ReadDDA()
 	return RTN_SUCC;
 }
 
+ERROR_CODE ReadMotor()
+{
+	int axis;
+	int i = 0;
+	int dat_buf[COMMUNICATION_MAX_LEN];
+	for(axis = 0; axis < AXISNUM; axis++){
+		if((gCmd.mark >> axis) & 0x01){
+				i++;
+				dat_buf[i] = MotorRegs[i].MSTA.all;
+			}
+  }
+	senddata(gCmd.type, gCmd.mark,dat_buf , i);
+	return RTN_SUCC;
+}
+
+ERROR_CODE ReadMfifo()
+{
+	int axis;
+	int i = 0;
+	int dat_buf[COMMUNICATION_MAX_LEN];
+	for(axis = 0; axis < AXISNUM; axis++){
+			if((gCmd.mark >> axis) & 0x01){
+					dat_buf[i++] = MotorRegs[axis].FFRP;
+					dat_buf[i++] = MotorRegs[axis].FFWP;
+				}
+	}
+	senddata(gCmd.type,gCmd.mark,dat_buf,i);
+	return RTN_SUCC;
+}
