@@ -70,8 +70,8 @@ ERROR_CODE PT_Mode(int axis, int pos, int time)
 
 
 				//获取数据    int cb_append(CIRCLE_BUFFER_S *buf, void* block_dat)
-				M_SetDDA(rise_data.time, rise_data.vel, rise_data.acc, rise_data.jerk);
-				M_SetDDA(down_data.time, down_data.vel, down_data.acc, down_data.jerk);
+//				M_SetDDA(rise_data.time, rise_data.vel, rise_data.acc, rise_data.jerk);
+//				M_SetDDA(down_data.time, down_data.vel, down_data.acc, down_data.jerk);
 				//cb_append(&pt_buf[axis], &rise_data);
 				//cb_append(&pt_buf[axis], &even_data);
 				//cb_append(&pt_buf[axis], &down_data);
@@ -102,9 +102,9 @@ ERROR_CODE PT_Mode(int axis, int pos, int time)
 				down_data.time = time;
 
 				//获取数据
-				M_SetDDA(rise_data.time, rise_data.vel, rise_data.acc, rise_data.jerk);
-				M_SetDDA(even_data.time, even_data.vel, even_data.acc, even_data.jerk);
-				M_SetDDA(down_data.time, down_data.vel, down_data.acc, down_data.jerk);
+//				M_SetDDA(rise_data.time, rise_data.vel, rise_data.acc, rise_data.jerk);
+//				M_SetDDA(even_data.time, even_data.vel, even_data.acc, even_data.jerk);
+//				M_SetDDA(down_data.time, down_data.vel, down_data.acc, down_data.jerk);
 				//cb_append(&pt_buf[axis], &rise_data);
 				//cb_append(&pt_buf[axis], &even_data);
 				//cb_append(&pt_buf[axis], &down_data);
@@ -141,9 +141,9 @@ ERROR_CODE PT_Mode(int axis, int pos, int time)
 				down_data.time = time;
 
 				//获取数据
-				M_SetDDA(rise_data.time, rise_data.vel, rise_data.acc, rise_data.jerk);
-				M_SetDDA(even_data.time, even_data.vel, even_data.acc, even_data.jerk);
-				M_SetDDA(down_data.time, down_data.vel, down_data.acc, down_data.jerk);
+//				M_SetDDA(rise_data.time, rise_data.vel, rise_data.acc, rise_data.jerk);
+//				M_SetDDA(even_data.time, even_data.vel, even_data.acc, even_data.jerk);
+//				M_SetDDA(down_data.time, down_data.vel, down_data.acc, down_data.jerk);
 				//cb_append(&pt_buf[axis], &rise_data);
 				//cb_append(&pt_buf[axis], &even_data);
 				//cb_append(&pt_buf[axis], &down_data);
@@ -173,9 +173,9 @@ ERROR_CODE PT_Mode(int axis, int pos, int time)
 				down_data.time = time;
 
 				//获取数据
-				M_SetDDA(rise_data.time, rise_data.vel, rise_data.acc, rise_data.jerk);
-				M_SetDDA(even_data.time, even_data.vel, even_data.acc, even_data.jerk);
-				M_SetDDA(down_data.time, down_data.vel, down_data.acc, down_data.jerk);
+//				M_SetDDA(rise_data.time, rise_data.vel, rise_data.acc, rise_data.jerk);
+//				M_SetDDA(even_data.time, even_data.vel, even_data.acc, even_data.jerk);
+//				M_SetDDA(down_data.time, down_data.vel, down_data.acc, down_data.jerk);
 				//cb_append(&pt_buf[axis], &rise_data);
 				//cb_append(&pt_buf[axis], &even_data);
 				//cb_append(&pt_buf[axis], &down_data);
@@ -214,9 +214,9 @@ ERROR_CODE PT_Mode(int axis, int pos, int time)
 				down_data.time = time;
 
 				//获取数据
-				M_SetDDA(rise_data.time, rise_data.vel, rise_data.acc, rise_data.jerk);
+//				M_SetDDA(rise_data.time, rise_data.vel, rise_data.acc, rise_data.jerk);
 				//M_SetDDA(even_data.time, even_data.vel, even_data.acc, even_data.jerk);
-				M_SetDDA(down_data.time, down_data.vel, down_data.acc, down_data.jerk);
+//				M_SetDDA(down_data.time, down_data.vel, down_data.acc, down_data.jerk);
 				//cb_append(&pt_buf[axis], &rise_data);
 				//cb_append(&pt_buf[axis], &even_data);
 				//cb_append(&pt_buf[axis], &down_data);
@@ -247,9 +247,9 @@ ERROR_CODE PT_Mode(int axis, int pos, int time)
 				down_data.time = time;
 
 				//获取数据
-				M_SetDDA(rise_data.time, rise_data.vel, rise_data.acc, rise_data.jerk);
-				M_SetDDA(even_data.time, even_data.vel, even_data.acc, even_data.jerk);
-				M_SetDDA(down_data.time, down_data.vel, down_data.acc, down_data.jerk);
+//				M_SetDDA(rise_data.time, rise_data.vel, rise_data.acc, rise_data.jerk);
+//				M_SetDDA(even_data.time, even_data.vel, even_data.acc, even_data.jerk);
+//				M_SetDDA(down_data.time, down_data.vel, down_data.acc, down_data.jerk);
 				//cb_append(&pt_buf[axis], &rise_data);
 				//cb_append(&pt_buf[axis], &even_data);
 				//cb_append(&pt_buf[axis], &down_data);
@@ -285,9 +285,9 @@ ERROR_CODE PT_Mode(int axis, int pos, int time)
 				down_data.time = time;
 
 				//获取数据
-				M_SetDDA(rise_data.time, rise_data.vel, rise_data.acc, rise_data.jerk);
-				M_SetDDA(even_data.time, even_data.vel, even_data.acc, even_data.jerk);
-				M_SetDDA(down_data.time, down_data.vel, down_data.acc, down_data.jerk);
+//				M_SetDDA(rise_data.time, rise_data.vel, rise_data.acc, rise_data.jerk);
+//				M_SetDDA(even_data.time, even_data.vel, even_data.acc, even_data.jerk);
+//				M_SetDDA(down_data.time, down_data.vel, down_data.acc, down_data.jerk);
 				//cb_append(&pt_buf[axis], &rise_data);
 				//cb_append(&pt_buf[axis], &even_data);
 				//cb_append(&pt_buf[axis], &down_data);
@@ -317,9 +317,9 @@ ERROR_CODE PT_Mode(int axis, int pos, int time)
 				down_data.time = time;
 
 				//获取数据
-				M_SetDDA(rise_data.time, rise_data.vel, rise_data.acc, rise_data.jerk);
-				M_SetDDA(even_data.time, even_data.vel, even_data.acc, even_data.jerk);
-				M_SetDDA(down_data.time, down_data.vel, down_data.acc, down_data.jerk);
+//				M_SetDDA(rise_data.time, rise_data.vel, rise_data.acc, rise_data.jerk);
+//				M_SetDDA(even_data.time, even_data.vel, even_data.acc, even_data.jerk);
+//				M_SetDDA(down_data.time, down_data.vel, down_data.acc, down_data.jerk);
 				//cb_append(&pt_buf[axis], &rise_data);
 				//cb_append(&pt_buf[axis], &even_data);
 				//cb_append(&pt_buf[axis], &down_data);

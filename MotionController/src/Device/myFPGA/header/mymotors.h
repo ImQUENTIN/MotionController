@@ -83,5 +83,6 @@ extern volatile struct MOTORS_REGS MotorRegs[AXIS_ITEM];
 void InitMotors(void);
 // test the motor.
 void testMymotor(void);
+void MR_SetDDA( int axis, DDA_VARS_S *dda);
 
 #endif /* MOTORS_H_ */

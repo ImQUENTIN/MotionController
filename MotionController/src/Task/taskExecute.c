@@ -15,6 +15,7 @@
 #include "DSP2833x_Device.h"
 #include "sysTypes.h"
 #include "PTmode.h"
+#include "senddata.h"
 
 extern COMMAND_S   gCmd;		// 来自ARM端的指令
 
@@ -100,7 +101,7 @@ ERROR_CODE EnterPTmode()
 	return RTN_SUCC;
 }
 
-ERROR_CODE ReadDDA()
+ERROR_CODE ReadDDA(void)
 {
 	int axis;
 	short i = 0;

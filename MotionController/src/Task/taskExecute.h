@@ -15,5 +15,6 @@ ERROR_CODE Activate();
 ERROR_CODE Start();
 ERROR_CODE SetDDA();
 ERROR_CODE EnterPTmode();
+ERROR_CODE ReadDDA(void);
 
 #endif /* TASKEXECUTE_H_ */
