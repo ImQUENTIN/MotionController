@@ -42,7 +42,9 @@ typedef enum COMMAND_TYPE {
 	CMD_PT_MODE,
 	CMD_RD_DDA,
 	CMD_RD_MSTA,
-	CMD_RD_MFIFO
+	CMD_RD_MFIFO,
+	CMD_RD_SRAM,
+	CMD_RD_PVAJ
 //	CMD_UPLOAD_ENCODERS,
 
 }COMMAND_TYPE;
@@ -65,7 +67,8 @@ typedef struct {
 
 typedef struct{
 	int32_t count;
-	int32_t ptPos[MAXNUM];
+	int32_t ptPos;
+	int32_t prevPos;
 	int32_t ptTime;
 }PT_VARS_S;
 

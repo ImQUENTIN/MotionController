@@ -4,11 +4,10 @@
 #include "PTmode.h"
 #include "math.h"
 #include "string.h"
-
+#include "myram.h"
 
 //CIRCLE_BUFFER_S pt_buf[AXISNUM];	// AXISNUM个轴的pt_buf.
-VP_PARAM_S vp_param[AXISNUM];		// velocity plan parameters.
-
+//VP_PARAM_S vp_param[AXISNUM];		// velocity plan parameters.
 
 //int PT_Initial()    //初始化 PT模式的循环缓冲区 pt_buf
 //{
@@ -26,13 +25,31 @@ VP_PARAM_S vp_param[AXISNUM];		// velocity plan parameters.
 //}
 
 // 上升和下降的加速度相同
-ERROR_CODE PT_Mode(int axis, int32_t lastpos, int32_t nowpos, int32_t time)
+ERROR_CODE PT_Mode(int axis, int32_t lastpos, int32_t nowpos, int32_t time, int32_t cmdnum)
 {
+	int i, j, k;
 	int32_t vel;
 	int32_t relpos;
+	DDA_VARS_S intmp, outtmp;
 	relpos = nowpos - lastpos;
 	vel = relpos/time*1000;
-	M_SetDDA( axis, nowpos, vel, 0, 0);
+	if(vel >= DEFUALT_MAX_EVEN_VEL)
+		vel = DEFUALT_MAX_EVEN_VEL;
+	for( i = 0; i < cmdnum-1; i++){
+		// 写满
+		intmp.pos = nowpos;
+		intmp.vel = vel;
+		intmp.acc = 0;
+		intmp.jerk = 0;
+		for(j = 0;j < AXISNUM; j++)
+			if( RTN_ERROR == cb_append(&ram_dda[j], &intmp))
+				break;
+
+	}
+	for(k = 0;k < AXISNUM; k++)
+		if( RTN_ERROR == cb_get(&ram_dda[k], &outtmp));
+	M_SetDDA(time, outtmp.pos, outtmp.vel, outtmp.acc, outtmp.jerk);
+
 	return RTN_SUCC;
 }
 	//	PT_DATA_S rise_data;

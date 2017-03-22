@@ -47,6 +47,7 @@
 									<listOptionValue builtIn="false" value="&quot;${PROJECT_LOC}\src\Task&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${PROJECT_LOC}\src\Kernal&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${PROJECT_LOC}\src\Communication\arm-dsp&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${PROJECT_LOC}\src\Communication\dsp-arm&quot;"/>
 								</option>
 								<option id="com.ti.ccstudio.buildDefinitions.C2000_6.2.compilerID.DEBUGGING_MODEL.2065026764" name="Debugging model" superClass="com.ti.ccstudio.buildDefinitions.C2000_6.2.compilerID.DEBUGGING_MODEL" value="com.ti.ccstudio.buildDefinitions.C2000_6.2.compilerID.DEBUGGING_MODEL.SYMDEBUG__DWARF" valueType="enumerated"/>
 								<option id="com.ti.ccstudio.buildDefinitions.C2000_6.2.compilerID.DIAG_WARNING.1960674339" name="Treat diagnostic &lt;id&gt; as warning (--diag_warning, -pdsw)" superClass="com.ti.ccstudio.buildDefinitions.C2000_6.2.compilerID.DIAG_WARNING" valueType="stringList">

@@ -16,7 +16,7 @@ typedef struct
 extern CIRCLE_BUFFER_S pt_buf[AXISNUM];
 extern VP_PARAM_S vp_param[AXISNUM];		// velocity plan parameters.
 
-int PT_Mode(int axis, int32_t lastpos,int32_t nowpos, int32_t time) ;
+int PT_Mode(int axis, int32_t lastpos,int32_t nowpos, int32_t time, int32_t cmdnum) ;
 
 
 

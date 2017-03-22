@@ -66,8 +66,8 @@ void main(void)
 	// step 1: initial devices
 	InitDevices();
 
-	FlashSST39_Test();
-	EXTRAM_test();
+//	FlashSST39_Test();
+//	EXTRAM_test();
 //	TestSpi();	// 注释掉，不需要测试的时候。
 
 //	while(1)

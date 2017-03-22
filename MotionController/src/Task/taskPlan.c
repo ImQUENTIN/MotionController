@@ -33,6 +33,7 @@ ERROR_CODE taskPlan()
 		case CMD_RD_DDA:
 		case CMD_RD_MSTA:
 		case CMD_RD_MFIFO:
+		case CMD_RD_SRAM:
 			rtn = handleCommand(&gCmd);
 			break;
 		default:
@@ -59,6 +60,14 @@ ERROR_CODE taskPlan()
 			break;
 
 		case CMD_RD_MFIFO:
+			rtn = handleCommand(&gCmd);
+			break;
+
+		case CMD_RD_SRAM:
+			rtn = handleCommand(&gCmd);
+			break;
+
+		case CMD_RD_PVAJ:
 			rtn = handleCommand(&gCmd);
 			break;
 
@@ -105,6 +114,8 @@ ERROR_CODE handleCommand(COMMAND_S *pCmd )
 	case CMD_RD_DDA:        rtn = ReadDDA();        break;
 	case CMD_RD_MSTA:		rtn = ReadMotor();		break;
 	case CMD_RD_MFIFO:		rtn = ReadMfifo();		break;
+	case CMD_RD_SRAM:		rtn = ReadSram();		break;
+
 
 	default:
 		rtn = RTN_INVALID_COMMAND;

@@ -15,10 +15,11 @@
 #include "DSP2833x_Device.h"
 #include "sysTypes.h"
 #include "PTmode.h"
+#include "senddata.h"
 
 extern COMMAND_S   gCmd;		// 来自ARM端的指令
 
-
+static int dat_buf[COMMUNICATION_MAX_LEN];
 ERROR_CODE Message(){
 	return RTN_SUCC;
 }
@@ -93,11 +94,11 @@ ERROR_CODE EnterPTmode()
 	int axis;
 		for (axis = 0; axis < AXISNUM; axis++) {
 			if ((gCmd.mark >> axis) & 0x01) {
-				if(gCmd.ptdata[axis].count == 0){
+				if(gCmd.ptdata[axis].count == 1){
 					return RTN_SUCC;
 				}
 				else
-			PT_Mode(axis, gCmd.ptdata[axis].ptPos[gCmd.ptdata[axis].count-1],gCmd.ptdata[axis].ptPos[gCmd.ptdata[axis].count],gCmd.ptdata[axis].ptTime) ;
+			PT_Mode(axis, gCmd.ptdata[axis].prevPos,gCmd.ptdata[axis].ptPos,gCmd.ptdata[axis].ptTime,gCmd.ptdata[axis].count) ;
 			}
 		}
 
@@ -107,8 +108,7 @@ ERROR_CODE EnterPTmode()
 ERROR_CODE ReadDDA()
 {
 	int axis;
-	short i = 0;
-	int dat_buf[COMMUNICATION_MAX_LEN];
+	int i = 0;
 	for(axis = 0; axis < AXISNUM; axis++){
 		if((gCmd.mark >> axis) & 0x01){
 			memcpy(dat_buf+i, (Uint16 *)&MotorRegs[axis].NOWPOS, 8);
@@ -124,11 +124,13 @@ ERROR_CODE ReadMotor()
 {
 	int axis;
 	int i = 0;
-	int dat_buf[COMMUNICATION_MAX_LEN];
 	for(axis = 0; axis < AXISNUM; axis++){
 		if((gCmd.mark >> axis) & 0x01){
-				i++;
-				dat_buf[i] = MotorRegs[i].MSTA.all;
+				dat_buf[i++] = MotorRegs[axis].MSTA.all;
+				dat_buf[i++] = MotorRegs[axis].NOWPOS;
+				dat_buf[i++] = MotorRegs[axis].NOWVEL;
+				dat_buf[i++] = MotorRegs[axis].NOWACC;
+				dat_buf[i++] = MotorRegs[axis].NOWACC;
 			}
   }
 	senddata(gCmd.type, gCmd.mark,dat_buf , i);
@@ -139,7 +141,6 @@ ERROR_CODE ReadMfifo()
 {
 	int axis;
 	int i = 0;
-	int dat_buf[COMMUNICATION_MAX_LEN];
 	for(axis = 0; axis < AXISNUM; axis++){
 			if((gCmd.mark >> axis) & 0x01){
 					dat_buf[i++] = MotorRegs[axis].FFRP;
@@ -149,3 +150,17 @@ ERROR_CODE ReadMfifo()
 	senddata(gCmd.type,gCmd.mark,dat_buf,i);
 	return RTN_SUCC;
 }
+
+ERROR_CODE ReadSram()
+{
+	int axis;
+	int dat[AXISNUM],i = 0;
+	for(axis = 0; axis < AXISNUM; axis++){
+			if((gCmd.mark >> axis) & 0x01){
+				dat[i++] = cb_usedSpace(&ram_dda[axis]);
+				}
+	}
+	senddata(gCmd.type,gCmd.mark,dat,i);
+	return RTN_SUCC;
+}
+
