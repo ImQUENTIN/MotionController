@@ -22,6 +22,7 @@ interrupt void cpu_timer0_isr(void)
 {
 	CpuTimer0.InterruptCount++;
 
+
 //	//   Functions of TEST_GPIO_TIMER_LED
 //	if(timer_int_cnt++ >= 12) {
 //		timer_int_cnt = 0;

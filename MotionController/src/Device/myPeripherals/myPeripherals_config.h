@@ -156,7 +156,7 @@ extern "C" {
 // Step1. Select the Cpu Timers modules you use.
 //----------------------------------------------------------
 #ifndef USE_CPU_TIMER0
-#define USE_CPU_TIMER0  0	// 是否使用Cpu Timer0
+#define USE_CPU_TIMER0  1	// 是否使用Cpu Timer0
 #endif
 #ifndef USE_CPU_TIMER1
 #define USE_CPU_TIMER1  0	// 是否使用Cpu Timer1
@@ -170,7 +170,7 @@ extern "C" {
 // Step3. configure the Cpu Timer period(us) .
 //----------------------------------------------------------
 #if !defined(CPU_TIMER0_PRD) & USE_CPU_TIMER0
-#define 	CPU_TIMER0_PRD	500000
+#define 	CPU_TIMER0_PRD	1e3
 #endif
 
 #if !defined(CPU_TIMER1_PRD) & USE_CPU_TIMER1

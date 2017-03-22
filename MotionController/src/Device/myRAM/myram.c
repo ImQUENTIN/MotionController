@@ -41,11 +41,13 @@ void testPlot(void) {
 	double A = 30, B = 2 * 3.141593 / 80, D;	// sin 参数
 	double step_vel = 1e4, max_vel = 64e3;		// 稳定脉冲速度
 
-	double x, y, v, vx, vy, x_prev = 0, y_prev = 0, t_sec = 0;
+	double x, y, v, px, py, vx, vy, x_prev = 0, y_prev = 0, t_sec = 0;
 
 	int x_start = 1, x_end = 100; // 单位mm
 
 	DDA_VARS_S dda[AXISNUM];
+	static int32_t pre_pos[AXISNUM];
+	const int time_scale = 50;
 	int axis = 0;
 
 	D = A;
@@ -63,10 +65,23 @@ void testPlot(void) {
 
 		// 压入RAM
 		memset(&dda[0], 0, sizeof(DDA_VARS_S) * AXISNUM);
-		dda[0].pos = (int32_t) (x * STEP_X + 0.5);
-		dda[0].vel = (int32_t) vx;
-		dda[1].pos = (int32_t) y * STEP_X + 0.5;
+		pre_pos[0] = dda[0].pos;
+		pre_pos[1] = dda[1].pos;
+
+		px = x * STEP_X;
+		py = y * STEP_X;
+		// 四舍五入
+		if(px>0) px = px + 0.5; else px = px - 0.5;
+		if(py>0) py = py + 0.5; else py = py - 0.5;
+
+		// 压入RAM
+		dda[0].pos = (int32_t) px;
+		dda[0].vel = (int32_t) vx; //
+		dda[0].jerk = t_sec*1e6*time_scale;			// used as period:us
+
+		dda[1].pos = (int32_t) py;
 		dda[1].vel = (int32_t) vy;
+		dda[1].jerk = t_sec*1e6*time_scale;			// used as period:us
 
 		cb_append(&ram_dda[0], &dda[0]);
 		cb_append(&ram_dda[1], &dda[1]);
@@ -88,11 +103,15 @@ void testPlot(void) {
 	for (axis = 0; axis < 2; axis++) {
 		MotorRegs[axis].MCTL.bit.ENA = 1;
 	}
-	while(MotorRegs[0].FFRP != 20 );//!= MotorRegs[0].FFWP>>3);
-	// 关闭电机
-	for (axis = 0; axis < 2; axis++) {
-		MotorRegs[axis].MCTL.bit.ENA = 0;
-	}
+
+//	while(MotorRegs[0].FFRP != MotorRegs[0].FFWP>>3);
+//	while( MotorRegs[0].MSTA.bit.MBSY);
+//
+//	// 关闭电机
+//	for (axis = 0; axis < 2; axis++) {
+//		MotorRegs[axis].MCTL.bit.ENA = 0;
+//	}
+
 }
 
 void EXTRAM_test(void) {
