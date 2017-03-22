@@ -53,6 +53,8 @@ void InitSpiFifo( struct SPI_VARS *Spi);
 #if(USE_SPIA)
 
 struct SPI_VARS Spia;		// Spia 变量
+Uint16 spia_rxbuf[CIRCLE_BUFFER_SIZE];
+Uint16 spia_txbuf[CIRCLE_BUFFER_SIZE];
 
 // Test 1,SPIA , 8-bit word,
 void InitSpia(void)
@@ -64,8 +66,15 @@ void InitSpia(void)
 	Spia.RegsAddr 	= &SpiaRegs;
 	Spia.Baud		= SPIA_BAUD;		// get from user's configuration.
 
-	cb_create(&Spia.cb_rx, sizeof(Uint16), CIRCLE_BUFFER_SIZE);		// 循环缓冲区
-	cb_create(&Spia.cb_tx, sizeof(Uint16), CIRCLE_BUFFER_SIZE);		// 循环缓冲区
+	memset(&Spia.cb_rx, 0, sizeof(CIRCLE_BUFFER_S));
+	Spia.cb_rx.dat = spia_rxbuf;
+	Spia.cb_rx.block_number = CIRCLE_BUFFER_SIZE;
+	Spia.cb_rx.block_size = sizeof(Uint16);
+
+	memset(&Spia.cb_tx, 0, sizeof(CIRCLE_BUFFER_S));
+	Spia.cb_tx.dat = spia_txbuf;
+	Spia.cb_tx.block_number = CIRCLE_BUFFER_SIZE;
+	Spia.cb_tx.block_size = sizeof(Uint16);
 
 	InitSpiaGpio();
 
