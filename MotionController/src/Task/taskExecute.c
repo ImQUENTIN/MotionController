@@ -19,7 +19,9 @@
 
 extern COMMAND_S gCmd;		// 来自ARM端的指令
 
+
 ERROR_CODE Message() {
+
 	return RTN_SUCC;
 }
 
@@ -88,6 +90,7 @@ ERROR_CODE SetDDA() {
 
 ERROR_CODE EnterPTmode() {
 	int axis;
+
 	for (axis = 0; axis < AXISNUM; axis++) {
 		if ((gCmd.mark >> axis) & 0x01) {
 			PT_Mode(axis, &gCmd.ptdata[axis]);
@@ -113,7 +116,7 @@ ERROR_CODE ReadDDA(void) {
 ERROR_CODE ReadMotor() {
 	int axis;
 	int i = 0;
-//	int dat_buf[COMMUNICATION_MAX_LEN];
+
 	for (axis = 0; axis < AXISNUM; axis++) {
 		if ((gCmd.mark >> axis) & 0x01) {
 			i++;
@@ -121,19 +124,36 @@ ERROR_CODE ReadMotor() {
 		}
 	}
 	senddata(gCmd.type, gCmd.mark, gCmd.dat_buf, i);
+
 	return RTN_SUCC;
 }
 
 ERROR_CODE ReadMfifo() {
 	int axis;
 	int i = 0;
-//	int dat_buf[COMMUNICATION_MAX_LEN];
+
 	for (axis = 0; axis < AXISNUM; axis++) {
 		if ((gCmd.mark >> axis) & 0x01) {
 			gCmd.dat_buf[i++] = MotorRegs[axis].FFRP;
 			gCmd.dat_buf[i++] = MotorRegs[axis].FFWP;
 		}
+
 	}
 	senddata(gCmd.type, gCmd.mark, gCmd.dat_buf, i);
 	return RTN_SUCC;
 }
+
+ERROR_CODE ReadSram()
+{
+	int dat[AXISNUM];
+	unsigned int axis, i = 0;
+
+	for(axis = 0; axis < AXISNUM; axis++){
+			if((gCmd.mark >> axis) & 0x01){
+				dat[i++] = cb_usedSpace(&ram_dda[axis]);
+				}
+	}
+	senddata(gCmd.type,gCmd.mark,dat,i);
+	return RTN_SUCC;
+}
+

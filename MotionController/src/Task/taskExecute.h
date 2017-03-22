@@ -15,8 +15,11 @@ ERROR_CODE Activate();
 ERROR_CODE Start();
 ERROR_CODE SetDDA();
 ERROR_CODE EnterPTmode();
+
 ERROR_CODE ReadDDA(void);
-ERROR_CODE ReadMotor();
 ERROR_CODE ReadMfifo();
+ERROR_CODE ReadMotor();
+ERROR_CODE ReadSram();
+
 
 #endif /* TASKEXECUTE_H_ */

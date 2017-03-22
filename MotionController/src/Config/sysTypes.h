@@ -7,7 +7,7 @@
 
 #ifndef MY_STD_TYPE
 #define MY_STD_TYPE
-	typedef           int word;
+	typedef unsigned int word;
 	typedef unsigned char byte;
 	typedef unsigned char  uint8_t;
 	typedef 		 char   int8_t;
@@ -42,7 +42,9 @@ typedef enum COMMAND_TYPE {
 	CMD_PT_MODE,
 	CMD_RD_DDA,
 	CMD_RD_MSTA,
-	CMD_RD_MFIFO
+	CMD_RD_MFIFO,
+	CMD_RD_SRAM,
+	CMD_RD_PVAJ
 //	CMD_UPLOAD_ENCODERS,
 
 }COMMAND_TYPE;
@@ -67,6 +69,7 @@ typedef struct{
 	int32_t Pos;
 	int32_t PrevPos;
 	int32_t Period;
+
 }PT_VARS_S;
 
 // user 指令结构体
@@ -135,11 +138,6 @@ typedef struct {
 	AXIS_S axis[AXISNUM];
 
 }SYS_INFO;
-
-
-
-
-
 
 
 #endif // __MY_TYPES_H__

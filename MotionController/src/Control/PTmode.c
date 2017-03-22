@@ -3,11 +3,12 @@
 #include "PTmode.h"
 #include "math.h"
 #include "string.h"
-
+#include "myram.h"
 //CIRCLE_BUFFER_S pt_buf[AXISNUM];	// AXISNUM个轴的pt_buf.
 VP_PARAM_S vp_param[AXISNUM];		// velocity plan parameters.
 
 const int time_ms2us =  50*1000;
+
 
 //int PT_Initial()    //初始化 PT模式的循环缓冲区 pt_buf
 //{
@@ -28,6 +29,7 @@ const int time_ms2us =  50*1000;
 ERROR_CODE PT_Mode(int axis, PT_VARS_S *pt) {
 	double vel;
 	int32_t delta_pos;
+	DDA_VARS_S dda;
 
 	delta_pos = pt->Pos - pt->PrevPos;
 	vel = delta_pos * 1000 / pt->Period;
@@ -35,11 +37,13 @@ ERROR_CODE PT_Mode(int axis, PT_VARS_S *pt) {
 		vel += 0.5;
 	else
 		vel -= 0.5;
-
-	M_SetDDA(axis, pt->Pos, (int32_t)vel, 0, pt->Period*time_ms2us);
-
 	pt->PrevPos = pt->Pos;
-	return RTN_SUCC;
+
+	dda.pos = pt->Pos;
+	dda.vel = (int32_t)vel;
+	dda.acc = 0;
+	dda.jerk = pt->Period*time_ms2us;
+	return  cb_append(&ram_dda[axis], &dda);
 }
 //	PT_DATA_S rise_data;
 //	PT_DATA_S even_data;

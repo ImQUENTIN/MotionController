@@ -9,7 +9,7 @@
 #include "my_project.h"
 
 // 全局变量
-COMMAND_S gCmd;
+ COMMAND_S gCmd;
 
 ERROR_CODE decoupleCommand(word *pCmd, short cmdLen);
 
@@ -102,10 +102,6 @@ ERROR_CODE decoupleCommand(word *pCmd, short cmdLen)
 		for (i = 0; i < AXISNUM; i++) {
 			if ((gCmd.mark >> i) & 0x01) {
 				memcpy(&gCmd.setDDA[i].pos,ptr,8);
-//				gCmd.setDDA[i].pos	= *ptr++<<16 + *ptr++;
-//				gCmd.setDDA[i].vel	= *ptr++<<16 + *ptr++;
-//				gCmd.setDDA[i].acc	= *ptr++<<16 + *ptr++;
-//				gCmd.setDDA[i].jerk	= *ptr++<<16 + *ptr++;
 				ptr += 8;
 			}
 		}
@@ -129,6 +125,7 @@ ERROR_CODE decoupleCommand(word *pCmd, short cmdLen)
 				memcpy(&gCmd.ptdata[i].Pos,ptr,2);
 				memcpy(&gCmd.ptdata[i].Period,ptr+2,2);
 				ptr += 4;
+
 			}
 		}
 		gCmd.serial++;
@@ -149,6 +146,12 @@ ERROR_CODE decoupleCommand(word *pCmd, short cmdLen)
 
 	case CMD_RD_MFIFO_ADDR:
 		gCmd.type = CMD_RD_MFIFO;
+		gCmd.mark = pCmd[1];
+		gCmd.serial++;
+		break;
+
+	case CMD_RD_SRAM_ADDR:
+		gCmd.type = CMD_RD_SRAM;
 		gCmd.mark = pCmd[1];
 		gCmd.serial++;
 		break;

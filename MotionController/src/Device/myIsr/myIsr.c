@@ -223,7 +223,7 @@ interrupt void spia_rx_isr(void)
 interrupt void spia_tx_isr(void)
 {
 //	int tmp;
-//	static int i=0;
+
 	if( Spia.RegsAddr->SPIFFTX.bit.TXFFINT ) {
 		//		TXFIFO 中断，我们设置的TXFFIL=0，所以当TXFFST=0时会触发中断。
 		if( cb_usedSpace(&Spia.cb_tx) > 0 ) {
