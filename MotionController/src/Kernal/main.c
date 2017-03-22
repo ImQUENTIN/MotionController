@@ -71,7 +71,9 @@ void main(void)
 //	TestSpi();	// 注释掉，不需要测试的时候。
 
 	testPlot();
-//	testMymotor();
+
+//	while(1)
+//		testMymotor();
 
 	while(1)
      {

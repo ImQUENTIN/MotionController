@@ -20,6 +20,8 @@
 #define CMD_GO_HOME_ADDR		0x06
 #define CMD_PT_MODE_ADDR		0x07
 #define CMD_RD_DDA_ADDR         0x08
+#define CMD_RD_MSTA_ADDR		0x09
+#define CMD_RD_MFIFO_ADDR		0x0A
 
 
 
