@@ -40,9 +40,8 @@ ERROR_CODE Estop() {
 	int axis;
 	for (axis = 0; axis < AXISNUM; axis++) {
 		if ((gCmd.mark >> axis) & 0x01) {
-			MotorRegs[0].MCTL.bit.PAUSE = 1;
-			ESTOP0;
-			// TEST HERE.
+			MotorRegs[0].MCTL.bit.ENA = 0;
+			MotorRegs[0].MCTL.bit.START = 0;
 		}
 	}
 	return RTN_SUCC;
@@ -53,8 +52,6 @@ ERROR_CODE Activate() {
 	for (axis = 0; axis < AXISNUM; axis++) {
 		if ((gCmd.mark >> axis) & 0x01) {
 			MotorRegs[0].MCTL.bit.ENA = 1;			// 使能电机
-			ESTOP0;
-			// TEST HERE.
 		}
 	}
 	return RTN_SUCC;
@@ -64,10 +61,7 @@ ERROR_CODE Start() {
 	int axis;
 	for (axis = 0; axis < AXISNUM; axis++) {
 		if ((gCmd.mark >> axis) & 0x01) {
-//			tmp = MotorRegs[0].MCTL.all;
-			MotorRegs[0].MCTL.bit.ENA = 1;			// 使能电机
-			MotorRegs[0].MCTL.bit.PAUSE = 0;			// 启动电机
-//			ESTOP0;	// TEST HERE.
+			MotorRegs[0].MCTL.bit.START = 1;		// 启动电机
 		}
 	}
 	return RTN_SUCC;
