@@ -18,8 +18,8 @@
 #include "senddata.h"
 
 extern COMMAND_S gCmd;		// 来自ARM端的指令
-
-
+extern uint8_t flag;
+static int a;
 ERROR_CODE Message() {
 
 	return RTN_SUCC;
@@ -62,14 +62,25 @@ ERROR_CODE Activate() {
 
 ERROR_CODE Start() {
 	int axis;
+	DDA_VARS_S dda[AXISNUM];
 	for (axis = 0; axis < AXISNUM; axis++) {
 		if ((gCmd.mark >> axis) & 0x01) {
 //			tmp = MotorRegs[0].MCTL.all;
-			MotorRegs[0].MCTL.bit.ENA = 1;			// 使能电机
-			MotorRegs[0].MCTL.bit.PAUSE = 0;			// 启动电机
+//			MotorRegs[0].MCTL.bit.ENA = 1;			// 使能电机
+//			MotorRegs[0].MCTL.bit.PAUSE = 0;			// 启动电机
 //			ESTOP0;	// TEST HERE.
+			MotorRegs[axis].MCTL.all = 0;	// 复位电机
+			MotorRegs[axis].MCTL.all = 1;
+			while (RTN_ERROR != cb_get(&ram_dda[axis], &dda[axis])) {
+				// 取轴axis, 压入DDA
+				MR_SetDDA(axis, &dda[axis]);
+				if((flag >> axis) == 1)
+					return RTN_NO_SPACE;//next step?
+			}
 		}
 	}
+	for (axis = 0; axis < AXISNUM; axis++)
+	MotorRegs[axis].MCTL.bit.ENA = 1;
 	return RTN_SUCC;
 }
 
@@ -119,8 +130,13 @@ ERROR_CODE ReadMotor() {
 
 	for (axis = 0; axis < AXISNUM; axis++) {
 		if ((gCmd.mark >> axis) & 0x01) {
-			i++;
-			gCmd.dat_buf[i] = MotorRegs[i].MSTA.all;
+			gCmd.dat_buf[i++] = MotorRegs[axis].MSTA.all;
+//			gCmd.dat_buf[i++] = MotorRegs[axis].NOWPOS;
+//			gCmd.dat_buf[i++] = MotorRegs[axis].NOWVEL;
+//			gCmd.dat_buf[i++] = MotorRegs[axis].NOWACC;
+//			gCmd.dat_buf[i++] = MotorRegs[axis].INJERK;
+			gCmd.dat_buf[i++] = a++;
+
 		}
 	}
 	senddata(gCmd.type, gCmd.mark, gCmd.dat_buf, i);
@@ -128,7 +144,7 @@ ERROR_CODE ReadMotor() {
 	return RTN_SUCC;
 }
 
-ERROR_CODE ReadMfifo() {
+ERROR_CODE ReadMfifo() {   //dsp-fpga
 	int axis;
 	int i = 0;
 
@@ -145,7 +161,7 @@ ERROR_CODE ReadMfifo() {
 
 ERROR_CODE ReadSram()
 {
-	int dat[AXISNUM];
+	unsigned int dat[AXISNUM];
 	unsigned int axis, i = 0;
 
 	for(axis = 0; axis < AXISNUM; axis++){

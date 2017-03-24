@@ -12,39 +12,23 @@
 //###########################################################################
 #include "my_project.h"
 
-
 //============================================================================
 //      Peripheral 2. Cpu Timer
 //============================================================================
-
+uint8_t flag;
+extern COMMAND_S gCmd;
 #if( USE_CPU_TIMER0 )
-interrupt void cpu_timer0_isr(void)
+interrupt void cpu_timer0_isr(void)			//1ms
 {
 	CpuTimer0.InterruptCount++;
+	int axis;
+	for (axis = 0; axis < AXISNUM; axis++) {
+		if ((gCmd.mark >> axis) & 0x01) {
+			 if( M_usedSpace(MotorRegs[axis].FFWP, MotorRegs[axis].FFRP) == 0)
+				flag |= (1 << axis);
+		}
+	}
 
-
-//	//   Functions of TEST_GPIO_TIMER_LED
-//	if(timer_int_cnt++ >= 12) {
-//		timer_int_cnt = 0;
-//		LED2 = LED_OFF;
-//		CpuTimer0Regs.TCR.bit.TIE	= 0;	// 设置TIE = 0，关闭定时器0中断
-//		CpuTimer1Regs.TCR.bit.TIE  	= 1;	// 设置TIE = 1，开启定时器1中断
-//		CpuTimer2Regs.TCR.bit.TIE  	= 0; 	// 设置TIE = 0，关闭定时器2中断
-//	}
-//
-//	LED2_TOG = 1;
-
-
-//#if(USE_DMA)
-//	extern volatile Uint16 srcBuf[1024];
-//	int i;
-//	for(i=0;i<DMA_BSIZE*DMA_TSIZE*2;i++)
-//		srcBuf[i] = 1000*CpuTimer0.InterruptCount;
-//	StartDMACHx( &Dma.RegsAddr->CH1);
-//
-//	StartDMACHx( &Dma.RegsAddr->CH2);
-//#endif
-	// Acknowledge this interrupt to receive more interrupts from group 1
 	PieCtrlRegs.PIEACK.bit.ACK1 = 1;
 
 }
@@ -196,7 +180,11 @@ interrupt void spia_rx_isr(void)
 
 			// 发送
 			if( RTN_ERROR != cb_get(&Spia.cb_tx, &tmp) ){
-			}else tmp = 0xeeee;
+
+			}
+				else
+					tmp = 0xeeee;
+
 			SpiaRegs.SPITXBUF = tmp;
 			recordtx[itx++] = tmp;
 			if(itx>=30) itx = 0;

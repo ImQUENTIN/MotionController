@@ -51,7 +51,7 @@ int cb_usedSpace(CIRCLE_BUFFER_S *buf)
 {
 	int tail = buf->tail;
 	if (tail < buf->head) tail += buf->block_number;
-	return (tail - buf->head);
+	return (buf->block_number - (tail - buf->head));
 }
 
 

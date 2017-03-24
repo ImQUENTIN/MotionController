@@ -30,7 +30,7 @@ ERROR_CODE senddata(word cmd, word mark, word *dat_buf, word dat_len) {
 		checksum += ch;			// checksum
 	}
 
-	SEND_CH(*dat_buf++);
+	SEND_CH(checksum);
 	// cmd[n], checksum
 	return RTN_SUCC;
 }
