@@ -52,8 +52,10 @@ void testAD(void)
 
 int M_usedSpace(uint16_t wp, uint16_t rp)
 {
-	int block_number;
-	if (wp < rp) wp += block_number;		//fifo num?
-	return (block_number - (wp - rp));
+	int block_number = 1024;
+	int tmp;
+	tmp = wp >> 3;
+	if (tmp < rp) tmp += block_number;		//fifo num?
+	return (block_number - (tmp - rp));
 }
 

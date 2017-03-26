@@ -18,7 +18,7 @@
 #include "senddata.h"
 
 extern COMMAND_S gCmd;		// 来自ARM端的指令
-extern uint8_t flag;
+
 static int a;
 ERROR_CODE Message() {
 
@@ -40,7 +40,7 @@ ERROR_CODE Estop() {
 	int axis;
 	for (axis = 0; axis < AXISNUM; axis++) {
 		if ((gCmd.mark >> axis) & 0x01) {
-			MotorRegs[0].MCTL.bit.PAUSE = 1;
+			MotorRegs[0].MCTL.bit.START = 1;
 			ESTOP0;
 			// TEST HERE.
 		}
@@ -62,25 +62,11 @@ ERROR_CODE Activate() {
 
 ERROR_CODE Start() {
 	int axis;
-	DDA_VARS_S dda[AXISNUM];
 	for (axis = 0; axis < AXISNUM; axis++) {
 		if ((gCmd.mark >> axis) & 0x01) {
-//			tmp = MotorRegs[0].MCTL.all;
-//			MotorRegs[0].MCTL.bit.ENA = 1;			// 使能电机
-//			MotorRegs[0].MCTL.bit.PAUSE = 0;			// 启动电机
-//			ESTOP0;	// TEST HERE.
-			MotorRegs[axis].MCTL.all = 0;	// 复位电机
-			MotorRegs[axis].MCTL.all = 1;
-			while (RTN_ERROR != cb_get(&ram_dda[axis], &dda[axis])) {
-				// 取轴axis, 压入DDA
-				MR_SetDDA(axis, &dda[axis]);
-				if((flag >> axis) == 1)
-					return RTN_NO_SPACE;//next step?
+			MotorRegs[axis].MCTL.bit.START = 1;
 			}
 		}
-	}
-	for (axis = 0; axis < AXISNUM; axis++)
-	MotorRegs[axis].MCTL.bit.ENA = 1;
 	return RTN_SUCC;
 }
 
@@ -101,7 +87,6 @@ ERROR_CODE SetDDA() {
 
 ERROR_CODE EnterPTmode() {
 	int axis;
-
 	for (axis = 0; axis < AXISNUM; axis++) {
 		if ((gCmd.mark >> axis) & 0x01) {
 			PT_Mode(axis, &gCmd.ptdata[axis]);

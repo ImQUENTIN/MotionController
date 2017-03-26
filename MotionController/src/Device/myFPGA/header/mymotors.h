@@ -40,8 +40,8 @@ union MSTA_REG{
 struct MCTL_BITS{
 	uint16_t RST:1;         // reset
 	uint16_t ENA:1;         // enable
-	uint16_t PAUSE:1;       // PAUSE MODE
-	uint16_t AD_CONV:1;       // AD convert control
+	uint16_t START:1;       // PAUSE MODE
+	uint16_t AD_CONV:1;     // AD convert control
 
     uint16_t rsvd:3;
     uint16_t EDITA:1;      // Edit allow bit
