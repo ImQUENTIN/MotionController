@@ -60,10 +60,6 @@ ERROR_CODE taskPlan()
 			rtn = handleCommand(&gCmd);
 			break;
 
-		case CMD_RD_PVAJ:
-			rtn = handleCommand(&gCmd);
-			break;
-
 		default:
 			rtn = RTN_INVALID_COMMAND;
 		}

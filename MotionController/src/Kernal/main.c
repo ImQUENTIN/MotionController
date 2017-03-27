@@ -80,7 +80,9 @@ void main(void)
 		rtn = checkNewCommand();
 		if (rtn == RTN_SUCC) {
 			taskPlan();
+
 		}
+		PT_Data();
      }
 }
 

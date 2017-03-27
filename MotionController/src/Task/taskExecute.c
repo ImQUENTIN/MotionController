@@ -19,7 +19,7 @@
 
 extern COMMAND_S gCmd;		// 来自ARM端的指令
 
-
+static int a;
 ERROR_CODE Message() {
 
 	return RTN_SUCC;
@@ -61,9 +61,9 @@ ERROR_CODE Start() {
 	int axis;
 	for (axis = 0; axis < AXISNUM; axis++) {
 		if ((gCmd.mark >> axis) & 0x01) {
-			MotorRegs[0].MCTL.bit.START = 1;		// 启动电机
+			MotorRegs[axis].MCTL.bit.START = 1; // 启动电机
+			}
 		}
-	}
 	return RTN_SUCC;
 }
 
@@ -84,7 +84,6 @@ ERROR_CODE SetDDA() {
 
 ERROR_CODE EnterPTmode() {
 	int axis;
-
 	for (axis = 0; axis < AXISNUM; axis++) {
 		if ((gCmd.mark >> axis) & 0x01) {
 			PT_Mode(axis, &gCmd.ptdata[axis]);
@@ -113,8 +112,13 @@ ERROR_CODE ReadMotor() {
 
 	for (axis = 0; axis < AXISNUM; axis++) {
 		if ((gCmd.mark >> axis) & 0x01) {
-			i++;
-			gCmd.dat_buf[i] = MotorRegs[i].MSTA.all;
+			gCmd.dat_buf[i++] = MotorRegs[axis].MSTA.all;
+//			gCmd.dat_buf[i++] = MotorRegs[axis].NOWPOS;
+//			gCmd.dat_buf[i++] = MotorRegs[axis].NOWVEL;
+//			gCmd.dat_buf[i++] = MotorRegs[axis].NOWACC;
+//			gCmd.dat_buf[i++] = MotorRegs[axis].INJERK;
+			gCmd.dat_buf[i++] = a++;
+
 		}
 	}
 	senddata(gCmd.type, gCmd.mark, gCmd.dat_buf, i);
@@ -122,7 +126,7 @@ ERROR_CODE ReadMotor() {
 	return RTN_SUCC;
 }
 
-ERROR_CODE ReadMfifo() {
+ERROR_CODE ReadMfifo() {   //dsp-fpga
 	int axis;
 	int i = 0;
 
@@ -139,7 +143,7 @@ ERROR_CODE ReadMfifo() {
 
 ERROR_CODE ReadSram()
 {
-	int dat[AXISNUM];
+	unsigned int dat[AXISNUM];
 	unsigned int axis, i = 0;
 
 	for(axis = 0; axis < AXISNUM; axis++){
