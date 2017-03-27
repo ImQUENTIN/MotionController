@@ -19,7 +19,6 @@
 
 extern COMMAND_S gCmd;		// 来自ARM端的指令
 
-static int a;
 ERROR_CODE Message() {
 
 	return RTN_SUCC;
@@ -113,11 +112,10 @@ ERROR_CODE ReadMotor() {
 	for (axis = 0; axis < AXISNUM; axis++) {
 		if ((gCmd.mark >> axis) & 0x01) {
 			gCmd.dat_buf[i++] = MotorRegs[axis].MSTA.all;
-//			gCmd.dat_buf[i++] = MotorRegs[axis].NOWPOS;
-//			gCmd.dat_buf[i++] = MotorRegs[axis].NOWVEL;
-//			gCmd.dat_buf[i++] = MotorRegs[axis].NOWACC;
-//			gCmd.dat_buf[i++] = MotorRegs[axis].INJERK;
-			gCmd.dat_buf[i++] = a++;
+			gCmd.dat_buf[i++] = MotorRegs[axis].NOWPOS;
+			gCmd.dat_buf[i++] = MotorRegs[axis].NOWVEL;
+			gCmd.dat_buf[i++] = MotorRegs[axis].NOWACC;
+			gCmd.dat_buf[i++] = MotorRegs[axis].INJERK;
 
 		}
 	}
