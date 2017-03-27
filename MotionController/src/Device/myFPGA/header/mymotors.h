@@ -58,7 +58,9 @@ union MCTL_REG{
 struct MCONF_BITS{
     uint16_t LIMITNV:1;     // 0,   limit-'s active value
     uint16_t LIMITPV:1;     // 1,   limit+'s active value
-    uint16_t rsvd2:14;
+    uint16_t INDISPM:1;     // 2,   INxxx Display Mode
+
+    uint16_t rsvd2:13;
   };
 
 union MCONF_REG{
@@ -87,14 +89,15 @@ struct MOTORS_REGS{
     union MSTA_REG      MSTA;         // Motor Status register    
     union MCTL_REG      MCTL;         // Motor Control register
     union MCONF_REG     MCONF;        // Motor Configure register
-    uint16_t            rsvdRegs2[3];
+    uint16_t            rsvdRegs2[2];
+    uint16_t 	MTCNT;
   };
 
 
 extern volatile struct MOTORS_REGS MotorRegs[AXIS_ITEM];
 
 void InitMotors(void);
-int M_usedSpace(uint16_t wp, uint16_t rp);
-void MR_SetDDA( int axis, DDA_VARS_S *dda);
+int M_freeSpace(int axis);
+void M_SetDDA( int axis, DDA_VARS_S *dda);
 
 #endif /* MOTORS_H_ */

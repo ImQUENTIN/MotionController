@@ -5,6 +5,8 @@
 #include "string.h"
 #include "myram.h"
 #include "DSP2833x_Device.h"
+#include "mymotors.h"
+
 //CIRCLE_BUFFER_S pt_buf[AXISNUM];	// AXISNUM个轴的pt_buf.
 VP_PARAM_S vp_param[AXISNUM];		// velocity plan parameters.
 extern uint8_t flag;
@@ -51,15 +53,13 @@ ERROR_CODE PT_Mode(int axis, PT_VARS_S *pt) {
 ERROR_CODE PT_Data()
 {
 		int axis;
-		DDA_VARS_S dda[AXISNUM];
-		if ( ((flag || 0 ) == 0) && (MotorRegs[axis].MCTL.bit.START)){
+		DDA_VARS_S dda;
+
 		for (axis = 0; axis < AXISNUM; axis++) {
-			if ((gCmd.mark >> axis) & 0x01) {
-					// 取轴axis, 压入DDA
-				if(RTN_ERROR != cb_get(&ram_dda[axis], &dda[axis]))
-					MR_SetDDA(axis, &dda[axis]);
-				}
-			}
+			// 取轴axis, 压入DDA
+			if( MotorRegs[axis].MCTL.bit.ENA && M_freeSpace(axis) )
+				if( RTN_ERROR != cb_get(&ram_dda[axis], &dda) )
+					M_SetDDA(axis, &dda);
 		}
 		return RTN_SUCC;
 }

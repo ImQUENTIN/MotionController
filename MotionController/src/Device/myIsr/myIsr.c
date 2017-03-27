@@ -22,11 +22,20 @@ interrupt void cpu_timer0_isr(void)			//1ms
 {
 	CpuTimer0.InterruptCount++;
 	int axis;
-	for (axis = 0; axis < AXISNUM; axis++) {
-		if ((gCmd.mark >> axis) & 0x01) {
-			 if( M_usedSpace(MotorRegs[axis].FFWP, MotorRegs[axis].FFRP) == 0)
-				flag |= (1 << axis);
+
+
+	for (axis = 0; axis < 3; axis++) {
+//		if ((gCmd.mark >> axis) & 0x01) {
+		// gcmd.mark 会随着上位机命令而改变，这里是需要检测以及激活的电机：
+		if( MotorRegs[axis].MCTL.bit.ENA){
+			// 这里做限位开关的检测即可，pt发送我移到到main里了。
+			if( MotorRegs[axis].MSTA.bit.LMTN || MotorRegs[axis].MSTA.bit.LMTP ){
+				Estop();
+				break;
+			}
+			// end
 		}
+
 	}
 
 	PieCtrlRegs.PIEACK.bit.ACK1 = 1;

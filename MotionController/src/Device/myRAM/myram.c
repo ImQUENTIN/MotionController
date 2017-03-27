@@ -5,7 +5,7 @@
  *      Author: QIYUEXIN
  *  Contact me: qiyuexin@yeah.net
  */
-
+#include "DSP2833x_Device.h"     	// DSP2833x Headerfile Include File
 #include "sysTypes.h"
 #include "CircleBuffer.h"
 #include "string.h"
@@ -90,27 +90,47 @@ void testPlot(void) {
 		y_prev = y;
 	}
 
+
+
 	for (axis = 0; axis < 2; axis++) {
 		MotorRegs[axis].MCTL.all = 0;	// 复位电机
 		MotorRegs[axis].MCTL.all = 3;
+		//	INxxx 显示DSP写入的数据
+		MotorRegs[axis].MCTL.bit.EDITA = 1;
+		MotorRegs[axis].MCONF.bit.INDISPM = 1;
+		MotorRegs[axis].MCTL.bit.EDITA = 0;
+
 		while (RTN_ERROR != cb_get(&ram_dda[axis], &dda[axis])) {
 			// 取轴axis, 压入DDA
-			MR_SetDDA(axis, &dda[axis]);
+			M_SetDDA(axis, &dda[axis]);
 		}
 	}
 
-	// 同时启动
+	//	INxxx 显示下一步DDA输入参数
+//	MotorRegs[axis].MCTL.bit.EDITA = 1;
+//	MotorRegs[axis].MCONF.bit.INDISPM = 0;
+//	MotorRegs[axis].MCTL.bit.EDITA = 0;
+
 	for (axis = 0; axis < 2; axis++) {
 		MotorRegs[axis].MCTL.bit.START = 1;
 	}
 
-//	while(MotorRegs[0].FFRP != MotorRegs[0].FFWP>>3);
-//	while( MotorRegs[0].MSTA.bit.MBSY);
+	// 调试模式
+	while(MotorRegs[0].FFRP != MotorRegs[0].FFWP>>3){
+
+//			while( MotorRegs[0].MSTA.bit.MBSY);// && abs(MotorRegs[0].INPOS - MotorRegs[0].NOWPOS) < 500);
+			// 同时启动
+//			for (axis = 0; axis < 2; axis++) {
+//				MotorRegs[axis].MCTL.bit.START = 1;
+//			}
 //
-//	// 关闭电机
-//	for (axis = 0; axis < 2; axis++) {
-//		MotorRegs[axis].MCTL.bit.ENA = 0;
-//	}
+//			// 同时停止
+//			for (axis = 0; axis < 2; axis++) {
+//				MotorRegs[axis].MCTL.bit.START = 0;
+//			}
+//
+//			ESTOP0;	// stop here.
+		}
 
 
 	// test clear limit bit
