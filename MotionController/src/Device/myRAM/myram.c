@@ -92,7 +92,7 @@ void testPlot(void) {
 
 	for (axis = 0; axis < 2; axis++) {
 		MotorRegs[axis].MCTL.all = 0;	// 复位电机
-		MotorRegs[axis].MCTL.all = 1;
+		MotorRegs[axis].MCTL.all = 3;
 		while (RTN_ERROR != cb_get(&ram_dda[axis], &dda[axis])) {
 			// 取轴axis, 压入DDA
 			MR_SetDDA(axis, &dda[axis]);
@@ -101,7 +101,7 @@ void testPlot(void) {
 
 	// 同时启动
 	for (axis = 0; axis < 2; axis++) {
-		MotorRegs[axis].MCTL.bit.ENA = 1;
+		MotorRegs[axis].MCTL.bit.START = 1;
 	}
 
 //	while(MotorRegs[0].FFRP != MotorRegs[0].FFWP>>3);
@@ -111,6 +111,13 @@ void testPlot(void) {
 //	for (axis = 0; axis < 2; axis++) {
 //		MotorRegs[axis].MCTL.bit.ENA = 0;
 //	}
+
+
+	// test clear limit bit
+{
+		MotorRegs[0].MSTA.bit.LMTN = 1;
+		MotorRegs[0].MSTA.bit.LMTP = 1;
+	}
 
 }
 
