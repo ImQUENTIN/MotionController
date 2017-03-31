@@ -16,7 +16,9 @@
 #include "DSP2833x_Device.h"     // DSP2833x Headerfile Include File
 
 volatile struct MOTORS_REGS MotorRegs[AXIS_ITEM];
+//volatile union MYDA_REGS myDaRegs;
 
 #pragma DATA_SECTION(MotorRegs,"MotorRegsFiles");
+//#pragma DATA_SECTION(myDaRegs,"myDaRegsFiles");
 
 

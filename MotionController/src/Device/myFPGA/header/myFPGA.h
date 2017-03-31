@@ -10,6 +10,6 @@
 #define MYFPGA_H_
 
 #include "mymotors.h"
-
+#include "myDA.h"
 
 #endif /* MYFPGA_H_ */
