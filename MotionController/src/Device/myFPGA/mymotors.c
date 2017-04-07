@@ -55,7 +55,7 @@ int M_usedSpace(uint16_t wp, uint16_t rp)
 	int block_number = 1024;
 	int tmp;
 	tmp = wp >> 3;
-	if (tmp < rp) tmp += block_number;		//fifo num?
+	if (tmp < rp) tmp += block_number;
 	return (block_number - (tmp - rp));
 }
 

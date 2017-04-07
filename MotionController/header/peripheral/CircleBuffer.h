@@ -16,5 +16,6 @@ int cb_release(CIRCLE_BUFFER_S *buf);
 int cb_append(CIRCLE_BUFFER_S *buf, void* block_dat);
 int cb_get(CIRCLE_BUFFER_S *buf, void* block_dat);
 int cb_usedSpace(CIRCLE_BUFFER_S *buf);
+int cb_clear(CIRCLE_BUFFER_S *buf);
 
 #endif //_CIRCLE_BUFFER_H_

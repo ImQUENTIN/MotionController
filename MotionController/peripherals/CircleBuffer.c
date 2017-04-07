@@ -54,5 +54,10 @@ int cb_usedSpace(CIRCLE_BUFFER_S *buf)
 	return (buf->block_number - (tail - buf->head));
 }
 
+int cb_clear(CIRCLE_BUFFER_S *buf)
+{
+	buf->head = buf->tail;
+	return buf->head;
+}
 
 

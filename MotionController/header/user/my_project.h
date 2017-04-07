@@ -24,6 +24,7 @@
 #include "taskPlan.h"
 #include "taskComm.h"
 #include "procotol.h"
-
+#include "dualram.h"
+#include "PTmode.h"
 
 #endif // DSP2833x_PROJECT_H

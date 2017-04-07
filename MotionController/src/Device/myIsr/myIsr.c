@@ -15,19 +15,16 @@
 //============================================================================
 //      Peripheral 2. Cpu Timer
 //============================================================================
-uint8_t flag;
 extern COMMAND_S gCmd;
+
 #if( USE_CPU_TIMER0 )
 interrupt void cpu_timer0_isr(void)			//1ms
 {
 	CpuTimer0.InterruptCount++;
-	int axis;
-	for (axis = 0; axis < AXISNUM; axis++) {
-		if ((gCmd.mark >> axis) & 0x01) {
-			 if( M_usedSpace(MotorRegs[axis].FFWP, MotorRegs[axis].FFRP) == 0)
-				flag |= (1 << axis);
-		}
-	}
+
+	FPGA_Space();
+
+	LIMIT();
 
 	PieCtrlRegs.PIEACK.bit.ACK1 = 1;
 

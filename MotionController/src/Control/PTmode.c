@@ -7,7 +7,7 @@
 #include "DSP2833x_Device.h"
 //CIRCLE_BUFFER_S pt_buf[AXISNUM];	// AXISNUM个轴的pt_buf.
 VP_PARAM_S vp_param[AXISNUM];		// velocity plan parameters.
-extern uint8_t flag;
+extern char flag;
 extern COMMAND_S gCmd;
 const int time_ms2us =  50*1000;
 
@@ -27,8 +27,23 @@ const int time_ms2us =  50*1000;
 //	return RTN_SUCC;
 //}
 
+void testpt()
+{
+	int i;
+	PT_VARS_S pdata;
+	pdata.Period = 1;
+	for(i = 0; i < 8000; i++){
+		pdata.Pos = 10*i;
+		pdata.PrevPos = 10*(i-1);
+		PT_Mode(0, &pdata);
+	}
+	gCmd.mark = 1;
+	MotorRegs[0].MCTL.bit.START = 1;
+
+
+}
 // 上升和下降的加速度相同
-ERROR_CODE PT_Mode(int axis, PT_VARS_S *pt) {
+int PT_Mode(int axis, PT_VARS_S *pt) {
 	double vel;
 	int32_t delta_pos;
 	DDA_VARS_S dda;
@@ -50,9 +65,10 @@ ERROR_CODE PT_Mode(int axis, PT_VARS_S *pt) {
 
 ERROR_CODE PT_Data()
 {
-		int axis;
+		int axis, i;
 		DDA_VARS_S dda[AXISNUM];
-		if ( ((flag || 0 ) == 0) && (MotorRegs[axis].MCTL.bit.START)){
+		for (i = 0; i < AXISNUM; i++)
+		if ( ((flag || 0 ) == 0) && (MotorRegs[i].MCTL.bit.START)){
 		for (axis = 0; axis < AXISNUM; axis++) {
 			if ((gCmd.mark >> axis) & 0x01) {
 					// 取轴axis, 压入DDA
@@ -61,9 +77,15 @@ ERROR_CODE PT_Data()
 				}
 			}
 		}
+		// FIFO数据取完， 停止电机
+		for (axis = 0; axis < AXISNUM; axis++)
+			if ((gCmd.mark >> axis) & 0x01)
+				 if( M_usedSpace(MotorRegs[axis].FFWP, MotorRegs[axis].FFRP) == 0){
+						MotorRegs[axis].MCTL.bit.ENA = 0;
+						MotorRegs[axis].MCTL.bit.START = 0;
+				 }
 		return RTN_SUCC;
 }
-
 
 
 

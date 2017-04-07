@@ -170,7 +170,7 @@ extern "C" {
 // Step3. configure the Cpu Timer period(us) .
 //----------------------------------------------------------
 #if !defined(CPU_TIMER0_PRD) & USE_CPU_TIMER0
-#define 	CPU_TIMER0_PRD	1e3
+#define 	CPU_TIMER0_PRD	10e3
 #endif
 
 #if !defined(CPU_TIMER1_PRD) & USE_CPU_TIMER1

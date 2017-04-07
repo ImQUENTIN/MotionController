@@ -40,22 +40,10 @@ ERROR_CODE taskPlan()
 	case STATE_RUNNING:
 		switch(gCmd.type)
 		{
-		case CMD_SET_DDA:
-
-			break;
-
+		//case CMD_SET_DDA:	break;
 		case CMD_RD_DDA:
-			rtn = handleCommand(&gCmd);
-			break;
-
 		case CMD_RD_MSTA:
-			rtn = handleCommand(&gCmd);
-			break;
-
 		case CMD_RD_MFIFO:
-			rtn = handleCommand(&gCmd);
-			break;
-
 		case CMD_RD_SRAM:
 			rtn = handleCommand(&gCmd);
 			break;
@@ -98,13 +86,13 @@ ERROR_CODE handleCommand(COMMAND_S *pCmd )
 	case CMD_ESTOP:			rtn = Estop();			break;
 	case CMD_ACTIVATE:		rtn = Activate();		break;
 	case CMD_START:			rtn = Start();			break;
+	case CMD_GO_HOME:		rtn = GoHome();			break;
 	case CMD_SET_DDA:		rtn = SetDDA();			break;
 	case CMD_PT_MODE:		rtn = EnterPTmode();	break;
 	case CMD_RD_DDA:        rtn = ReadDDA();        break;
 	case CMD_RD_MSTA:		rtn = ReadMotor();		break;
 	case CMD_RD_MFIFO:		rtn = ReadMfifo();		break;
 	case CMD_RD_SRAM:		rtn = ReadSram();		break;
-
 
 	default:
 		rtn = RTN_INVALID_COMMAND;

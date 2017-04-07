@@ -96,5 +96,6 @@ extern volatile struct MOTORS_REGS MotorRegs[AXIS_ITEM];
 void InitMotors(void);
 int M_usedSpace(uint16_t wp, uint16_t rp);
 void MR_SetDDA( int axis, DDA_VARS_S *dda);
+void M_SetDDA( int axis, int32_t inpos, int32_t invel, int32_t inacc, int32_t injerk);
 
 #endif /* MOTORS_H_ */
