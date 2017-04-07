@@ -10,6 +10,7 @@
 
 #include "DSP2833x_Device.h"
 #include "sysTypes.h"
+#include "myram.h"
 
 ERROR_CODE FPGA_Space();
 ERROR_CODE LIMIT();

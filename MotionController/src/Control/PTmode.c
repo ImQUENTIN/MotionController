@@ -5,6 +5,8 @@
 #include "string.h"
 #include "myram.h"
 #include "DSP2833x_Device.h"
+#include "mymotors.h"
+
 //CIRCLE_BUFFER_S pt_buf[AXISNUM];	// AXISNUM个轴的pt_buf.
 VP_PARAM_S vp_param[AXISNUM];		// velocity plan parameters.
 extern char flag;
@@ -65,17 +67,17 @@ int PT_Mode(int axis, PT_VARS_S *pt) {
 
 ERROR_CODE PT_Data()
 {
+
 		int axis, i;
 		DDA_VARS_S dda[AXISNUM];
 		for (i = 0; i < AXISNUM; i++)
 		if ( ((flag || 0 ) == 0) && (MotorRegs[i].MCTL.bit.START)){
-		for (axis = 0; axis < AXISNUM; axis++) {
-			if ((gCmd.mark >> axis) & 0x01) {
-					// 取轴axis, 压入DDA
-				if(RTN_ERROR != cb_get(&ram_dda[axis], &dda[axis]))
-					MR_SetDDA(axis, &dda[axis]);
+			for (axis = 0; axis < AXISNUM; axis++) {
+			// 取轴axis, 压入DDA
+				if( MotorRegs[axis].MCTL.bit.ENA && M_freeSpace(axis) )
+				if( RTN_ERROR != cb_get(&ram_dda[axis], &dda[axis]) )
+					M_SetDDA(axis, &dda[axis]);
 				}
-			}
 		}
 		// FIFO数据取完， 停止电机
 		for (axis = 0; axis < AXISNUM; axis++)

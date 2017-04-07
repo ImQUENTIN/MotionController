@@ -239,13 +239,14 @@ void InitZone0(void)
 #elif(SYSCLKOUT_MHZ == 90)
 	// SYSCLK=90Mhz -> 11.11ns
     // Zone write timing
-	cfg.XWRLEAD 	= 2;	// one XTIMCLK cycle.
-    cfg.XWRACTIVE 	= 2;	// two XTIMCLK cycle.
-    cfg.XWRTRAIL 	= 0;
+	cfg.XWRLEAD 	= 1;	// one XTIMCLK cycle.
+    cfg.XWRACTIVE 	= 1;	// two XTIMCLK cycle.
+    cfg.XWRTRAIL 	= 1;
+
     // Zone read timing
-    cfg.XRDLEAD 	= 2;
-    cfg.XRDACTIVE 	= 2;
-    cfg.XRDTRAIL 	= 0;
+    cfg.XRDLEAD 	= 1;
+    cfg.XRDACTIVE 	= 1;
+    cfg.XRDTRAIL 	= 1;
 
     // double all Zone read/write lead/active/trail timing
     cfg.X2TIMING 	= 1;
@@ -305,7 +306,7 @@ void InitXintf(void)
 	// ------------------------------------------------------
     // Step 4. Initialize the specific zone.
 	//
-//	InitZone0();		// 运动卡的FPGA用的zone0，
+	InitZone0();		// 运动卡的FPGA用的zone0，
 	InitZone6();		// 运动卡的EXTRAM用的zone6，
 	InitZone7();		// EXTFLASH用的zone7， 不用XINTF。
 

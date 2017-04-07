@@ -89,12 +89,22 @@ ERROR_CODE Reset() {
 	return transState(STATE_READY);
 }
 
+// Emergence Stop: Stop all the activated motors.
 ERROR_CODE Estop() {
 	int axis;
 	for (axis = 0; axis < AXISNUM; axis++) {
-		if ((gCmd.mark >> axis) & 0x01) {
-			MotorRegs[axis].MCTL.bit.ENA = 0;
-			MotorRegs[axis].MCTL.bit.START = 0;
+		if (MotorRegs[axis].MCTL.bit.ENA) {
+			MotorRegs[axis].MCTL.all = 1;
+		}
+	}
+	return RTN_SUCC;
+}
+
+ERROR_CODE Stop() {
+	int axis;
+	for (axis = 0; axis < AXISNUM; axis++) {
+		if ( (gCmd.mark >> axis) & 0x01 ) {
+			MotorRegs[axis].MCTL.all = 1;
 		}
 	}
 	return transState(STATE_ESTOP);
@@ -124,7 +134,7 @@ ERROR_CODE GoHome(){
 	int axis;
 	for (axis = 0; axis < AXISNUM; axis++) {
 		if ((gCmd.mark >> axis) & 0x01) {
-			M_SetDDA(axis, 0, -DEFUALT_MAX_EVEN_VEL, 0, 0);
+			MR_SetDDA(axis, 0, -DEFUALT_MAX_EVEN_VEL, 0, 0);
 		}
 	}
 	return transState(STATE_RUNNING);

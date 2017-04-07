@@ -58,12 +58,34 @@ union MCTL_REG{
 struct MCONF_BITS{
     uint16_t LIMITNV:1;     // 0,   limit-'s active value
     uint16_t LIMITPV:1;     // 1,   limit+'s active value
-    uint16_t rsvd2:14;
+    uint16_t INDISPM:1;     // 2,   INxxx Display Mode
+
+    uint16_t rsvd2:13;
   };
 
 union MCONF_REG{
     uint16_t           all;
     struct MCONF_BITS  bit;
+};
+
+//---------------------------------------------------------------------------
+// Da Register File:
+//
+struct MYDA_REGS_BITS{
+	uint16_t data:16;
+	uint16_t addr:3;
+	uint16_t reg:3;
+	uint16_t z:1;
+	uint16_t rw:1;
+	uint16_t we:1;		// bit 8,
+	uint16_t load:1;		// bit 9,
+
+	uint16_t rsvd:6;
+  };
+
+union MYDA_REGS{
+	struct MYDA_REGS_BITS bit;
+	uint32_t all;
 };
 
 //---------------------------------------------------------------------------
@@ -80,22 +102,29 @@ struct MOTORS_REGS{
     int32_t     NOWACC;
     int32_t     NOWJERK;
     // 0x10~0x17
-    uint16_t            rsvdRegs[8];
+    union MYDA_REGS   MYDA;
+    uint16_t            rsvdRegs[6];
     // 0x18~0x1f
     uint16_t            FFWP;         // Fifo write Pointer
     uint16_t            FFRP;         // Fifo Read Pointer
     union MSTA_REG      MSTA;         // Motor Status register    
     union MCTL_REG      MCTL;         // Motor Control register
     union MCONF_REG     MCONF;        // Motor Configure register
-    uint16_t            rsvdRegs2[3];
+    uint16_t            rsvdRegs2[2];
+    uint16_t 	MTCNT;
   };
 
 
 extern volatile struct MOTORS_REGS MotorRegs[AXIS_ITEM];
 
 void InitMotors(void);
+
 int M_usedSpace(uint16_t wp, uint16_t rp);
-void MR_SetDDA( int axis, DDA_VARS_S *dda);
-void M_SetDDA( int axis, int32_t inpos, int32_t invel, int32_t inacc, int32_t injerk);
+void MR_SetDDA( int axis, int32_t inpos, int32_t invel, int32_t inacc, int32_t injerk);
+
+int M_freeSpace(int axis);
+void M_SetDDA( int axis, DDA_VARS_S *dda);
+void testMyDAC(void);
+
 
 #endif /* MOTORS_H_ */

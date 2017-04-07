@@ -19,6 +19,7 @@ MEMORY
  PAGE 1:    /* Data Memory */
    //ZONE0B	  : origin = 0x004000, length = 0x001000	// 用作与FPGA通信, 4KB, added by QUENTIN.
    MOTOR      : origin = 0x004000, length = 0x000100    // Motor1 ~ 8
+   AD         : origin = 0x004100, length = 0x000010    // DA
    //NEXT      : origin = 0x004100, length = 0x000100    // Motor1 ~ 8
 
  }
@@ -28,6 +29,7 @@ SECTIONS
 {
 //   REM EXTFPGA_DATA     : > ZONE0B,     PAGE = 1		// added by QUENTIN.
    MotorRegsFiles  : > MOTOR,     PAGE = 1
+   myDaRegsFiles   : > AD,     PAGE = 1
 
 }
 
