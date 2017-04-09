@@ -61,6 +61,14 @@ void M_SetDDA( int axis, DDA_VARS_S *dda){
 }
 
 // ·µ»ØÊ£Óà¿Õ¼ä
+int M_usedSpace(uint16_t wp, uint16_t rp)
+{
+	int fwp = wp >> 3;
+	int frp = rp;
+
+	if (fwp < frp) fwp += MRAM_SIZE;
+	return(MRAM_SIZE - (fwp - frp));
+}
 int M_freeSpace(int axis)
 {
 
@@ -72,17 +80,4 @@ int M_freeSpace(int axis)
 
 }
 
-void testMyDAC(void){
-	uint16_t tmp_dat;
 
-	MotorRegs[0].MYDA.all = 0x800000;
-	MotorRegs[0].MYDA.bit.we = 1;
-
-	ESTOP0;
-	// fsdaf
-	MotorRegs[0].MYDA.all = 0x180000;
-	MotorRegs[0].MYDA.bit.we = 1;
-	ESTOP0;
-	tmp_dat =MotorRegs[0].MYDA.bit.data;
-
-}

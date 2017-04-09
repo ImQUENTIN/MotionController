@@ -70,7 +70,6 @@ void main(void)
 //	EXTRAM_test();
 //	TestSpi();	// 注释掉，不需要测试的时候。
 
-
 	testPlot();
 	testpt();  //测试
 	PT_Data();  //暂时放这测试
@@ -81,13 +80,13 @@ void main(void)
 //	while(1)
 //		testMymotor();
 
+	testMyDAC();
 	while(1)
      {
 		rtn = checkNewCommand();
 		if (rtn == RTN_SUCC) {
 			taskPlan();
 			// taskExecute();
-
 		}
 
      }
