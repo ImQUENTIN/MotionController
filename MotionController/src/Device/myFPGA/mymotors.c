@@ -70,17 +70,4 @@ int M_freeSpace(int axis)
 	return (MRAM_SIZE - (wp - rp));
 }
 
-void testMyDAC(void){
-	uint16_t tmp_dat;
 
-	MotorRegs[0].MYDA.all = 0x800000;
-	MotorRegs[0].MYDA.bit.we = 1;
-
-	ESTOP0;
-	// fsdaf
-	MotorRegs[0].MYDA.all = 0x180000;
-	MotorRegs[0].MYDA.bit.we = 1;
-	ESTOP0;
-	tmp_dat =MotorRegs[0].MYDA.bit.data;
-
-}

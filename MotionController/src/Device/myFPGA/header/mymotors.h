@@ -68,25 +68,6 @@ union MCONF_REG{
     struct MCONF_BITS  bit;
 };
 
-//---------------------------------------------------------------------------
-// Da Register File:
-//
-struct MYDA_REGS_BITS{
-	uint16_t data:16;
-	uint16_t addr:3;
-	uint16_t reg:3;
-	uint16_t z:1;
-	uint16_t rw:1;
-	uint16_t we:1;		// bit 8,
-	uint16_t load:1;		// bit 9,
-
-	uint16_t rsvd:6;
-  };
-
-union MYDA_REGS{
-	struct MYDA_REGS_BITS bit;
-	uint32_t all;
-};
 
 //---------------------------------------------------------------------------
 // Motor Register File:
@@ -102,8 +83,8 @@ struct MOTORS_REGS{
     int32_t     NOWACC;
     int32_t     NOWJERK;
     // 0x10~0x17
-    union MYDA_REGS   MYDA;
-    uint16_t            rsvdRegs[6];
+
+    uint16_t            rsvdRegs[7];
     // 0x18~0x1f
     uint16_t            FFWP;         // Fifo write Pointer
     uint16_t            FFRP;         // Fifo Read Pointer
