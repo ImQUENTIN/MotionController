@@ -23,12 +23,11 @@
 //
 struct MSTA_BITS{
     uint16_t MBSY:1;    // 0,   Motor Busy, high active.
-    uint16_t NSTA:2;    // 2-1, Now Status of DDA
-    uint16_t NMSG:1;    // 3,   Next Message
-    uint16_t LMTN:1;    // 4,   limit- flag, high active.
-    uint16_t LMTP:1;    // 5,   limit+ flag, high active.
+    uint16_t NMSG:1;    // 1,   Next Message
+    uint16_t LMTN:1;    // 2,   limit- flag, high active.
+    uint16_t LMTP:1;    // 3,   limit+ flag, high active.
 
-    uint16_t rsvd:10;
+    uint16_t rsvd:12;
   };
 
 union MSTA_REG{
@@ -39,12 +38,16 @@ union MSTA_REG{
 //---------------------------------------------------
 // Motor Control register bit definitions:
 //
+
 struct MCTL_BITS{
     uint16_t RST:1;         // 0,   reset
     uint16_t ENA:1;         // 1,   enable
     uint16_t START:1;       // 2,   start
     uint16_t EDITA:1;       // 3,   Edit allow bit
-    uint16_t rsvd2:12;
+    enum MMODE_E{			// 4-5, Motion Mode,
+    	DDA_MODE=0, 		// 		00-DDA mode, 01-JOG mode.
+    	JOG_MODE} MMODE:2;
+    uint16_t rsvd2:10;
   };
 
 union MCTL_REG{
@@ -58,9 +61,10 @@ union MCTL_REG{
 struct MCONF_BITS{
     uint16_t LIMITNV:1;     // 0,   limit-'s active value
     uint16_t LIMITPV:1;     // 1,   limit+'s active value
-    uint16_t INDISPM:1;     // 2,   INxxx Display Mode
-
-    uint16_t rsvd2:13;
+    uint16_t LIMITDIS:1;    // 2,   1: limit function is disable
+    uint16_t DISPM:1;     	// 3,   INxxx Display Mode
+    uint16_t CBUFS:4;     	// 7-4, Command Buffer Size
+    uint16_t rsvd2:8;
   };
 
 union MCONF_REG{
@@ -77,35 +81,48 @@ struct MOTORS_REGS{
     int32_t     INPOS;   // IN Position
     int32_t     INVEL;   // velocity
     int32_t     INACC;   // acceleration
-    int32_t     INJERK;  // jerk
+    int32_t     INXX;  	// jerk
     int32_t     NOWPOS;
     int32_t     NOWVEL;
     int32_t     NOWACC;
-    int32_t     NOWJERK;
+    int32_t     NOWXX;
     // 0x10~0x17
 
-    uint16_t            rsvdRegs[7];
+    uint16_t            rsvdRegs[8];
     // 0x18~0x1f
     uint16_t            FFWP;         // Fifo write Pointer
     uint16_t            FFRP;         // Fifo Read Pointer
-    union MSTA_REG      MSTA;         // Motor Status register    
+    union MSTA_REG      MSTA;         // Motor Status register
     union MCTL_REG      MCTL;         // Motor Control register
     union MCONF_REG     MCONF;        // Motor Configure register
     uint16_t            rsvdRegs2[2];
-    uint16_t 	MTCNT;
+    uint16_t 			MTCNT;
   };
 
 
 extern volatile struct MOTORS_REGS MotorRegs[AXIS_ITEM];
 
-void InitMotors(void);
+void InitMotors(void);		// 初始化电机
+/* 基本操作 */
+void M_Arm(int axis); 			// 激活轴
+void M_UnArm(int axis); 		// 禁止轴
+void M_ServoOn(int axis);		// 打开电机
+void M_ServoOff(int axis);		// 关闭电机
 
-int M_usedSpace(uint16_t wp, uint16_t rp);
-void MR_SetDDA( int axis, int32_t inpos, int32_t invel, int32_t inacc, int32_t injerk);
+/* 控制模式选择 */
+enum MMODE_E M_GetCurMode(int axis);			// 获取当前轴的控制模式
 
-int M_freeSpace(int axis);
-void M_SetDDA( int axis, DDA_VARS_S *dda);
-void testMyDAC(void);
+/* PT 模式操作相关 */
+void M_SetPtMode(int axis);				// 设置当前轴为PT模式
+int M_GetfreeCmdSize(int axis);			// 获取空闲的DDA命令缓存区的大小
+void M_SetPvat( int axis, PVAT_S *dda);	// 输入pvat的数据
+
+/* JOG 模式操作相关 */
+void M_SetJogMode(int axis);			// 设置当前轴为JOG模式
+void M_SetVad( int axis, VAD_S *vad);	// 输入vad 的数据
+
+
+//void testMyDAC(void);
 
 
 #endif /* MOTORS_H_ */

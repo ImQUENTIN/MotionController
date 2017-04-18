@@ -86,7 +86,7 @@ void main(void)
 		rtn = checkNewCommand();
 		if (rtn == RTN_SUCC) {
 			taskPlan();
-			// taskExecute();
+//			 taskExecute();
 		}
 
      }

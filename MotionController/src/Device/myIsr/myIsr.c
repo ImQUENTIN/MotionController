@@ -22,9 +22,9 @@ interrupt void cpu_timer0_isr(void)			//1ms
 {
 	CpuTimer0.InterruptCount++;
 
-	FPGA_Space();
+//	FPGA_Space();
 
-	LIMIT();  //mark 会改变？
+//	LIMIT();  //mark 会改变？
 
 	int axis;
 
@@ -35,7 +35,7 @@ interrupt void cpu_timer0_isr(void)			//1ms
 		if( MotorRegs[axis].MCTL.bit.ENA){
 			// 这里做限位开关的检测即可，pt发送我移到到main里了。
 			if( MotorRegs[axis].MSTA.bit.LMTN || MotorRegs[axis].MSTA.bit.LMTP ){
-				Estop();
+//				Estop();
 				break;
 			}
 			// end

@@ -15,21 +15,21 @@
 #define DDA_RAM_SIZE 		0x80000/AXISNUM/8
 
 // 运动卡的EXTRAM用的zone6，
-#pragma DATA_SECTION(dda_stored,"EXTRAM_DATA");
+#pragma DATA_SECTION(cmd_ram,"EXTRAM_DATA");
 
 //8 words;
-DDA_VARS_S dda_stored[AXISNUM][DDA_RAM_SIZE];	// 8k
-CIRCLE_BUFFER_S ram_dda[AXISNUM];
+CMD_VARS_S cmd_ram[AXISNUM][DDA_RAM_SIZE];	// 8k
+CIRCLE_BUFFER_S cmd_buf[AXISNUM];
 
 void EXTRAM_init(void) {
 	int i;
 	for (i = 0; i < AXISNUM; i++) {
-		memset(&ram_dda[i], 0, sizeof(CIRCLE_BUFFER_S));
-		ram_dda[i].dat = (int*) dda_stored[i];
-		ram_dda[i].block_number = DDA_RAM_SIZE;
-		ram_dda[i].block_size = sizeof(DDA_VARS_S);
-		ram_dda[i].head = 0;
-		ram_dda[i].tail = 0;
+		memset(&cmd_buf[i], 0, sizeof(CIRCLE_BUFFER_S));
+		cmd_buf[i].dat = (int*) cmd_ram[i];
+		cmd_buf[i].block_number = DDA_RAM_SIZE;
+		cmd_buf[i].block_size = sizeof(CMD_VARS_S);
+		cmd_buf[i].head = 0;
+		cmd_buf[i].tail = 0;
 	}
 
 }
@@ -45,7 +45,7 @@ void testPlot(void) {
 
 	int x_start = 1, x_end = 100; // 单位mm
 
-	DDA_VARS_S dda[AXISNUM];
+	PVAT_S pvat[AXISNUM];
 	static int32_t pre_pos[AXISNUM];
 	const int time_scale = 50;
 	int axis = 0;
@@ -64,9 +64,9 @@ void testPlot(void) {
 		vy = vy / t_sec;					// vel y
 
 		// 压入RAM
-		memset(&dda[0], 0, sizeof(DDA_VARS_S) * AXISNUM);
-		pre_pos[0] = dda[0].pos;
-		pre_pos[1] = dda[1].pos;
+		memset(&pvat[0], 0, sizeof(PVAT_S) * AXISNUM);
+		pre_pos[0] = pvat[0].aim_pos;
+		pre_pos[1] = pvat[1].aim_pos;
 
 		px = x * STEP_X;
 		py = y * STEP_X;
@@ -75,16 +75,16 @@ void testPlot(void) {
 		if(py>0) py = py + 0.5; else py = py - 0.5;
 
 		// 压入RAM
-		dda[0].pos = (int32_t) px;
-		dda[0].vel = (int32_t) vx; //
-		dda[0].jerk = t_sec*1e6*time_scale;			// used as period:us
+		pvat[0].aim_pos = (int32_t) px;
+		pvat[0].start_vel = (int32_t) vx; //
+		pvat[0].min_period = t_sec*1e6*time_scale;			// used as period:us
 
-		dda[1].pos = (int32_t) py;
-		dda[1].vel = (int32_t) vy;
-		dda[1].jerk = t_sec*1e6*time_scale;			// used as period:us
+		pvat[1].aim_pos = (int32_t) py;
+		pvat[1].start_vel = (int32_t) vy;
+		pvat[1].min_period = t_sec*1e6*time_scale;			// used as period:us
 
-		cb_append(&ram_dda[0], &dda[0]);
-		cb_append(&ram_dda[1], &dda[1]);
+		cb_append(&cmd_buf[0], &pvat[0]);
+		cb_append(&cmd_buf[1], &pvat[1]);
 
 		x_prev = x;
 		y_prev = y;
@@ -97,12 +97,12 @@ void testPlot(void) {
 		MotorRegs[axis].MCTL.all = 3;
 		//	INxxx 显示DSP写入的数据
 		MotorRegs[axis].MCTL.bit.EDITA = 1;
-		MotorRegs[axis].MCONF.bit.INDISPM = 1;
+		MotorRegs[axis].MCONF.bit.DISPM = 1;
 		MotorRegs[axis].MCTL.bit.EDITA = 0;
 
-		while (RTN_ERROR != cb_get(&ram_dda[axis], &dda[axis])) {
+		while (RTN_ERROR != cb_get(&cmd_buf[axis], &pvat[axis])) {
 			// 取轴axis, 压入DDA
-			M_SetDDA(axis, &dda[axis]);
+			M_SetPvat(axis, &pvat[axis]);
 		}
 	}
 
@@ -143,35 +143,35 @@ void testPlot(void) {
 
 void EXTRAM_test(void) {
 	uint16_t i, j;
-	static DDA_VARS_S tmp, tmp2;
+	static PVAT_S tmp, tmp2;
 	for (i = 0; i < DDA_RAM_SIZE - 1; i++) {
 		// 写满
-		tmp.pos = i;
-		tmp.vel = i + 1;
-		tmp.acc = i + 2;
-		tmp.jerk = i + 3;
+		tmp.aim_pos = i;
+		tmp.start_vel = i + 1;
+		tmp.start_acc = i + 2;
+		tmp.min_period = i + 3;
 		for (j = 0; j < AXISNUM; j++)
-			if (RTN_ERROR == cb_append(&ram_dda[j], &tmp))
+			if (RTN_ERROR == cb_append(&cmd_buf[j], &tmp))
 				asm("ESTOP0");
 //		if( i == 8191) asm("ESTOP0");
 	}
 
 	for (; i < DDA_RAM_SIZE + 16; i++) {
 		// 检测覆盖写入
-		tmp.pos = i;
-		tmp.vel = i + 1;
-		tmp.acc = i + 2;
-		tmp.jerk = i + 3;
+		tmp.aim_pos = i;
+		tmp.start_vel = i + 1;
+		tmp.start_acc = i + 2;
+		tmp.min_period = i + 3;
 		for (j = 0; j < AXISNUM; j++) {
-			if (RTN_ERROR == cb_append(&ram_dda[j], &tmp)) {
-				cb_get(&ram_dda[j], &tmp2);
-				cb_append(&ram_dda[j], &tmp);
+			if (RTN_ERROR == cb_append(&cmd_buf[j], &tmp)) {
+				cb_get(&cmd_buf[j], &tmp2);
+				cb_append(&cmd_buf[j], &tmp);
 			}
 		}
 
 	}
 	//*****************************
-	// 可以直接查看 dda_stored 数据。
+	// 可以直接查看 cmd_ram 数据。
 	//*****************************
 
 }

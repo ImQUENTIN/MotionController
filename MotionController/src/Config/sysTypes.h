@@ -59,17 +59,35 @@ typedef struct {
 }VP_PARAM_S;
 
 typedef struct {
-	int32_t pos;
-	int32_t vel;
-	int32_t acc;
-	int32_t jerk;
-}DDA_VARS_S;
+	int32_t p1;
+	int32_t p2;
+	int32_t p3;
+	int32_t p4;
+}CMD_VARS_S;
+
+/* DDA 模式变量
+ * dda_pvt 模式使用变量
+ */
+typedef struct {
+	int32_t aim_pos;		// 目标位置
+	int32_t start_vel;		// 起始速度
+	int32_t start_acc;		// 起始加速度
+	int32_t min_period;		// 最小运行时间
+}PVAT_S;
+
+/* JOG 模式变量
+ */
+typedef struct {
+	int32_t aim_vel;		// 目标速度
+	int32_t start_acc;		// 起始加速度，加速有效
+	int32_t start_dec;		// 起始减速度，减速有效
+}VAD_S;
+
 
 typedef struct{
 	int32_t Pos;
 	int32_t PrevPos;
 	int32_t Period;
-
 }PT_VARS_S;
 
 // user 指令结构体
@@ -80,8 +98,12 @@ typedef struct {
 	// parameters
 	unsigned short mark;
 
-	// axis variables
-	DDA_VARS_S setDDA[AXISNUM];
+	// DDA MODE: pvat
+	PVAT_S pvat[AXISNUM];
+
+	// JOG MODE: vad
+	VAD_S   vad[AXISNUM];
+
 
 	// PT variables
 //		VP_PARAM_S vp_param[AXISNUM];		// velocity plan parameters.

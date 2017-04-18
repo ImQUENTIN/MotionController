@@ -132,10 +132,13 @@ ERROR_CODE Start() {
 
 ERROR_CODE GoHome(){
 	int axis;
+	PVAT_S home ={ 	0,						// aim_pos
+					-DEFUALT_MAX_EVEN_VEL,	// start_vel
+					0,						// start_acc
+					0};						// min_period
 	for (axis = 0; axis < AXISNUM; axis++) {
-		if ((gCmd.mark >> axis) & 0x01) {
-			MR_SetDDA(axis, 0, -DEFUALT_MAX_EVEN_VEL, 0, 0);
-		}
+		if ((gCmd.mark >> axis) & 0x01)
+			M_SetPvat( axis, &home);
 	}
 	return transState(STATE_RUNNING);
 }
@@ -143,14 +146,8 @@ ERROR_CODE GoHome(){
 ERROR_CODE SetDDA() {
 	int axis;
 	for (axis = 0; axis < AXISNUM; axis++) {
-		if ((gCmd.mark >> axis) & 0x01) {
-			MotorRegs[axis].INPOS = gCmd.setDDA[axis].pos;
-			MotorRegs[axis].INVEL = gCmd.setDDA[axis].vel;
-			MotorRegs[axis].INACC = gCmd.setDDA[axis].acc;
-			MotorRegs[axis].INJERK = gCmd.setDDA[axis].jerk;
-
-			MotorRegs[axis].MSTA.bit.NMSG = 1;	// push into the fifo of DDA.
-		}
+		if ((gCmd.mark >> axis) & 0x01)
+			M_SetPvat( axis, &gCmd.pvat[axis]);
 	}
 	return RTN_SUCC;
 }
@@ -189,7 +186,7 @@ ERROR_CODE ReadMotor() {
 			gCmd.dat_buf[i++] = MotorRegs[axis].NOWPOS;
 			gCmd.dat_buf[i++] = MotorRegs[axis].NOWVEL;
 			gCmd.dat_buf[i++] = MotorRegs[axis].NOWACC;
-			gCmd.dat_buf[i++] = MotorRegs[axis].INJERK;
+			gCmd.dat_buf[i++] = MotorRegs[axis].INXX;
 
 		}
 	}
@@ -220,7 +217,7 @@ ERROR_CODE ReadSram()
 
 	for(axis = 0; axis < AXISNUM; axis++) {
 		if((gCmd.mark >> axis) & 0x01) {
-			dat[i++] = cb_usedSpace(&ram_dda[axis]);
+			dat[i++] = cb_usedSpace(&cmd_buf[axis]);
 		}
 	}
 	senddata(gCmd.type,gCmd.mark,dat,i);

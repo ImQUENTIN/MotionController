@@ -8,7 +8,7 @@ ERROR_CODE FPGA_Space()
 	flag = 0;
 	for (axis = 0; axis < AXISNUM; axis++) {
 		if ((gCmd.mark >> axis) & 0x01) {
-			 if( M_usedSpace(MotorRegs[axis].FFWP, MotorRegs[axis].FFRP) == 0)
+			 if( MotorRegs[axis].FFWP >>3 == MotorRegs[axis].FFRP )
 				flag |= (1 << axis);
 		}
 	}
@@ -28,11 +28,12 @@ ERROR_CODE LIMIT()
 						MotorRegs[i].MCTL.bit.START = 0;
 						MotorRegs[i].MCTL.bit.ENA = 0;
 						MotorRegs[i].MCTL.bit.EDITA = 1;
-						MotorRegs[i].MCONF.bit.LIMITNV = 1;
-						MotorRegs[i].MCONF.bit.LIMITPV = 1;
-						MotorRegs[i].MCTL.bit.EDITA = 0;
+//						MotorRegs[i].MCONF.bit.LIMITNV = 1;
+//						MotorRegs[i].MCONF.bit.LIMITPV = 1;
 						MotorRegs[i].FFWP = 8*MotorRegs[i].FFRP;
-						cb_clear(&ram_dda[i]);
+						MotorRegs[i].MCTL.bit.EDITA = 0;
+
+						cb_clear(&cmd_buf[i]);
 
 					}
 				}

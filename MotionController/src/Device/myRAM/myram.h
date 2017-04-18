@@ -8,7 +8,7 @@
 
 #ifndef MYRAM_H_
 #define MYRAM_H_
-extern CIRCLE_BUFFER_S ram_dda[AXISNUM];
+extern CIRCLE_BUFFER_S cmd_buf[AXISNUM];
 
 void EXTRAM_init(void);
 void EXTRAM_test(void);

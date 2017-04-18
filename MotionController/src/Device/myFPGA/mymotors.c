@@ -25,8 +25,8 @@ void InitMotors(void)
 	int axis;
 	for(axis=0; axis<AXISNUM; axis++){
 		MotorRegs[axis].MCTL.all = 0;
-		MotorRegs[axis].MCTL.all = 9;
-		MotorRegs[axis].MCONF.bit.INDISPM = 1; // INxx 显示写入的数据
+		MotorRegs[axis].MCTL.all = 9;	// no reset & EDITA
+		MotorRegs[axis].MCONF.bit.DISPM = 1; // INxx 显示写入的数据
 		if(axis>2){
 			// 这些轴没有使用
 			MotorRegs[axis].MCONF.bit.LIMITNV = 0;
@@ -37,47 +37,78 @@ void InitMotors(void)
 }
 
 
-// 文件内部测试使用
-void MR_SetDDA( int axis, int32_t inpos, int32_t invel, int32_t inacc, int32_t injerk){
+// 激活轴
+void M_Arm(int axis){
+	MotorRegs[axis].MCTL.bit.ENA = 1;
+}
 
-	MotorRegs[axis].INPOS =  inpos;
-	MotorRegs[axis].INVEL =  invel;
-	MotorRegs[axis].INACC =  inacc;
-	MotorRegs[axis].INJERK = injerk;
+// 禁止轴
+void M_UnArm(int axis){
+	MotorRegs[axis].MCTL.bit.ENA = 0;
+}
 
+// 打开电机
+void M_ServoOn(int axis){
+	MotorRegs[axis].MCTL.bit.START = 1;
+}
+
+// 关闭电机
+void M_ServoOff(int axis){
+	MotorRegs[axis].MCTL.bit.START = 0;
+}
+
+// 获取当前轴的控制模式
+enum MMODE_E M_GetCurMode(int axis){
+	return MotorRegs[axis].MCTL.bit.MMODE;
+}
+
+// 设置当前轴为PT模式
+void M_SetPvatMode(int axis){
+	MotorRegs[axis].MCTL.bit.MMODE = DDA_MODE;
+}
+
+// 输入pvat的数据
+void M_SetPvat( int axis, PVAT_S *dda){
+	MotorRegs[axis].INPOS =  dda->aim_pos;
+	MotorRegs[axis].INVEL =  dda->start_vel;
+	MotorRegs[axis].INACC =  dda->start_acc;
+	MotorRegs[axis].INXX  =  dda->min_period;
 	MotorRegs[axis].MSTA.bit.NMSG = 1;	// push into the fifo of DDA.
 }
 
-void M_SetDDA( int axis, DDA_VARS_S *dda){
-
-	MotorRegs[axis].INPOS =  dda->pos;
-	MotorRegs[axis].INVEL =  dda->vel;
-	MotorRegs[axis].INACC =  dda->acc;
-	MotorRegs[axis].INJERK = dda->jerk;
-//	if( memcmp((uint16_t *)&MotorRegs[axis].INPOS, (uint16_t *)&dda->pos, 8) )
-//		ESTOP0;	//校验不一致，传输错误！
-//	else
-		MotorRegs[axis].MSTA.bit.NMSG = 1;	// push into the fifo of DDA.
-}
-
-// 返回剩余空间
-int M_usedSpace(uint16_t wp, uint16_t rp)
+// 获取空闲的DDA命令缓存区的大小
+int M_GetfreeCmdSize(int axis)
 {
-	int fwp = wp >> 3;
-	int frp = rp;
-
-	if (fwp < frp) fwp += MRAM_SIZE;
-	return(MRAM_SIZE - (fwp - frp));
-}
-int M_freeSpace(int axis)
-{
-
 	int wp = MotorRegs[axis].FFWP >> 3;
-	int  rp = MotorRegs[axis].FFRP;
+	int rp = MotorRegs[axis].FFRP;
+	int cmdbufsize = 1 << 1+MotorRegs[axis].MCONF.bit.CBUFS;
 
-	if (wp < rp) wp += MRAM_SIZE;
-	return (MRAM_SIZE - (wp - rp));
+	if (wp < rp)	return (rp - wp);
+	else			return ( cmdbufsize - (wp - rp));
 
 }
 
+// 设置当前轴为JOG模式
+void M_SetJogMode(int axis){
+	MotorRegs[axis].MCTL.bit.MMODE = JOG_MODE;
+}
+
+// 输入vad 的数据
+void M_SetVad( int axis, VAD_S *vad){
+	MotorRegs[axis].INXX  =  vad->start_dec;
+	MotorRegs[axis].INACC =  vad->start_acc;
+	MotorRegs[axis].INVEL =  vad->aim_vel;
+}
+
+
+
+//// 返回剩余空间
+//int M_usedSpace(uint16_t wp, uint16_t rp)
+//{
+//	int fwp = wp >> 3;
+//	int frp = rp;
+//
+//	if (fwp < frp) fwp += MRAM_SIZE;
+//	return(MRAM_SIZE - (fwp - frp));
+//}
 

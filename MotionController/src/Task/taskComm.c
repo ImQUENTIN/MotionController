@@ -101,7 +101,7 @@ ERROR_CODE decoupleCommand(word *pCmd, short cmdLen)
 		ptr = &pCmd[2];
 		for (i = 0; i < AXISNUM; i++) {
 			if ((gCmd.mark >> i) & 0x01) {
-				memcpy(&gCmd.setDDA[i].pos,ptr,8);
+				memcpy(&gCmd.pvat[i].aim_pos,ptr,8);
 				ptr += 8;
 			}
 		}
