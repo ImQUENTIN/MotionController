@@ -100,11 +100,11 @@ ERROR_CODE Estop() {
 	return RTN_SUCC;
 }
 
-ERROR_CODE Stop() {
+ERROR_CODE Stop( AXIS_ITEM mark) {
 	int axis;
 	for (axis = 0; axis < AXISNUM; axis++) {
-		if ( (gCmd.mark >> axis) & 0x01 ) {
-			MotorRegs[axis].MCTL.all = 1;
+		if ( (mark >> axis) & 0x01 ) {
+			MotorRegs[axis].MCTL.bit.ENA = 0;
 		}
 	}
 	return transState(STATE_ESTOP);

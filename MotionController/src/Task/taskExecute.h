@@ -11,6 +11,8 @@
 ERROR_CODE Message();
 ERROR_CODE Reset();
 ERROR_CODE Estop();
+ERROR_CODE Stop(AXIS_ITEM mark);
+
 ERROR_CODE Activate();
 ERROR_CODE Start();
 ERROR_CODE SetDDA();

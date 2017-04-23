@@ -26,8 +26,10 @@ interrupt void cpu_timer0_isr(void)			//1ms
 	CpuTimer0.InterruptCount++;
 
 	if( CpuTimer0.InterruptCount - preCount >= 10 ){
+		/*  period = 10ms */
 		preCount = CpuTimer0.InterruptCount;
 		for (axis = 0; axis < 3; axis++) {
+
 			if(MotorRegs[axis].MCTL.bit.MMODE == JOG_MODE)
 				testJog(axis);
 		}
@@ -35,17 +37,13 @@ interrupt void cpu_timer0_isr(void)			//1ms
 
 //	FPGA_Space();
 
-//	LIMIT();  //mark 会改变？
-
-
-
 	for (axis = 0; axis < 3; axis++) {
 //		if ((gCmd.mark >> axis) & 0x01) {
 		// gcmd.mark 会随着上位机命令而改变，这里是需要检测以及激活的电机：
 		if( MotorRegs[axis].MCTL.bit.ENA){
 			// 这里做限位开关的检测即可，pt发送我移到到main里了。
 			if( MotorRegs[axis].MSTA.bit.LMTN || MotorRegs[axis].MSTA.bit.LMTP ){
-//				Estop();
+				Stop(AXIS_ALL);		// Turn off all the Servomotors.
 				break;
 			}
 			// end

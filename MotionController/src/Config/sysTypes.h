@@ -30,6 +30,18 @@ typedef enum ERROR_CODE {
 
 }ERROR_CODE;
 
+typedef enum  {
+	AXIS1 = 0x01,
+	AXIS2 = 0x02,
+	AXIS3 = 0x04,
+	AXIS4 = 0x08,
+	AXIS5 = 0x10,
+	AXIS6 = 0x20,
+	AXIS7 = 0x40,
+	AXIS8 = 0x80,
+	AXIS_ALL = 0xff
+}AXIS_ITEM;
+
 //////////////////////////////////////////////////////////
 // ÷∏¡Ó¿‡–Õ
 typedef enum COMMAND_TYPE {

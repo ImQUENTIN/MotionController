@@ -15,9 +15,6 @@
 #ifndef MYMOTORS_H_
 #define MYMOTORS_H_
 
-#define AXIS_ITEM 8
-
-
 //---------------------------------------------------
 // Motor Status register bit definitions:
 //
@@ -128,7 +125,7 @@ struct MOTORS_REGS{
   };
 
 
-extern volatile struct MOTORS_REGS MotorRegs[AXIS_ITEM];
+extern volatile struct MOTORS_REGS MotorRegs[8];
 
 void InitMotors(void);		// 初始化电机
 /* 基本操作 */

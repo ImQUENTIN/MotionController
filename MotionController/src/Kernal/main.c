@@ -81,6 +81,9 @@ void main(void)
 	EnterJogMode(1);
 	EnterJogMode(2);
 
+	M_EXO1 = 1;
+	M_EXO2 = 1;
+	M_EXO3 = 0;
 
 
 	while(1)
