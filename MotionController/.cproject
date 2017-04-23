@@ -27,7 +27,7 @@
 							</option>
 							<option id="com.ti.ccstudio.buildDefinitions.core.OPT_CODEGEN_VERSION.1075728451" name="Compiler version" superClass="com.ti.ccstudio.buildDefinitions.core.OPT_CODEGEN_VERSION" value="6.2.0" valueType="string"/>
 							<targetPlatform id="com.ti.ccstudio.buildDefinitions.C2000_6.2.exe.targetPlatformDebug.1057285417" name="Platform" superClass="com.ti.ccstudio.buildDefinitions.C2000_6.2.exe.targetPlatformDebug"/>
-							<builder buildPath="${BuildDirectory}" id="com.ti.ccstudio.buildDefinitions.C2000_6.2.exe.builderDebug.972354672" keepEnvironmentInBuildfile="false" name="GNU Make" superClass="com.ti.ccstudio.buildDefinitions.C2000_6.2.exe.builderDebug"/>
+							<builder buildPath="${BuildDirectory}" enableAutoBuild="false" id="com.ti.ccstudio.buildDefinitions.C2000_6.2.exe.builderDebug.972354672" keepEnvironmentInBuildfile="false" name="GNU Make" superClass="com.ti.ccstudio.buildDefinitions.C2000_6.2.exe.builderDebug"/>
 							<tool id="com.ti.ccstudio.buildDefinitions.C2000_6.2.exe.compilerDebug.419764954" name="C2000 Compiler" superClass="com.ti.ccstudio.buildDefinitions.C2000_6.2.exe.compilerDebug">
 								<option id="com.ti.ccstudio.buildDefinitions.C2000_6.2.compilerID.LARGE_MEMORY_MODEL.896844143" name="Use large memory model (--large_memory_model, -ml)" superClass="com.ti.ccstudio.buildDefinitions.C2000_6.2.compilerID.LARGE_MEMORY_MODEL" value="true" valueType="boolean"/>
 								<option id="com.ti.ccstudio.buildDefinitions.C2000_6.2.compilerID.UNIFIED_MEMORY.1589428620" name="Unified memory (--unified_memory, -mt)" superClass="com.ti.ccstudio.buildDefinitions.C2000_6.2.compilerID.UNIFIED_MEMORY" value="true" valueType="boolean"/>
@@ -41,6 +41,7 @@
 									<listOptionValue builtIn="false" value="&quot;${PROJECT_LOC}\src\Device\myIsr&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${PROJECT_LOC}\src\Device\dualram&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${PROJECT_LOC}\src\Device\myFlash&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${PROJECT_LOC}\src\Device\myEXIO&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${PROJECT_LOC}\src\Device\myRAM&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${PROJECT_LOC}\src\Device\myFPGA\header&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${PROJECT_LOC}\src\Config&quot;"/>

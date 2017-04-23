@@ -37,24 +37,14 @@ void InitMotors(void)
 }
 
 
-// 激活轴
-void M_Arm(int axis){
-	MotorRegs[axis].MCTL.bit.ENA = 1;
-}
-
-// 禁止轴
-void M_UnArm(int axis){
-	MotorRegs[axis].MCTL.bit.ENA = 0;
-}
-
 // 打开电机
 void M_ServoOn(int axis){
-	MotorRegs[axis].MCTL.bit.START = 1;
+	MotorRegs[axis].MCTL.bit.ENA = 1;
 }
 
 // 关闭电机
 void M_ServoOff(int axis){
-	MotorRegs[axis].MCTL.bit.START = 0;
+	MotorRegs[axis].MCTL.bit.ENA = 0;
 }
 
 // 获取当前轴的控制模式
@@ -94,21 +84,9 @@ void M_SetJogMode(int axis){
 }
 
 // 输入vad 的数据
-void M_SetVad( int axis, VAD_S *vad){
-	MotorRegs[axis].INXX  =  vad->start_dec;
-	MotorRegs[axis].INACC =  vad->start_acc;
-	MotorRegs[axis].INVEL =  vad->aim_vel;
+void M_SetVad( int axis, int32_t aim_vel){
+	MotorRegs[axis].MCTL.bit.START = 0;
+	MotorRegs[axis].INVEL =  aim_vel;
+	MotorRegs[axis].MCTL.bit.START = 1;
 }
-
-
-
-//// 返回剩余空间
-//int M_usedSpace(uint16_t wp, uint16_t rp)
-//{
-//	int fwp = wp >> 3;
-//	int frp = rp;
-//
-//	if (fwp < frp) fwp += MRAM_SIZE;
-//	return(MRAM_SIZE - (fwp - frp));
-//}
 

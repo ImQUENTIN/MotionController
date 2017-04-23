@@ -67,6 +67,7 @@ void InitPeripherals(void)
 	InitXintf();		// initializes the External Interface the default reset state.
 //	InitDmas();			// Peripheral 5: DMA 初始化，if used.
 
+	InitEXIO();			// 初始化外部IO
 	FlashSST39_Init();
 	InitMotors();		// 初始化电机
 	EXTRAM_init();		// 初始化外部RAM

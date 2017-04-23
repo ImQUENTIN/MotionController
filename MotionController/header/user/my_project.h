@@ -26,5 +26,6 @@
 #include "procotol.h"
 #include "dualram.h"
 #include "PTmode.h"
+#include "myEXIO.h"
 
 #endif // DSP2833x_PROJECT_H

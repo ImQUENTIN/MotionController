@@ -105,9 +105,9 @@ PAGE 0 :
    RAMM0      : origin = 0x000050, length = 0x0003B0
 
    RAML0      : origin = 0x008000, length = 0x001000    
-   RAML1      : origin = 0x009000, length = 0x002000    
+   RAML1      : origin = 0x009000, length = 0x003000
    // RAML2      : origin = 0x00A000, length = 0x001000    /* 娌℃湁鐢ㄥ埌锛屾墍浠ユ妸瀹冨垝缁橰AML1 */
-   RAML3      : origin = 0x00B000, length = 0x001000 
+   //RAML3      : origin = 0x00B000, length = 0x001000
 //   ZONE6A     : origin = 0x100000, length = 0x00FC00    /* XINTF zone 6 - program space */
    CSM_RSVD   : origin = 0x33FF80, length = 0x000076     /* Part of FLASHA.  Program with all 0x0000 when CSM is in use. */
    CSM_PWL    : origin = 0x33FFF8, length = 0x000008     /* Part of FLASHA.  CSM password locations in FLASHA            */

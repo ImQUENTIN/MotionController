@@ -72,6 +72,31 @@ union MCONF_REG{
     struct MCONF_BITS  bit;
 };
 
+//---------------------------------------------------
+// Max Velocity register bit definitions:
+//
+struct MAXVEL_BITS{
+	uint32_t maxvel:23;		// 0-22：最大速度，无符号。
+	uint32_t rsvd:9;		// reserved.
+};
+union MAXVEL_REG{
+	uint32_t 			all;
+	struct MAXVEL_BITS bit;
+};
+
+
+//---------------------------------------------------
+// Max Acceleration register bit definitions:
+//
+struct MAXACC_BITS{
+	uint32_t acc_l:23;		// 0-22：低位，无符号。
+	int32_t  acc_h:9;		//  高位，有符号。
+};
+union MAXACC_REG{
+	uint32_t 			all;
+	struct MAXACC_BITS bit;
+};
+
 
 //---------------------------------------------------------------------------
 // Motor Register File:
@@ -87,8 +112,11 @@ struct MOTORS_REGS{
     int32_t     NOWACC;
     int32_t     NOWXX;
     // 0x10~0x17
+    int32_t     ENCP;	// Encode Position
+    int32_t     ENCV;	// Encode Velocity
+    union MAXVEL_REG     MAXVEL;	// Max Velocity
+    union MAXACC_REG     MAXACC;	// Max Velocity
 
-    uint16_t            rsvdRegs[8];
     // 0x18~0x1f
     uint16_t            FFWP;         // Fifo write Pointer
     uint16_t            FFRP;         // Fifo Read Pointer
@@ -104,8 +132,6 @@ extern volatile struct MOTORS_REGS MotorRegs[AXIS_ITEM];
 
 void InitMotors(void);		// 初始化电机
 /* 基本操作 */
-void M_Arm(int axis); 			// 激活轴
-void M_UnArm(int axis); 		// 禁止轴
 void M_ServoOn(int axis);		// 打开电机
 void M_ServoOff(int axis);		// 关闭电机
 
@@ -119,7 +145,7 @@ void M_SetPvat( int axis, PVAT_S *dda);	// 输入pvat的数据
 
 /* JOG 模式操作相关 */
 void M_SetJogMode(int axis);			// 设置当前轴为JOG模式
-void M_SetVad( int axis, VAD_S *vad);	// 输入vad 的数据
+void M_SetVad( int axis, int32_t aim_vel);	// 输入vad 的数据
 
 
 //void testMyDAC(void);

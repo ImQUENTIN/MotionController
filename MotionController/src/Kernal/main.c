@@ -50,7 +50,7 @@
 // 从ARM过来的指令：硬件 --> taskComm --> taskPlan  --> taskExecute
 
 void main(void)
-{
+  {
 
 /* 
 	tmp = sizeof(char);			// 1 - 16bit
@@ -70,17 +70,19 @@ void main(void)
 //	EXTRAM_test();
 //	TestSpi();	// 注释掉，不需要测试的时候。
 
-	testPlot();
-	testpt();  //测试
-	PT_Data();  //暂时放这测试
-	testMyDAC();
+//	testpt();  //测试
+//	PT_Data();  //暂时放这测试
+
+//	testMyDAC();
 //	testPlot();
-
-
 //	while(1)
 //		testMymotor();
+	EnterJogMode(0);
+	EnterJogMode(1);
+	EnterJogMode(2);
 
-	testMyDAC();
+
+
 	while(1)
      {
 		rtn = checkNewCommand();

@@ -20,13 +20,23 @@ extern COMMAND_S gCmd;
 #if( USE_CPU_TIMER0 )
 interrupt void cpu_timer0_isr(void)			//1ms
 {
+	int axis;
+	static Uint32 preCount;
+
 	CpuTimer0.InterruptCount++;
+
+	if( CpuTimer0.InterruptCount - preCount >= 10 ){
+		preCount = CpuTimer0.InterruptCount;
+		for (axis = 0; axis < 3; axis++) {
+			if(MotorRegs[axis].MCTL.bit.MMODE == JOG_MODE)
+				testJog(axis);
+		}
+	}
 
 //	FPGA_Space();
 
 //	LIMIT();  //mark 会改变？
 
-	int axis;
 
 
 	for (axis = 0; axis < 3; axis++) {

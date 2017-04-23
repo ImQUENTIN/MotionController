@@ -75,14 +75,6 @@ typedef struct {
 	int32_t min_period;		// 最小运行时间
 }PVAT_S;
 
-/* JOG 模式变量
- */
-typedef struct {
-	int32_t aim_vel;		// 目标速度
-	int32_t start_acc;		// 起始加速度，加速有效
-	int32_t start_dec;		// 起始减速度，减速有效
-}VAD_S;
-
 
 typedef struct{
 	int32_t Pos;
@@ -102,8 +94,7 @@ typedef struct {
 	PVAT_S pvat[AXISNUM];
 
 	// JOG MODE: vad
-	VAD_S   vad[AXISNUM];
-
+	int32_t   jog_vel[AXISNUM];
 
 	// PT variables
 //		VP_PARAM_S vp_param[AXISNUM];		// velocity plan parameters.
