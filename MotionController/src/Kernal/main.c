@@ -74,17 +74,15 @@ void main(void)
 //	PT_Data();  //‘› ±∑≈’‚≤‚ ‘
 
 //	testMyDAC();
-//	testPlot();
+
 //	while(1)
 //		testMymotor();
-	EnterJogMode(0);
-	EnterJogMode(1);
-	EnterJogMode(2);
 
-	M_EXO1 = 1;
-	M_EXO2 = 1;
-	M_EXO3 = 0;
+//	EnterJogMode(0);
+//	EnterJogMode(1);
+//	EnterJogMode(2);
 
+	testPlot();
 
 	while(1)
      {

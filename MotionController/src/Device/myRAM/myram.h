@@ -12,6 +12,6 @@ extern CIRCLE_BUFFER_S cmd_buf[AXISNUM];
 
 void EXTRAM_init(void);
 void EXTRAM_test(void);
-void testPlot(void);
+
 
 #endif /* MYRAM_H_ */

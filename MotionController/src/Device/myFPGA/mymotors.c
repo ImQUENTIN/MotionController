@@ -47,6 +47,12 @@ void M_ServoOff(int axis){
 	MotorRegs[axis].MCTL.bit.ENA = 0;
 }
 
+// 运行电机运行
+void M_Update(int axis){
+	MotorRegs[axis].MCTL.bit.START = 1;
+}
+
+
 // 获取当前轴的控制模式
 enum MMODE_E M_GetCurMode(int axis){
 	return MotorRegs[axis].MCTL.bit.MMODE;
@@ -89,4 +95,5 @@ void M_SetVad( int axis, int32_t aim_vel){
 	MotorRegs[axis].INVEL =  aim_vel;
 	MotorRegs[axis].MCTL.bit.START = 1;
 }
+
 

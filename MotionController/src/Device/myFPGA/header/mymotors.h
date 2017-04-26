@@ -131,12 +131,13 @@ void InitMotors(void);		// 初始化电机
 /* 基本操作 */
 void M_ServoOn(int axis);		// 打开电机
 void M_ServoOff(int axis);		// 关闭电机
+void M_Update(int axis);		// 更新运动指令。
 
 /* 控制模式选择 */
 enum MMODE_E M_GetCurMode(int axis);			// 获取当前轴的控制模式
 
 /* PT 模式操作相关 */
-void M_SetPtMode(int axis);				// 设置当前轴为PT模式
+void M_SetPvatMode(int axis);				// 设置当前轴为PT模式
 int M_GetfreeCmdSize(int axis);			// 获取空闲的DDA命令缓存区的大小
 void M_SetPvat( int axis, PVAT_S *dda);	// 输入pvat的数据
 

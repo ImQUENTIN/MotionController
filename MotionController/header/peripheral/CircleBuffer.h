@@ -18,4 +18,6 @@ int cb_get(CIRCLE_BUFFER_S *buf, void* block_dat);
 int cb_usedSpace(CIRCLE_BUFFER_S *buf);
 int cb_clear(CIRCLE_BUFFER_S *buf);
 
+
+int cb_getLast(CIRCLE_BUFFER_S *buf, void* block_dat);	// not used
 #endif //_CIRCLE_BUFFER_H_

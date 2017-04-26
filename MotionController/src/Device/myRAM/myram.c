@@ -36,110 +36,7 @@ void EXTRAM_init(void) {
 double constrain(double src, double min, double max) {
 	return (src > max) ? max : (src < min) ? min : src;
 }
-void testPlot(void) {
-	double STEP_X = (2.1 * 6400) / 100;   //步进电机步长，单位mm
-	double A = 30, B = 2 * 3.141593 / 80, D;	// sin 参数
-	double step_vel = 1e4, max_vel = 64e3;		// 稳定脉冲速度
 
-	double x, y, v, px, py, vx, vy, x_prev = 0, y_prev = 0, t_sec = 0;
-
-	int x_start = 1, x_end = 100; // 单位mm
-
-	PVAT_S pvat[AXISNUM];
-	static int32_t pre_pos[AXISNUM];
-	const int time_scale = 50;
-	int axis = 0;
-
-	D = A;
-
-	for (x = x_start; x < x_end + 1; x+=1) {
-		y = A * sin(B * x) + D;
-		// 计算脉冲速度
-		vx = (x - x_prev) * STEP_X;		// delta x
-		vy = (y - y_prev) * STEP_X;		// delta y
-		v = sqrt(vx * vx + vy * vy);		// distance
-		t_sec = (v / step_vel);			// time, seconds
-
-		vx = vx / t_sec;					// vel x
-		vy = vy / t_sec;					// vel y
-
-		// 压入RAM
-		memset(&pvat[0], 0, sizeof(PVAT_S) * AXISNUM);
-		pre_pos[0] = pvat[0].aim_pos;
-		pre_pos[1] = pvat[1].aim_pos;
-
-		px = x * STEP_X;
-		py = y * STEP_X;
-		// 四舍五入
-		if(px>0) px = px + 0.5; else px = px - 0.5;
-		if(py>0) py = py + 0.5; else py = py - 0.5;
-
-		// 压入RAM
-		pvat[0].aim_pos = (int32_t) px;
-		pvat[0].start_vel = (int32_t) vx; //
-		pvat[0].min_period = t_sec*1e6*time_scale;			// used as period:us
-
-		pvat[1].aim_pos = (int32_t) py;
-		pvat[1].start_vel = (int32_t) vy;
-		pvat[1].min_period = t_sec*1e6*time_scale;			// used as period:us
-
-		cb_append(&cmd_buf[0], &pvat[0]);
-		cb_append(&cmd_buf[1], &pvat[1]);
-
-		x_prev = x;
-		y_prev = y;
-	}
-
-
-
-	for (axis = 0; axis < 2; axis++) {
-		MotorRegs[axis].MCTL.all = 0;	// 复位电机
-		MotorRegs[axis].MCTL.all = 3;
-		//	INxxx 显示DSP写入的数据
-		MotorRegs[axis].MCTL.bit.EDITA = 1;
-		MotorRegs[axis].MCONF.bit.DISPM = 1;
-		MotorRegs[axis].MCTL.bit.EDITA = 0;
-
-		while (RTN_ERROR != cb_get(&cmd_buf[axis], &pvat[axis])) {
-			// 取轴axis, 压入DDA
-			M_SetPvat(axis, &pvat[axis]);
-		}
-	}
-
-	//	INxxx 显示下一步DDA输入参数
-//	MotorRegs[axis].MCTL.bit.EDITA = 1;
-//	MotorRegs[axis].MCONF.bit.INDISPM = 0;
-//	MotorRegs[axis].MCTL.bit.EDITA = 0;
-
-	for (axis = 0; axis < 2; axis++) {
-		MotorRegs[axis].MCTL.bit.START = 1;
-	}
-
-	// 调试模式
-	while(MotorRegs[0].FFRP != MotorRegs[0].FFWP>>3){
-
-//			while( MotorRegs[0].MSTA.bit.MBSY);// && abs(MotorRegs[0].INPOS - MotorRegs[0].NOWPOS) < 500);
-			// 同时启动
-//			for (axis = 0; axis < 2; axis++) {
-//				MotorRegs[axis].MCTL.bit.START = 1;
-//			}
-//
-//			// 同时停止
-//			for (axis = 0; axis < 2; axis++) {
-//				MotorRegs[axis].MCTL.bit.START = 0;
-//			}
-//
-//			ESTOP0;	// stop here.
-		}
-
-
-	// test clear limit bit
-{
-		MotorRegs[0].MSTA.bit.LMTN = 1;
-		MotorRegs[0].MSTA.bit.LMTP = 1;
-	}
-
-}
 
 void EXTRAM_test(void) {
 	uint16_t i, j;
@@ -173,6 +70,6 @@ void EXTRAM_test(void) {
 	//*****************************
 	// 可以直接查看 cmd_ram 数据。
 	//*****************************
-
 }
+
 

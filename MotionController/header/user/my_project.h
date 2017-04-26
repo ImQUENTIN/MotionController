@@ -27,5 +27,6 @@
 #include "dualram.h"
 #include "PTmode.h"
 #include "myEXIO.h"
+#include "testPlots.h"
 
 #endif // DSP2833x_PROJECT_H

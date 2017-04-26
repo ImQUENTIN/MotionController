@@ -44,3 +44,4 @@ encoding//Debug/targetConfigs/subdir_rules.mk=UTF-8
 encoding//Debug/targetConfigs/subdir_vars.mk=UTF-8
 encoding//header/peripheral/swfifo.h=UTF-8
 encoding//peripherals/DSP2833x_Xintf.c=UTF-8
+encoding//src/Device/myRAM/testPlots.c=UTF-8

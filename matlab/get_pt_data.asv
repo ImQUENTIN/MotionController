@@ -1,0 +1,19 @@
+function [tx, ty, tz] = get_pt_data3( x, y, z, vel)
+% x, y, z 是三个轴的pos信息， 单位mm
+% vel 是希望的速度。
+
+%计算速度
+vx = x;
+vx(2:end) = (x(2:end) - x(1:end-1));
+vy = y;
+vy(2:end) = (y(2:end) - y(1:end-1));
+vz = z;
+vz(2:end) = (z(2:end) - z(1:end-1)); 
+s = sqrt(vx.^2 + vy.^2 + vz.^2);
+t = 
+
+% 计算平稳速度
+vy = vy./v;
+vx = vx./v;
+vz = vz./v;
+v2  = sqrt(vx.^2 + vy.^2 + vz.^2);

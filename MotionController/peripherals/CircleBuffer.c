@@ -37,6 +37,12 @@ int cb_append(CIRCLE_BUFFER_S *buf, void* block_dat)
 	return buf->tail;
 }
 
+int cb_getLast(CIRCLE_BUFFER_S *buf, void* block_dat)
+{
+	memcpy((Uint16 *)block_dat, (Uint16 *)(buf->dat) + buf->tail * buf->block_size, buf->block_size);
+	return buf->tail;
+}
+
 int cb_get(CIRCLE_BUFFER_S *buf, void* block_dat)
 {
 	int head = (buf->head + 1) % buf->block_number;
