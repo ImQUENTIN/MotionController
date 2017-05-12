@@ -7,26 +7,31 @@ vx = x;
 vy = y;
 vz = z;
 s  = z;
-figure;
+
+subplot(2,2,2);
 plot(vx);
 hold on;
 plot(vy, 'r');
 hold on;
 plot(vz, 'c');
+title('now position');
+legend('pos x', 'pos y', 'pos z');
 
 vy(2:end) = (y(2:end) - y(1:end-1));
 vx(2:end) = (x(2:end) - x(1:end-1));
 vz(2:end) = (z(2:end) - z(1:end-1)); 
 s = sqrt(vx.^2 + vy.^2 + vz.^2);
 
-figure;
-plot(vx);
-hold on;
-plot(vy, 'r');
-hold on;
-plot(vz, 'c');
-hold on;
-plot(s, 'k');
+% subplot(2,2,3);
+% plot(vx);
+% hold on;
+% plot(vy, 'r');
+% hold on;
+% plot(vz, 'c');
+% hold on;
+% plot(s, 'k');
+% title('delta distance');
+% legend('delta x', 'delta y', 'delta z');
 
 t = s/vel;
 %t = 4/100;
@@ -35,7 +40,7 @@ vy = vy ./t;
 vz = vz ./t;
 s = sqrt(vx.^2 + vy.^2 + vz.^2);
 
-figure;
+subplot(2,1,2);
 plot(vx);
 hold on;
 plot(vy, 'r');
@@ -43,3 +48,5 @@ hold on;
 plot(vz, 'c');
 hold on;
 plot(s, 'k');
+title('各轴速度及合速度');
+legend('x轴速度：vx','y轴速度：vy','z轴速度：vz','合速度：s');

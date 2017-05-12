@@ -77,15 +77,20 @@ void main(void)
 
 //	while(1)
 //		testMymotor();
+#if 0
 
-//	EnterJogMode(0);
-//	EnterJogMode(1);
-//	EnterJogMode(2);
 
+	EnterJogMode(0);
+	EnterJogMode(1);
+	EnterJogMode(2);
+
+#else
 	testPlot();
+#endif
 
 	while(1)
      {
+		SetPvats();
 		rtn = checkNewCommand();
 		if (rtn == RTN_SUCC) {
 			taskPlan();

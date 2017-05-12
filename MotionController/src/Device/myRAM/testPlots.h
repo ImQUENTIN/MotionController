@@ -10,6 +10,6 @@
 #define TESTPLOTS_H_
 
 void testPlot(void);
-
+void SetPvats(void);
 
 #endif /* TESTPLOTS_H_ */

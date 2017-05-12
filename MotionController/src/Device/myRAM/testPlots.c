@@ -5,13 +5,18 @@
 #include "string.h"
 #include "CircleBuffer.h"
 #include "myram.h"
+#include "testPlots.h"
+//#define TEST_SIN
 
 /* 电机/机械结构参数 */
 const double STEP_X = (2.1 * 6400) / 100;   // X轴步进电机步长，单位pulse/mm
 const double STEP_Y = (2.1 * 6400) / 100;   // Y轴步进电机步长，单位pulse/mm
 const double STEP_Z = (2.1 * 6400) / 100;   // Z轴步进电机步长，单位pulse/mm
-const double STEP_V = 6400;		// 期望合速度，单位pulse/second
-
+#ifdef TEST_SIN
+const double STEP_V = 6000;		// 期望合速度，单位pulse/second
+#else
+const double STEP_V = 30000;		// 期望合速度，单位pulse/second
+#endif
 /* 绘图尺寸范围限制 */
 const int x_start=0;      // 坐标下限（相对于系统坐标原点，单位mm）
 const int y_start=0;
@@ -65,6 +70,7 @@ void PlotSin(struct CAL_PVAT *cal);
 void PlotCirlce(struct CAL_PVAT *cal) ;
 int32_t DDA_MOVE(int axis, int32_t aim_pos, int32_t delay_time);
 
+
 void testPlot(void){
 	int axis;
 	for( axis = 0; axis <3; axis++) {
@@ -72,22 +78,19 @@ void testPlot(void){
 		M_ServoOn(axis);		// Turn On servo
 	}
 
-	DDA_MOVE(0, 	0, 0.5*1e6*time_scale);
-	DDA_MOVE(1, 	0, 0.5*1e6*time_scale);
-	DDA_MOVE(2, 	0, 0.5*1e6*time_scale);
+//	DDA_MOVE(0, 	0, 0.5*1e6*time_scale);
+//	DDA_MOVE(1, 	0, 0.5*1e6*time_scale);
+//	DDA_MOVE(2, 	0, 0.5*1e6*time_scale);
+#ifdef TEST_SIN
+	PlotSin(&cal_pvat);
+#else
 	PlotCirlce(&cal_pvat);
 	DDA_MOVE(0, 	0, 0.5*1e6*time_scale);
 	DDA_MOVE(1, 	0, 0.5*1e6*time_scale);
 	DDA_MOVE(2, 	0, 0.5*1e6*time_scale);
-//	PlotSin(&cal_pvat);
+#endif
 
-	for (axis = 0; axis < 3; axis++) {
-		while (RTN_ERROR != cb_get(&cmd_buf[axis], &pvat[axis])) {
-			// 取轴axis, 压入DDA
-			if(M_GetfreeCmdSize(axis)>2)	M_SetPvat(axis, &pvat[axis]);
-		}
-	}
-
+	SetPvats();
 	/* start all the axis at the same time */
 	for( axis = 0; axis <3; axis++) {
 		M_Update(axis);
@@ -96,6 +99,17 @@ void testPlot(void){
 
 }
 
+void SetPvats(void){
+	int axis;
+
+	for (axis = 0; axis < 3; axis++) {
+		while (RTN_ERROR != cb_get(&cmd_buf[axis], &pvat[axis]) && M_GetfreeCmdSize(axis) > 2) {
+			// 取轴axis, 压入DDA
+			M_SetPvat(axis, &pvat[axis]);
+		}
+	}
+
+}
 //	INxxx 显示下一步DDA输入参数
 //	MotorRegs[axis].MCTL.bit.EDITA = 1;
 //	MotorRegs[axis].MCONF.bit.INDISPM = 0;
@@ -160,9 +174,21 @@ void PlotSin(struct CAL_PVAT *cal) {
 		pvat[1].start_vel 	= (int32_t) cal->vy; 			//
 		pvat[1].min_period 	= cal->t_sec*1e6*time_scale;			// used as period:us
 
+		pvat[2].min_period 	= cal->t_sec*1e6*time_scale;			// used as period:us
 		cb_append(&cmd_buf[0], &pvat[0]);
 		cb_append(&cmd_buf[1], &pvat[1]);
+		cb_append(&cmd_buf[2], &pvat[2]);
+
 	}
+
+//	pvat[0].min_period 	= 1*1e4*time_scale;			// used as period:us
+//	pvat[1].min_period 	= 1*1e4*time_scale;			// used as period:us
+//
+//	cb_append(&cmd_buf[0], &pvat[0]);
+//	cb_append(&cmd_buf[1], &pvat[1]);
+//	cb_append(&cmd_buf[2], &pvat[1]);
+
+
 }
 void PlotCirlce(struct CAL_PVAT *cal) {
 	const int R = 40;
@@ -173,10 +199,10 @@ void PlotCirlce(struct CAL_PVAT *cal) {
 	y_offset 	= 0;
 	z_offset 	= 0;
 
-	for (theta = 0; theta <= 2*pi; theta +=2*pi/100) {
+	for (theta = 0; theta <= 4*2*pi; theta +=2*pi/100) {
 
-		x = R*cos(pitch)*cos(pi - theta) + x_offset;
-		y = R*cos(pitch)*sin(pi - theta) + y_offset;
+		x = R*cos(pitch)*cos(0*pi - theta) + x_offset;
+		y = R*cos(pitch)*sin(0*pi - theta) + y_offset;
 		z = x*tan(pitch) + z_offset;
 		cal->px = (x+x_offset) * STEP_X;
 		cal->py = (y+y_offset) * STEP_Y;

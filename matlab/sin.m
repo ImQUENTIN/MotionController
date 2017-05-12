@@ -33,6 +33,7 @@ y = z .*sin(1*pi - theta) + Ori_y;
 
 plot3(x,y,z);
 
+
 % 转成脉冲形式：
 px = x*step_x;
 py = y*step_y;

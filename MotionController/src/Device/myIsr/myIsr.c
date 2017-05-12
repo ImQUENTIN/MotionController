@@ -43,6 +43,7 @@ interrupt void cpu_timer0_isr(void)			//1ms
 		if( MotorRegs[axis].MCTL.bit.ENA){
 			// 这里做限位开关的检测即可，pt发送我移到到main里了。
 			if( MotorRegs[axis].MSTA.bit.LMTN || MotorRegs[axis].MSTA.bit.LMTP ){
+				//
 				Stop(AXIS_ALL);		// Turn off all the Servomotors.
 				break;
 			}

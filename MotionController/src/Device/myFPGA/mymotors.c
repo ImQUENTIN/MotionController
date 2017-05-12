@@ -75,7 +75,7 @@ void M_SetPvat( int axis, PVAT_S *dda){
 // 获取空闲的DDA命令缓存区的大小
 int M_GetfreeCmdSize(int axis)
 {
-	int wp = MotorRegs[axis].FFWP >> 3;
+	int wp = MotorRegs[axis].FFWP>>3;
 	int rp = MotorRegs[axis].FFRP;
 	int cmdbufsize = 1 << 1+MotorRegs[axis].MCONF.bit.CBUFS;
 

@@ -1,10 +1,11 @@
 close all;
 clear;
+clc
 
 % 电机/机械结构参数（暂时未使用）
 step_x = (2.1*6400)/100;   %步进电机步长，单位mm
 step_y = step_x;
-step_z = step_x;
+step_z = 1.5*step_x;
 step_v = 6400;   % pulse/second
 
 % 绘图尺寸范围限制（暂时未使用）
@@ -21,17 +22,21 @@ min_step = 2*pi/100;            %密化步长，单位mm
 % 圆参数
 R = 40;
 pitch = pi/4;
-theta = 0: min_step :2*pi-min_step;
+theta = 0: min_step :1.75*pi;
 
 Ori_x= 0;
 Ori_y= 0;
 Ori_z= 0;
 
 % 密化
-x = R*cos(pitch)*cos(1*pi - theta) + Ori_x;
-y = R*cos(pitch)*sin(1*pi - theta) + Ori_y;
-z = x*tan(pitch) + Ori_z;
+x = R*cos(pitch)*cos(0*pi - theta) + Ori_x;
+y = R*cos(pitch)*sin(0*pi - theta) + Ori_y;
+z = 1*x*tan(pitch) + Ori_z;
+figure;
+subplot(2,2,1);
 plot3(x,y,z);
+title('圆形轨迹');
+hold on;
 
 % 转成脉冲形式：
 px = x*step_x;
