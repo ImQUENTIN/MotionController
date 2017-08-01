@@ -6,7 +6,7 @@
 #include "CircleBuffer.h"
 #include "myram.h"
 #include "testPlots.h"
-//#define TEST_SIN
+#define TEST_SIN
 
 /* 电机/机械结构参数 */
 const double STEP_X = (2.1 * 6400) / 100;   // X轴步进电机步长，单位pulse/mm

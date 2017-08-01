@@ -29,8 +29,8 @@ void InitMotors(void)
 		MotorRegs[axis].MCONF.bit.DISPM = 1; // INxx 显示写入的数据
 		if(axis>2){
 			// 这些轴没有使用
-			MotorRegs[axis].MCONF.bit.LIMITNV = 0;
-			MotorRegs[axis].MCONF.bit.LIMITPV = 0;
+			MotorRegs[axis].MCONF.bit.LIMITNV = 1;
+			MotorRegs[axis].MCONF.bit.LIMITPV = 1;
 		}
 		MotorRegs[axis].MCTL.bit.EDITA = 0;
 	}

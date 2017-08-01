@@ -77,8 +77,7 @@ void main(void)
 
 //	while(1)
 //		testMymotor();
-#if 0
-
+#if 1
 
 	EnterJogMode(0);
 	EnterJogMode(1);
